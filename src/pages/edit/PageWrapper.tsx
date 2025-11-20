@@ -1,46 +1,16 @@
-import {
-  ElementLayerContext,
-  useEditedImageContext,
-  useProductContext,
-} from '@/contexts/global-context'
 import { productService } from '@/services/product.service'
-import { TElementLayerState } from '@/utils/types/global'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditPage from './Page'
 import { PageLoading } from '@/components/custom/Loading'
-
-const ElementLayerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [elementLayers, setElementLayers] = useState<TElementLayerState[]>([])
-
-  const addToElementLayers = (elementLayer: TElementLayerState) => {
-    setElementLayers((prev) => {
-      if (prev.some((el) => el.elementId === elementLayer.elementId)) {
-        return prev
-      }
-      const updatedLayers = [...prev, elementLayer]
-      updatedLayers.sort((a, b) => a.index - b.index)
-      return updatedLayers
-    })
-  }
-
-  const removeFromElementLayers = (elementIds: string[]) => {
-    setElementLayers((prev) => prev.filter((el) => !elementIds.includes(el.elementId)))
-  }
-
-  return (
-    <ElementLayerContext.Provider
-      value={{ elementLayers, setElementLayers, addToElementLayers, removeFromElementLayers }}
-    >
-      {children}
-    </ElementLayerContext.Provider>
-  )
-}
+import { useProductStore } from '@/stores/product/product.store'
+import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
 
 const PageWrapper = () => {
   const [error, setError] = useState<string | null>(null)
-  const { products, setProducts } = useProductContext()
-  const { editedImages: printedImages } = useEditedImageContext()
+  const products = useProductStore((s) => s.products)
+  const setProducts = useProductStore((s) => s.setProducts)
+  const printedImages = usePrintedImageStore((s) => s.printedImages)
   const [fetched, setFetched] = useState<boolean>(false)
   const navigate = useNavigate()
 
@@ -76,24 +46,22 @@ const PageWrapper = () => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-circle-alert-icon lucide-circle-alert text-pink-cl"
+        className="lucide lucide-circle-alert-icon lucide-circle-alert text-main-cl"
       >
         <circle cx="12" cy="12" r="10" />
         <line x1="12" x2="12" y1="8" y2="12" />
         <line x1="12" x2="12.01" y1="16" y2="16" />
       </svg>
-      <p className="text-pink-cl text-lg text-center font-bold mt-2">{error}</p>
+      <p className="text-main-cl text-lg text-center font-bold mt-2">{error}</p>
       <button
         onClick={() => navigate('/')}
-        className="bg-pink-cl text-white text-lg font-bold px-4 py-2 rounded mt-4"
+        className="bg-main-cl text-white text-lg font-bold px-4 py-2 rounded mt-4"
       >
         Quay lại trang chủ
       </button>
     </div>
   ) : products.length > 0 && printedImages.length > 0 ? (
-    <ElementLayerProvider>
-      <EditPage products={products} printedImages={printedImages} />
-    </ElementLayerProvider>
+    <EditPage products={products} printedImages={printedImages} />
   ) : (
     <PageLoading message="Đang tải dữ liệu..." />
   )

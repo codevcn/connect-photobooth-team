@@ -235,7 +235,7 @@ export const PaymentModal = ({ show, onHideShow, voucherCode, cartItems }: Payme
           <div className="space-y-3 pt-2">
             <button
               onClick={handleConfirmPayment}
-              className="w-full h-[50px] bg-pink-cl text-white font-bold text-lg rounded-lg shadow-lg active:scale-90 transition"
+              className="w-full h-[50px] bg-main-cl text-white font-bold text-lg rounded-lg shadow-lg active:scale-90 transition"
             >
               Xác nhận thanh toán
             </button>

@@ -26,13 +26,13 @@ const IntroPage = () => {
       <div className="fixed top-1/2 -translate-y-1/2 md:top-6 md:translate-y-0 left-1/2 -translate-x-1/2 z-20">
         <button
           onClick={() => navigate('/qr')}
-          className="group relative px-4 w-max py-4 bg-linear-to-r from-pink-cl to-pink-hover-cl text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-pink-cl/50 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
+          className="group relative px-4 w-max py-4 bg-linear-to-r from-main-cl to-pink-hover-cl text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-main-cl/50 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
         >
           {/* Animated background shimmer */}
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
 
           {/* Pulsing ring */}
-          <div className="absolute inset-0 rounded-full bg-pink-cl opacity-75 animate-ping-slow" />
+          <div className="absolute inset-0 rounded-full bg-main-cl opacity-75 animate-ping-slow" />
 
           {/* Button content */}
           <span className="relative z-10 flex items-center gap-2">

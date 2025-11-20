@@ -101,7 +101,7 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-tag-icon lucide-tag text-pink-cl"
+          className="lucide lucide-tag-icon lucide-tag text-main-cl"
         >
           <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
           <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
@@ -155,12 +155,12 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
           onKeyDown={(e) => e.key === 'Enter' && !isApplyingVoucher && applyVoucher()}
           placeholder="Nhập mã khuyến mãi"
           disabled={!!appliedVoucher || isApplyingVoucher}
-          className="flex-1 h-10 w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="flex-1 h-10 w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
         <button
           onClick={applyVoucher}
           disabled={!!appliedVoucher || isApplyingVoucher}
-          className="h-10 px-6 bg-pink-cl text-white font-medium rounded-xl active:scale-95 transition shadow-sm w-max disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="h-10 px-6 bg-main-cl text-white font-medium rounded-xl active:scale-95 transition shadow-sm w-max disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isApplyingVoucher ? (
             <>
@@ -246,7 +246,7 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-loader-circle-icon lucide-loader-circle animate-spin text-pink-cl"
+                className="lucide lucide-loader-circle-icon lucide-loader-circle animate-spin text-main-cl"
               >
                 <path d="M21 12a9 9 0 1 1-6.219-8.56" />
               </svg>
@@ -261,7 +261,7 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
                     setDiscountCode(voucher.code)
                   }}
                   disabled={isApplyingVoucher}
-                  className="text-xs px-2 py-1 bg-pink-50 text-pink-cl border border-pink-200 rounded-md hover:bg-pink-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xs px-2 py-1 bg-pink-50 text-main-cl border border-pink-200 rounded-md hover:bg-pink-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {voucher.code}
                 </button>

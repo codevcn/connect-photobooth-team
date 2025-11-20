@@ -6,13 +6,13 @@ import { ToastContainer } from 'react-toastify'
 import ScanQRPage from './pages/scan-qr/Page'
 import { AppRootProvider } from './providers/RootProvider'
 import { useEffect } from 'react'
-import { useEditedImageContext } from './contexts/global-context'
 // import { useIdleDetector } from './hooks/use-idle-detector'
 // import { IdleWarningModal } from './components/custom/IdleWarningModal'
 // import { useNavigate } from 'react-router-dom'
 import IntroPage from './pages/intro/Page'
 import { isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
+import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -35,7 +35,7 @@ import PaymentPage from './pages/payment/Page'
 // }
 
 function AppContent() {
-  const { clearAllEditedImages } = useEditedImageContext()
+  const { clearAllPrintedImages } = usePrintedImageStore()
 
   const handleReturnHome = () => {
     if (isHomePage()) {
@@ -50,7 +50,7 @@ function AppContent() {
   useEffect(() => {
     LocalStorageHelper.clearAllMockupImages()
     return () => {
-      clearAllEditedImages()
+      clearAllPrintedImages()
     }
   }, [])
 

@@ -1,6 +1,7 @@
 import { postCreateOrder } from './api/order.api'
-import { TCreateOrderReq, TOrderResponse } from '@/utils/types/api'
+import { TOrderResponse } from '@/utils/types/api'
 import { TPaymentProductItem, TShippingInfo } from '@/utils/types/global'
+import { OrderAdapter } from './adapter/order.adapter'
 
 class OrderService {
   /**
@@ -11,45 +12,13 @@ class OrderService {
     shippingInfo: TShippingInfo,
     voucherCode?: string
   ): Promise<TOrderResponse> {
-    // Transform cart data to API format
-    const items: TCreateOrderReq['items'] = []
-    for (const item of cartItems) {
-      if (!item.preSentImageLink) {
-        throw new Error('Thiếu đường dẫn hình ảnh đã gửi trước cho dữ liệu mockup')
-      }
-      items.push({
-        variant_id: item.productImageId,
-        quantity: item.quantity, // Each mockup is 1 item
-        surfaces: [
-          {
-            surface_id: item.surface.id,
-            editor_state_json: item.elementsVisualState,
-            file_url: item.preSentImageLink,
-            width_px: item.mockupData.widthPx,
-            height_px: item.mockupData.heightPx,
-          },
-        ],
-      })
-    }
-
-    const requestBody: TCreateOrderReq = {
-      store_code: import.meta.env.VITE_STORE_CODE,
-      customer: {
-        name: shippingInfo.name,
-        email: shippingInfo.email,
-        phone: shippingInfo.phone,
-      },
-      shipping_address: {
-        address1: shippingInfo.address,
-        city: shippingInfo.city,
-        province: shippingInfo.province,
-        postcode: '000000',
-        country: 'VN',
-      },
-      items,
-      voucher_code: voucherCode,
-      note: shippingInfo.message,
-    }
+    // Sử dụng OrderAdapter để convert sang API format
+    const requestBody = OrderAdapter.toCreateOrderRequest(
+      cartItems,
+      shippingInfo,
+      import.meta.env.VITE_STORE_CODE,
+      voucherCode
+    )
 
     const response = await postCreateOrder(requestBody)
 

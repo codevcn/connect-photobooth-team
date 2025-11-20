@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+:root {
+  --vcn-superlight-main-cl: #fff6f4;
+  --vcn-light-main-cl: #ffece4;
+  --vcn-main-cl: #f54900;
+  --vcn-secondary-cl: #f7921f;
+  --vcn-pink-hover-cl: #ffd5c1;
+  --vcn-dark-main-cl: #aa4419;
+}
+
 @theme {
   /* Custom Breakpoints */
   --breakpoint-xs: 376px;
@@ -13,20 +22,17 @@
   --breakpoint-3xl: 1441px;
   --breakpoint-4xl: 1601px;
 
-  /* Border Radius - sử dụng CSS variables có sẵn */
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-
   /* Custom Colors */
-  --color-pink-cl: var(--vcn-pink-cl);
+  --color-main-cl: var(--vcn-main-cl);
   --color-pink-hover-cl: var(--vcn-pink-hover-cl);
-  --color-light-pink-cl: var(--vcn-light-pink-cl);
-  --color-superlight-pink-cl: var(--vcn-superlight-pink-cl);
-  --color-dark-pink-cl: var(--vcn-dark-pink-cl);
+  --color-light-main-cl: var(--vcn-light-main-cl);
+  --color-superlight-main-cl: var(--vcn-superlight-main-cl);
+  --color-dark-main-cl: var(--vcn-dark-main-cl);
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  --color-primary: var(--vcn-pink-cl);
+  --color-primary: var(--vcn-main-cl);
   --color-muted: hsl(var(--muted));
+  --color-secondary-cl: var(--vcn-secondary-cl);
 
   /* Custom Animations */
   --animate-fade-in: fade-in 0.2s ease-out;
@@ -41,134 +47,6 @@
     Roboto, sans-serif;
 }
 
-/* Custom scrollbar for gallery */
-.gallery-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.gallery-scroll {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.animate-pop-in {
-  animation: pop-in 0.2s ease-out;
-}
-
-/* Smooth transitions for interactive elements */
-.touch-target {
-  @apply transition-all duration-200 active:scale-95;
-}
-
-.STYLE-adjusting-element {
-  pointer-events: none;
-  opacity: 0;
-}
-
-.NAME-button-container {
-  position: relative;
-  display: block;
-}
-
-.NAME-star {
-  position: absolute;
-  font-size: 20px;
-  animation: blink 1.5s infinite;
-  pointer-events: none;
-  z-index: 10;
-  width: 24px;
-}
-
-.NAME-attractive-button {
-  animation: jump 4s infinite 4s forwards;
-}
-
-.NAME-star:nth-child(1) {
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation-delay: 0s;
-}
-.NAME-star:nth-child(2) {
-  top: 50%;
-  right: -20px;
-  animation-delay: 0.5s;
-}
-.NAME-star:nth-child(3) {
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation-delay: 1s;
-}
-.NAME-star:nth-child(4) {
-  top: 50%;
-  left: -20px;
-  animation-delay: 1.5s;
-}
-.NAME-star:nth-child(5) {
-  top: -20px;
-  left: 75%;
-  animation-delay: 0.5s;
-}
-.NAME-star:nth-child(6) {
-  top: 0;
-  left: 0;
-  animation-delay: 0.5s;
-}
-
-.animate-fade-in-down {
-  animation: fadeInDown 0.6s ease-out;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.5s ease-out;
-}
-
-.animate-slide-in-left {
-  animation: slideInLeft 0.5s ease-out;
-}
-
-.animate-slide-in-right {
-  animation: slideInRight 0.5s ease-out;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-glow {
-  animation: glow 2s infinite;
-}
-
-.STYLE-animation-loading-shapes {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0),
-    linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0);
-  background-size: 21px 21px;
-  background-repeat: no-repeat;
-  animation: app-loading-shapes 1.5s infinite cubic-bezier(0.3, 1, 0, 1);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-}
-
-/* Ẩn scrollbar trên Chrome, Edge, Safari */
-.STYLE-hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Ẩn scrollbar trên Firefox */
-.STYLE-hide-scrollbar {
-  scrollbar-width: none;
-}
-
-/* Ẩn scrollbar trên IE, Edge cũ */
-.STYLE-hide-scrollbar {
-  -ms-overflow-style: none;
+@utility mobile-touch {
+  @apply transition duration-200 active:scale-95;
 }

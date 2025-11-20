@@ -5,9 +5,10 @@ import { PaymentModal } from '@/pages/payment/PaymentModal'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { LocalStorageHelper } from '@/utils/localstorage'
-import { useGlobalContext, useProductContext } from '@/contexts/global-context'
+import { useGlobalContext } from '@/contexts/global-context'
 import { VoucherSection } from '@/pages/payment/Voucher'
 import { ProductList } from '@/pages/payment/ProductList'
+import { useProductStore } from '@/stores/product/product.store'
 
 interface IPaymentModalProps {
   imgSrc?: string
@@ -54,7 +55,7 @@ const PaymentPage = () => {
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState<string>()
-  const { products } = useProductContext()
+  const { products } = useProductStore((s) => ({ products: s.products }))
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
@@ -73,7 +74,7 @@ const PaymentPage = () => {
   const updateQuantity = (mockupId: string, delta: number, productImageId: number) => {
     let productStock: number = 0
     for (const product of products) {
-      for (const image of product.images) {
+      for (const image of product.variants) {
         if (image.id === productImageId) {
           productStock = image.stock
           break
@@ -91,7 +92,7 @@ const PaymentPage = () => {
 
   const findProductImageInProducts = (productImageId: number): TClientProductVariant | null => {
     for (const product of products.flat()) {
-      for (const image of product.images) {
+      for (const image of product.variants) {
         if (image.id === productImageId) {
           return image
         }
@@ -202,7 +203,7 @@ const PaymentPage = () => {
             <div>
               <button
                 onClick={backToEditPage}
-                className="flex items-center gap-2 py-1 px-2 md:px-4 text-sm md:text-base bg-pink-cl rounded-md text-white font-bold active:scale-95 transition"
+                className="flex items-center gap-2 py-1 px-2 md:px-4 text-sm md:text-base bg-main-cl rounded-md text-white font-bold active:scale-95 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +293,7 @@ const PaymentPage = () => {
                   <div className="hidden md:block mt-3 md:mt-4">
                     <button
                       onClick={() => setShowModal(true)}
-                      className="flex items-center justify-center gap-2 w-full mt-4 h-11 bg-pink-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
+                      className="flex items-center justify-center gap-2 w-full mt-4 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -323,7 +324,7 @@ const PaymentPage = () => {
             <div className="w-full mx-auto px-2 py-2">
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center justify-center gap-2 w-full h-[45px] bg-pink-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
+                className="flex items-center justify-center gap-2 w-full h-[45px] bg-main-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -381,7 +382,7 @@ const PaymentPage = () => {
             {/* Action Button */}
             <button
               onClick={() => navigate('/edit')}
-              className="group relative w-full md:max-w-md lg:max-w-lg mx-auto bg-pink-cl hover:bg-dark-pink-cl text-white font-bold p-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 overflow-hidden"
+              className="group relative w-full md:max-w-md lg:max-w-lg mx-auto bg-main-cl hover:bg-dark-main-cl text-white font-bold p-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
               <div className="relative flex items-center justify-center gap-3 md:gap-4">

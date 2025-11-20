@@ -45,10 +45,12 @@ export type TProductVariant = {
   updated_at: string
 }
 
+export type TSurfaceCode = 'front' | 'back'
+
 export type TProductSurface = {
   id: number
   product_id: number
-  code: string
+  code: TSurfaceCode
   display_name: string
   preview_image_url: string
   order_index: number

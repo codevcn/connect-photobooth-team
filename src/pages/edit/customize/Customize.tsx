@@ -12,43 +12,19 @@ export const Customize = () => {
           </label>
           <div className="flex space-x-3">
             <button className="w-12 h-12 rounded border-2 border-transparent hover:border-gray-300 focus:outline-none overflow-hidden relative group">
-              <div
-                className="w-full h-full bg-red-800"
-                style={{
-                  backgroundImage:
-                    "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjOTkxYjFiIi8+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjN2YxZDFkIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+');",
-                }}
-              ></div>
+              <div className="w-full h-full bg-red-800"></div>
             </button>
             <button className="w-12 h-12 rounded border-2 border-transparent hover:border-gray-300 focus:outline-none overflow-hidden relative group">
-              <div
-                className="w-full h-full bg-blue-900"
-                style={{
-                  backgroundImage:
-                    "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMWUzYThhIi8+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjMTczMjcxIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+');",
-                }}
-              ></div>
+              <div className="w-full h-full bg-blue-900"></div>
             </button>
             <button className="w-12 h-12 rounded border-2 border-orange-500 focus:outline-none overflow-hidden relative group ring-2 ring-orange-500 ring-offset-1">
-              <div
-                className="w-full h-full bg-green-700"
-                style={{
-                  backgroundImage:
-                    "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjMTE2NjJjIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+');",
-                }}
-              ></div>
+              <div className="w-full h-full bg-green-700"></div>
               <div className="absolute bottom-0 right-0 bg-green-600 text-white text-[10px] p-0.5 rounded-tl">
                 <i className="fas fa-check"></i>
               </div>
             </button>
             <button className="w-12 h-12 rounded border-2 border-transparent hover:border-gray-300 focus:outline-none overflow-hidden relative group">
-              <div
-                className="w-full h-full bg-amber-700"
-                style={{
-                  backgroundImage:
-                    "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjOTI1NDBlIi8+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjN2UzNzBiIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+');",
-                }}
-              ></div>
+              <div className="w-full h-full bg-amber-700"></div>
             </button>
           </div>
         </div>

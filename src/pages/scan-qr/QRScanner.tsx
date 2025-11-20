@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { TUserInputImage } from '@/utils/types/global'
 
 interface QRScannerProps {
-  onScanSuccess: (result: TUserInputImage[]) => void
+  onScanSuccess: (result: TUserInputImage[]) => Promise<void>
 }
 
 export default function QRScanner({ onScanSuccess }: QRScannerProps) {
@@ -84,7 +84,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   }, [])
 
   useEffect(() => {
-    initializeScanner()
+    // initializeScanner()
     if (error) {
       stopCamera()
     }

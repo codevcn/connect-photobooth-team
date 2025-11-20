@@ -1,22 +1,30 @@
 import { getFetchProvinces, getFetchDistricts, getFetchWards } from './api/address.api'
-import { TAddressProvince, TAddressDistrict, TAddressWard } from '@/utils/types/api'
+import {
+  AddressAdapter,
+  TClientProvince,
+  TClientDistrict,
+  TClientWard,
+} from './adapter/address.adapter'
 
 class AddressService {
   constructor() {}
 
-  async fetchProvinces(): Promise<TAddressProvince[]> {
+  async fetchProvinces(): Promise<TClientProvince[]> {
     const response = await getFetchProvinces()
-    return response.data?.data || []
+    const apiProvinces = response.data?.data || []
+    return AddressAdapter.toClientProvinces(apiProvinces)
   }
 
-  async fetchDistricts(provinceId: number): Promise<TAddressDistrict[]> {
+  async fetchDistricts(provinceId: number): Promise<TClientDistrict[]> {
     const response = await getFetchDistricts(provinceId)
-    return response.data?.data || []
+    const apiDistricts = response.data?.data || []
+    return AddressAdapter.toClientDistricts(apiDistricts)
   }
 
-  async fetchWards(districtId: number): Promise<TAddressWard[]> {
+  async fetchWards(districtId: number): Promise<TClientWard[]> {
     const response = await getFetchWards(districtId)
-    return response.data?.data || []
+    const apiWards = response.data?.data || []
+    return AddressAdapter.toClientWards(apiWards)
   }
 }
 

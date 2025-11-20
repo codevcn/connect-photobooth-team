@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useState } from 'react'
 import { addressService } from '@/services/address.service'
-import { TAddressProvince, TAddressDistrict } from '@/utils/types/api'
+import { TClientDistrict, TClientProvince } from '@/services/adapter/address.adapter'
 
 type TFormErrors = {
   fullName?: string
@@ -17,8 +17,8 @@ interface ShippingInfoFormProps {
 
 export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProps>(
   ({ errors }, ref) => {
-    const [provinces, setProvinces] = useState<TAddressProvince[]>([])
-    const [districts, setDistricts] = useState<TAddressDistrict[]>([])
+    const [provinces, setProvinces] = useState<TClientProvince[]>([])
+    const [districts, setDistricts] = useState<TClientDistrict[]>([])
     const [selectedProvinceId, setSelectedProvinceId] = useState<number | null>(null)
     const [isLoadingProvinces, setIsLoadingProvinces] = useState<boolean>(false)
     const [isLoadingDistricts, setIsLoadingDistricts] = useState<boolean>(false)
@@ -96,7 +96,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
               name="fullName"
               type="text"
               placeholder="Nguyễn Văn A"
-              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all"
+              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all"
             />
             {errors.fullName && (
               <p className="text-red-600 text-sm mt-0.5 pl-1">{errors.fullName}</p>
@@ -113,7 +113,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
                 name="phone"
                 type="tel"
                 placeholder="09xx xxx xxx"
-                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all"
+                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all"
               />
               {errors.phone && <p className="text-red-600 text-sm mt-0.5 pl-1">{errors.phone}</p>}
             </div>
@@ -127,7 +127,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
                 name="email"
                 type="email"
                 placeholder="email@domain.com"
-                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all"
+                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all"
               />
               {errors.email && <p className="text-red-600 text-sm mt-0.5 pl-1">{errors.email}</p>}
             </div>
@@ -145,7 +145,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
                 id="province-input"
                 name="province"
                 onChange={handleProvinceChange}
-                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all bg-white"
+                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all bg-white"
                 disabled={isLoadingProvinces}
               >
                 <option value="">
@@ -169,7 +169,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
               <select
                 id="city-input"
                 name="city"
-                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all bg-white"
+                className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all bg-white"
                 disabled={!selectedProvinceId || isLoadingDistricts}
               >
                 <option value="">
@@ -198,7 +198,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
               name="address"
               type="text"
               placeholder="Số nhà, tên đường, phường/xã..."
-              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all"
+              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all"
             />
             {errors.address && <p className="text-red-600 text-sm mt-0.5 pl-1">{errors.address}</p>}
           </div>
@@ -212,7 +212,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
               name="message"
               placeholder="Nhập lời nhắn của bạn..."
               rows={2}
-              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-cl focus:border-transparent transition-all"
+              className="w-full min-h-11 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all"
             ></textarea>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { TPrintAreaInfo, TSizeInfo } from '@/utils/types/global'
+import { TPrintAreaInfo } from '@/utils/types/global'
 
 type TPrintAreaBounds = {
   x: number
@@ -9,9 +9,9 @@ type TPrintAreaBounds = {
 }
 
 type TUsePrintAreaReturn = {
-  printAreaRef: React.RefObject<HTMLDivElement | null>
-  overlayRef: React.RefObject<HTMLDivElement | null>
-  containerElementRef: React.RefObject<HTMLElement | null>
+  printAreaRef: React.RefObject<HTMLDivElement>
+  overlayRef: React.RefObject<HTMLDivElement>
+  containerElementRef: React.MutableRefObject<HTMLElement | null>
   isOutOfBounds: boolean
   printAreaBounds: TPrintAreaBounds | null
   checkElementBounds: (
@@ -29,7 +29,7 @@ export const usePrintArea = (): TUsePrintAreaReturn => {
   const overlayRef = useRef<HTMLDivElement>(null)
   const [isOutOfBounds, setIsOutOfBounds] = useState(false)
   const [printAreaBounds, setPrintAreaBounds] = useState<TPrintAreaBounds | null>(null)
-  const containerSizeRef = useRef<TSizeInfo | null>(null)
+  const containerSizeRef = useRef<{ width: number; height: number } | null>(null)
   const containerElementRef = useRef<HTMLElement | null>(null)
 
   const calculatePrintAreaFromContainer = useCallback(

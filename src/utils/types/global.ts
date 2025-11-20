@@ -13,10 +13,10 @@ export type TPrintAreaInfo = {
   // productImageId: string
   id: number
   area: {
-    printX?: number // pixel position x
-    printY?: number // pixel position y
-    printW?: number // pixel width
-    printH?: number // pixel height
+    printX: number // pixel position x
+    printY: number // pixel position y
+    printW: number // pixel width
+    printH: number // pixel height
     widthRealPx: number // real width of product image (for exporting)
     heightRealPx: number // real height of product image (for exporting)
   }
@@ -24,10 +24,10 @@ export type TPrintAreaInfo = {
   imageUrl: string
 }
 
-export type TProductMockupInfo = {
+export type TProductVariantSurface = {
   variantId: number
   surfaceId: number
-  mockupUrl: string
+  imageURL: string
 }
 
 export type TBaseProduct = {
@@ -35,11 +35,11 @@ export type TBaseProduct = {
   url: string
   name: string
   description: string
-  variants: TClientProductVariant[] // variants
+  variants: TClientProductVariant[]
   detailImages: string[]
   inNewLine: boolean
   printAreaList: TPrintAreaInfo[] // surfaces
-  mockups: TProductMockupInfo[]
+  variantSurfaces: TProductVariantSurface[]
 }
 
 export type TProductCategory =
@@ -67,6 +67,8 @@ export type TClientProductVariant = {
 export type TPrintedImage = {
   id: string
   url: string
+  width: number
+  height: number
 }
 
 export type TElementType = 'text' | 'sticker' | 'printed-image' | 'template-frame'
@@ -91,9 +93,10 @@ export type TGlobalContextValue = {
 
 export type TElementLayerContextValue = {
   elementLayers: TElementLayerState[]
-  setElementLayers: React.Dispatch<React.SetStateAction<TElementLayerState[]>>
+  setElementLayers: (elementLayers: TElementLayerState[]) => void
   addToElementLayers: (elementLayer: TElementLayerState) => void
   removeFromElementLayers: (elementId: string[]) => void
+  updateElementLayerIndex: (elementId: string, newIndex: number) => void
 }
 
 export type TDetectCollisionWithViewportEdgesResult = {
@@ -128,14 +131,14 @@ export type TUserInputImage = {
 export type TEditedImage = TPrintedImage
 
 export type TEditedImageContextValue = {
-  editedImages: TEditedImage[]
-  setEditedImages: React.Dispatch<React.SetStateAction<TEditedImage[]>>
-  clearAllEditedImages: () => void
+  printedImages: TEditedImage[]
+  setPrintedImages: (printedImages: TEditedImage[]) => void
+  clearAllPrintedImages: () => void
 }
 
 export type TProductContextValue = {
   products: TBaseProduct[]
-  setProducts: React.Dispatch<React.SetStateAction<TBaseProduct[]>>
+  setProducts: (products: TBaseProduct[]) => void
 }
 
 export type TVoucher = {
@@ -275,8 +278,6 @@ export type TEndOfPaymentData = {
 export type TFramesCount = 1 | 2 | 3 | 4
 
 export type TTemplateType =
-  | `1-horizon`
-  | '1-vertical'
   | '1-square'
   | '2-horizon'
   | '2-vertical'
@@ -286,6 +287,7 @@ export type TTemplateType =
   | '3-bottom'
   | '4-square'
   | '4-horizon'
+  | '4-vertical'
 
 export type TPrintTemplate = {
   id: string
@@ -295,7 +297,9 @@ export type TPrintTemplate = {
   framesCount: TFramesCount
 }
 
-export type TFrameRectType = 'horizontal' | 'vertical' | 'square'
+export type TBaseRectType = 'horizontal' | 'vertical' | 'square'
+
+export type TFrameRectType = TBaseRectType
 
 export type TTemplateFrame = {
   id: string
@@ -341,3 +345,5 @@ export type TSizeInfo = {
   height: number
   width: number
 }
+
+export type TPrintAreaShapeType = 'square' | 'portrait' | 'landscape'

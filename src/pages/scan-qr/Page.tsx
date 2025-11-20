@@ -1,35 +1,37 @@
 import QRScanner from './QRScanner'
-import { TUserInputImage } from '@/utils/types/global'
-import { useEditedImageContext } from '@/contexts/global-context'
+import { TPrintedImage, TUserInputImage } from '@/utils/types/global'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
+import { generateUniqueId } from '@/utils/helpers'
+import { toast } from 'react-toastify'
 
 const ScanQRPage = () => {
-  const { setEditedImages, editedImages } = useEditedImageContext()
+  const setPrintedImages = usePrintedImageStore((s) => s.setPrintedImages)
   const navigate = useNavigate()
 
-  const handleData = (imageDataList: TUserInputImage[]) => {
-    setEditedImages([])
-    setEditedImages((prevImages) => {
-      return [
-        ...prevImages,
-        ...imageDataList.map((image) => ({
-          url: image.url,
-          height: -1,
-          width: -1,
-          id: image.url,
-          x: 0,
-          y: 0,
-        })),
-      ]
-    })
-  }
-
-  useEffect(() => {
-    if (editedImages.length > 0) {
-      // navigate('/edit')
+  const handleData = async (imageDataList: TUserInputImage[]) => {
+    setPrintedImages([])
+    const imagesToAdd: TPrintedImage[] = []
+    for (const imageData of imageDataList) {
+      const img = new Image()
+      img.onload = () => {
+        imagesToAdd.push({
+          url: imageData.url,
+          height: img.naturalHeight,
+          width: img.naturalWidth,
+          id: generateUniqueId(),
+        })
+        if (imagesToAdd.length === imageDataList.length) {
+          setPrintedImages(imagesToAdd)
+          navigate('/edit')
+        }
+      }
+      img.onerror = () => {
+        toast.error('Đã có lỗi xảy ra khi tải hình ảnh. Có 1 số ảnh không được xử lý.')
+      }
+      img.src = imageData.url
     }
-  }, [editedImages])
+  }
 
   return (
     <div className="relative flex items-center justify-center h-screen w-screen overflow-hidden">
@@ -56,7 +58,7 @@ const ScanQRPage = () => {
         <div className="flex items-center justify-center gap-3 animate-fade-in-down">
           <div
             onClick={() => navigate('/edit')}
-            className="bg-pink-cl p-3 rounded-xl shadow-lg animate-float"
+            className="bg-main-cl p-3 rounded-xl shadow-lg animate-float"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

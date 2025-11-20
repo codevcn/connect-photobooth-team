@@ -1,18 +1,8 @@
-import {
-  EditedImageContext,
-  GlobalContext,
-  LoadedTextFontContext,
-  ProductContext,
-} from '@/contexts/global-context'
+import { GlobalContext, LoadedTextFontContext } from '@/contexts/global-context'
 import { EInternalEvents } from '@/utils/enums'
 import { eventEmitter } from '@/utils/events'
 import { generateUniqueId } from '@/utils/helpers'
-import {
-  TBaseProduct,
-  TEditedImage,
-  TElementType,
-  TPreSentMockupImageLink,
-} from '@/utils/types/global'
+import { TElementType, TPreSentMockupImageLink } from '@/utils/types/global'
 import { useEffect, useState } from 'react'
 
 type TGlobalState = {
@@ -23,8 +13,6 @@ type TGlobalState = {
 }
 
 export const AppRootProvider = ({ children }: { children: React.ReactNode }) => {
-  const [editedImages, setEditedImages] = useState<TEditedImage[]>([])
-  const [products, setProducts] = useState<TBaseProduct[]>([])
   const [globalState, setGlobalState] = useState<TGlobalState>({
     pickedElementRoot: null,
     elementType: null,
@@ -38,10 +26,6 @@ export const AppRootProvider = ({ children }: { children: React.ReactNode }) => 
       ...pre,
       preSentMockupImageLinks: [...pre.preSentMockupImageLinks, { mockupId, imageUrl }],
     }))
-  }
-
-  const clearAllEditedImages = () => {
-    setEditedImages([])
   }
 
   const listenPickElement = (element: HTMLElement | null, elementType: TElementType | null) => {
@@ -58,13 +42,7 @@ export const AppRootProvider = ({ children }: { children: React.ReactNode }) => 
   return (
     <GlobalContext.Provider value={{ ...globalState, addPreSentMockupImageLink }}>
       <LoadedTextFontContext.Provider value={{ availableFonts, setAvailableFonts }}>
-        <EditedImageContext.Provider
-          value={{ editedImages, setEditedImages, clearAllEditedImages }}
-        >
-          <ProductContext.Provider value={{ products, setProducts }}>
-            {children}
-          </ProductContext.Provider>
-        </EditedImageContext.Provider>
+        {children}
       </LoadedTextFontContext.Provider>
     </GlobalContext.Provider>
   )

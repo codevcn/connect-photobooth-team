@@ -153,12 +153,12 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                 </p>
                 <p>Cám ơn bạn đã sử dụng dịch vụ!</p>
                 {transactionCode && (
-                  <p className="p-1 rounded-md bg-light-pink-cl mt-1">
+                  <p className="p-1 rounded-md bg-light-main-cl mt-1">
                     Mã giao dịch của bạn là <span className="font-bold">{transactionCode}</span>
                   </p>
                 )}
                 {orderHashCode && (
-                  <p className="p-1 rounded-md bg-superlight-pink-cl mt-1">
+                  <p className="p-1 rounded-md bg-superlight-main-cl mt-1">
                     Mã đơn hàng: <span className="font-bold">{orderHashCode}</span>
                   </p>
                 )}
@@ -388,7 +388,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
       {(method === 'cod' || status === 'completed' || status === 'failed') && (
         <button
           onClick={backToEditPage}
-          className="flex items-center gap-2 mt-4 text-pink-cl font-bold active:underline"
+          className="flex items-center gap-2 mt-4 text-main-cl font-bold active:underline"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

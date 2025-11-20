@@ -3,9 +3,9 @@ import { usePinchElement } from '@/hooks/element/use-pinch-element'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
 import { useContext, useEffect, useState } from 'react'
-import { ElementLayerContext } from '@/contexts/global-context'
 import { getInitialContants } from '@/utils/contants'
 import { TElementVisualBaseState } from '@/utils/types/global'
+import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 
 const fixedMaxZoom: number = 2
 const fixedMinZoom: number = 0.3
@@ -59,7 +59,7 @@ export const useElementControl = (
     scale: initialZoom = getInitialContants<number>('ELEMENT_ZOOM'),
     zindex: initialZindex = getInitialContants<number>('ELEMENT_ZINDEX'),
   } = initialParams || {}
-  const { elementLayers, setElementLayers } = useContext(ElementLayerContext)
+  const { elementLayers, updateElementLayerIndex } = useElementLayerStore()
   const [position, setPosition] = useState<TElementVisualBaseState['position']>({
     x: initialPosX !== undefined ? initialPosX : getInitialContants<number>('ELEMENT_X'),
     y: initialPosY !== undefined ? initialPosY : getInitialContants<number>('ELEMENT_Y'),
@@ -121,32 +121,7 @@ export const useElementControl = (
       setAngle(angle)
     }
     if (zindex) {
-      setElementLayers((pre) => {
-        // Tìm index hiện tại của element
-        const currentIndex = pre.findIndex((layer) => layer.elementId === elementId)
-        if (currentIndex === -1) return pre
-
-        const isMovingUp = zindex > 0
-
-        // Kiểm tra boundary
-        if (isMovingUp && currentIndex === pre.length - 1) return pre // Đã ở trên cùng
-        if (!isMovingUp && currentIndex === 0) return pre // Đã ở dưới cùng
-
-        // Tạo mảng mới và swap vị trí
-        const updatedLayers = [...pre]
-        const targetIndex = currentIndex + (isMovingUp ? 1 : -1)
-
-        // Swap
-        const temp = updatedLayers[currentIndex]
-        updatedLayers[currentIndex] = updatedLayers[targetIndex]
-        updatedLayers[targetIndex] = temp
-
-        // Cập nhật lại index cho tất cả layers
-        return updatedLayers.map((layer, idx) => ({
-          ...layer,
-          index: (idx + 1) * getInitialContants<number>('ELEMENT_ZINDEX_STEP') + 1,
-        }))
-      })
+      updateElementLayerIndex(elementId, zindex)
     }
   }
 
