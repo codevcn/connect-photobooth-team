@@ -113,6 +113,9 @@ export const StickerElement = ({
         }
         display.style.cssText = cssText
         display.onload = () => {
+          if (printAreaContainerRef.current) {
+            moveElementIntoCenter(root, elementContainer, printAreaContainerRef.current)
+          }
           // reset max size limit after image load
           const elementContainerRect = elementContainer.getBoundingClientRect()
           const mainBox = root.querySelector<HTMLElement>('.NAME-element-main-box')

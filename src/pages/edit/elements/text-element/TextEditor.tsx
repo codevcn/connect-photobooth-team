@@ -1,7 +1,8 @@
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { getInitialContants } from '@/utils/contants'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TextElementMenu } from './Menu'
+import { generateUniqueId } from '@/utils/helpers'
 
 type EditorModalProps = {
   onClose: () => void
@@ -13,7 +14,7 @@ const EditorModal = ({ onClose }: EditorModalProps) => {
   const handleAddText = () => {
     if (text.trim()) {
       useEditedElementStore.getState().addTextElement({
-        id: crypto.randomUUID(),
+        id: generateUniqueId(),
         content: text,
         angle: getInitialContants<number>('ELEMENT_ROTATION'),
         position: {
@@ -80,7 +81,7 @@ const EditorModal = ({ onClose }: EditorModalProps) => {
           <button
             onClick={handleAddText}
             disabled={!text.trim()}
-            className="text-base sm:text-lg w-full bg-primary active:scale-95 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl shadow-lg touch-target flex items-center justify-center gap-2 transition"
+            className="sm:text-base smd:text-lg text-sm w-full bg-primary active:scale-95 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl shadow-lg touch-target flex items-center justify-center gap-2 transition"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -112,19 +113,17 @@ const EditorModalWrapper = () => {
     <>
       <button
         onClick={() => setShowEditorModal(true)}
-        className="flex flex-col items-center -rotate-6 gap-2 cursor-pointer mobile-touch p-3 bg-white rounded-md active:bg-light-orange-cl touch-target transition"
+        className="smd:p-3 p-2 flex flex-col items-center -rotate-6 gap-2 cursor-pointer mobile-touch bg-white rounded-md active:bg-light-orange-cl touch-target transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-type-icon lucide-type text-main-cl"
+          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-8 smd:h-8"
         >
           <path d="M12 4v16" />
           <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
@@ -163,9 +162,40 @@ const TextMenuWrapper = () => {
 }
 
 export const TextEditor = () => {
+  const selectedElement = useEditedElementStore((state) => state.selectedElement)
+  const { elementType } = selectedElement || {}
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleSelectElement = () => {
+    // nếu không phải frame và màn hình đang có kích thước nhỏ hơn smd thì ẩn container
+    if (elementType && elementType !== 'text' && window.innerWidth < 662) {
+      containerRef.current?.classList.add('hidden')
+    } else {
+      containerRef.current?.classList.remove('hidden')
+    }
+  }
+
+  useEffect(() => {
+    handleSelectElement()
+  }, [elementType])
+
+  useEffect(() => {
+    const displayContainerOnResize = () => {
+      if (window.innerWidth >= 662) {
+        containerRef.current?.classList.remove('hidden')
+      } else {
+        handleSelectElement()
+      }
+    }
+    window.addEventListener('resize', displayContainerOnResize)
+    return () => {
+      window.removeEventListener('resize', displayContainerOnResize)
+    }
+  }, [elementType])
+
   return (
-    <div className="mt-6 w-fit">
-      <h3 className="mb-1 font-bold text-gray-800">Thêm văn bản</h3>
+    <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
+      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm văn bản</h3>
       <EditorModalWrapper />
       <TextMenuWrapper />
     </div>

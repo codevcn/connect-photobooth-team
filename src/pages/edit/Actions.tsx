@@ -15,14 +15,14 @@ export const Actions = () => {
   }
 
   return (
-    <div className="py-2">
+    <div className="order-3 py-2">
       <button
         onClick={() => setShowMockupPreview(true)}
         className="w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg touch-target flex items-center justify-center gap-2 text-lg"
       >
         Xem trước bản mockup
       </button>
-      <div className="flex gap-2 items-stretch mt-3">
+      <div className="flex gap-2 items-stretch mt-3 flex-col lg:flex-row">
         <button
           onClick={addToCart}
           className="w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
@@ -45,8 +45,9 @@ export const Actions = () => {
         </button>
         <button
           onClick={() => navigate('/payment')}
-          className="relative cursor-pointer bg-white border-2 border-gray-200 px-2 h-10 rounded-md shadow mobile-touch"
+          className="flex items-center justify-center gap-2 lg:block relative cursor-pointer bg-white border-2 border-gray-200 px-2 h-10 rounded-md shadow mobile-touch"
         >
+          <span className="inline-block lg:hidden">Xem giỏ hàng</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

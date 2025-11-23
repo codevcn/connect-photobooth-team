@@ -79,7 +79,7 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
       <div className="relative z-20 flex flex-col bg-white rounded-lg shadow-2xl max-w-[95vw] overflow-hidden animate-pop-in">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-1 border-b border-gray-200 bg-main-cl">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <h2 className="sms:text-xl text-base font-bold text-white flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

@@ -72,7 +72,7 @@ export const LivePreview = ({
   }, [displayedImage])
 
   return (
-    <div className="min-h-full max-h-full w-full h-full relative">
+    <div className="w-full smd:w-full min-h-full h-full relative">
       <AddToCartHandler
         checkIfAnyElementOutOfBounds={checkIfAnyElementOutOfBounds}
         printAreaContainerRef={printAreaContainerRef}
@@ -102,7 +102,7 @@ export const LivePreview = ({
       </div>
       <div
         ref={printAreaContainerRef}
-        className="NAME-print-area-container min-h-full max-h-full w-full h-full overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
+        className="NAME-print-area-container min-h-full w-full h-full overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
       >
         <div
           style={{ display: isOutOfBounds ? 'block' : 'none' }}
@@ -116,7 +116,7 @@ export const LivePreview = ({
           src={displayedImage.imageURL}
           alt={displayedImage.altText}
           crossOrigin="anonymous"
-          className="NAME-product-image min-h-full max-h-full w-full h-full object-contain object-center relative z-4"
+          className="NAME-product-image min-h-full w-full h-full object-contain object-center relative z-4"
           onLoad={removeProductChangingModal}
         />
         <PrintAreaOverlay

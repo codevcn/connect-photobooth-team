@@ -9,6 +9,7 @@ import { useEditedElementStore } from '@/stores/element/element.store'
 import { AdditionalInformation } from './product/AdditionalInformation'
 import { Actions } from './Actions'
 import { useFontLoader } from '@/hooks/use-font'
+import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 
 const AddingToCartLoadingModal = () => {
   const isLoading = useProductUIDataStore((s) => s.isAddingToCart)
@@ -37,7 +38,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const { loadAllFonts } = useFontLoader()
 
   useEffect(() => {
-    const listenClickOnPage = (e: PointerEvent) => {
+    const listenClickOnPage = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null
       if (target) {
         if (
@@ -57,6 +58,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
         }
       }
     }
+    useEditedElementStore.getState().resetData()
+    useElementLayerStore.getState().resetData()
     loadAllFonts()
     document.body.addEventListener('click', listenClickOnPage)
     return () => {
@@ -65,10 +68,10 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   }, [])
 
   return (
-    <div className="font-sans grid grid-cols-[1fr_6fr] h-screen gap-4 bg-white z-10 relative">
+    <div className="spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen bg-white z-10 relative">
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
-      <div className="NAME-main-parent grid grid-cols-[3fr_2fr] gap-4 h-screen">
+      <div className="NAME-main-parent xl:gap-4 spmd:h-screen spmd:min-h-auto md:grid-cols-[3fr_2fr] smd:grid-cols-[3fr_2.5fr] smd:min-h-0 smd:w-auto w-full grid-cols-1 grid gap-2">
         {pickedProduct && pickedVariant && pickedSurface ? (
           <LivePreview
             pickedProduct={pickedProduct}
@@ -78,7 +81,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
         ) : (
           <div></div>
         )}
-        <div className="flex flex-col gap-2 p-4 pl-2 min-h-full max-h-full overflow-y-auto gallery-scroll border border-gray-400/30">
+        <div className="xl:px-3 xl:pt-4 px-2 pt-1 pb-4 flex flex-col gap-2 pl-2 h-full overflow-y-auto gallery-scroll border border-gray-400/30">
           {pickedProduct && pickedVariant ? (
             <>
               <ProductDetails pickedProduct={pickedProduct} pickedVariant={pickedVariant} />

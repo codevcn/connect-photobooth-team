@@ -28,15 +28,13 @@ const CropImageModalWrapper = ({ frameId, imageUrl }: TCropElementModalWrapperPr
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-crop-icon lucide-crop"
+          className="lucide lucide-crop-icon lucide-crop w-4 h-4 smd:w-5 smd:h-5"
         >
           <path d="M6 2v14a2 2 0 0 0 2 2h14" />
           <path d="M18 22V8a2 2 0 0 0-2-2H2" />
@@ -80,15 +78,13 @@ const RemovePrintedElementFromFrame = ({ frameId }: TRemovePrintedElementFromFra
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-trash2-icon lucide-trash-2"
+          className="lucide lucide-trash2-icon lucide-trash-2 w-4 h-4 smd:w-5 smd:h-5"
         >
           <path d="M10 11v6" />
           <path d="M14 11v6" />
@@ -162,15 +158,13 @@ const ChangePrintedImage = ({ frameId }: TChangePrintedImageProps) => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"
+        className="lucide lucide-refresh-ccw-icon lucide-refresh-ccw w-4 h-4 smd:w-5 smd:h-5"
       >
         <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
         <path d="M3 3v5h5" />
@@ -330,20 +324,20 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
   return (
     <div
       ref={menuRef}
-      className="NAME-menu-section NAME-menu-template-frame STYLE-hide-scrollbar w-full mt-2"
+      className="NAME-menu-section NAME-menu-template-frame STYLE-hide-scrollbar smd:text-base text-sm w-full mt-2"
     >
-      <h3 className="mt-3 mb-1 text-sm font-bold">Tùy chỉnh</h3>
-      <div className="grid grid-cols-3 rounded-md gap-2">
-        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
+      <h3 className="text-xs smd:text-sm mt-3 mb-1 font-bold">Tùy chỉnh</h3>
+      <div className="2xl:grid-cols-3 spmd:gap-2 smd:grid-cols-2 sm:grid-rows-1 grid-rows-2 grid-flow-col gap-1 grid rounded-md">
+        <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
           <CropImageModalWrapper frameId={frameId} imageUrl={printedImageURL} />
         </div>
-        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
+        <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
           <RemovePrintedElementFromFrame frameId={frameId} />
         </div>
-        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
+        <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
           <ChangePrintedImage frameId={frameId} />
         </div>
-        <div className="flex items-center justify-center mobile-touch cursor-pointer border-2 border-main-cl z-30 text-white bg-main-cl rounded hover:bg-white hover:text-main-cl w-full">
+        <div className="flex items-center justify-center h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl z-30 text-white bg-main-cl rounded hover:bg-white hover:text-main-cl w-full">
           <button
             onClick={onClose}
             className="group flex items-center justify-center h-7 w-full text-inherit rounded p-1"

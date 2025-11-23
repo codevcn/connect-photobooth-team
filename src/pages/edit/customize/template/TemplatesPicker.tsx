@@ -22,14 +22,14 @@ export const TemplatesPicker = ({ printedImagesCount, classNames }: TTemplatePic
 
   return (
     <div className="w-full">
-      <h3 className="mb-1 font-bold text-gray-800">Chọn mẫu in</h3>
+      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Chọn mẫu in</h3>
       <div className={classNames?.templatesList}>
         {availableTemplates.map((template) => (
           <div
             key={template.id}
             onClick={() => pickTemplate(template)}
             className={cn(
-              'flex items-center justify-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition',
+              'flex items-center justify-center min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition',
               classNames?.templateItem
             )}
           >
@@ -44,7 +44,7 @@ export const TemplatesPicker = ({ printedImagesCount, classNames }: TTemplatePic
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-image-icon lucide-image text-gray-500 w-8 h-8"
+                  className="lucide lucide-image-icon lucide-image text-gray-500 min-h-4 min-w-4 w-6 h-6 lg:w-8 lg:h-8 p-0.5"
                 >
                   <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                   <circle cx="9" cy="9" r="2" />

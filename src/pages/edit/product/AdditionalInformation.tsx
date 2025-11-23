@@ -18,7 +18,7 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
   }
 
   return (
-    <div className="flex flex-col gap-1 w-full bg-gray-100 rounded-lg shadow-sm p-2 border-border">
+    <div className="order-4 flex flex-col gap-1 w-full bg-gray-100 rounded-lg shadow-sm p-2 border-border">
       <div className="w-full">
         <div
           className="w-full group flex items-center mobile-touch justify-between p-4 cursor-pointer hover:bg-white border-border rounded-md border-b border-transparent"

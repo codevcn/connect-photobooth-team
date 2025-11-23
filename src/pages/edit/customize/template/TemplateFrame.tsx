@@ -1,8 +1,7 @@
-import { TSizeInfo, TTemplateFrame, TTemplateType } from '@/utils/types/global'
+import { TTemplateFrame, TTemplateType } from '@/utils/types/global'
 import { PlacedImage } from './PlacedImage'
 import type React from 'react'
 import { cn } from '@/configs/ui/tailwind-utils'
-import { getInitialContants } from '@/utils/contants'
 import { styleFrameByTemplateType } from '@/configs/print-template/templates-helpers'
 
 type TemplateFrameProps = {
@@ -76,51 +75,4 @@ export const TemplateFrame = ({
       )}
     </div>
   )
-}
-
-export const diffPrintedImageFromShapeSize = (
-  frameSize: TSizeInfo,
-  printedImageSize: TSizeInfo
-): number => {
-  const imgRatio = printedImageSize.width / printedImageSize.height
-  const upSquareDiff = 1 + getInitialContants<number>('MAX_DIFF_RATIO_VALUE')
-  const downSquareDiff = 1 - getInitialContants<number>('MAX_DIFF_RATIO_VALUE')
-  const { width, height } = frameSize
-  if (width < height) {
-    if (imgRatio < downSquareDiff) return 0
-    return 1 - imgRatio
-  } else if (width > height) {
-    if (imgRatio > upSquareDiff) return 0
-    return imgRatio - 1
-  }
-  if (imgRatio >= downSquareDiff && imgRatio <= upSquareDiff) return 0
-  return Math.abs(1 - imgRatio)
-}
-
-export const matchPrintedImageToShapeSize = (
-  frameSize: TSizeInfo,
-  printedImageSize: TSizeInfo
-): boolean => {
-  const imgRatio = printedImageSize.width / printedImageSize.height
-  const { width, height } = frameSize
-  if (width < height) {
-    return imgRatio < 1
-  } else if (width > height) {
-    return imgRatio > 1
-  }
-  return imgRatio === 1
-}
-
-export const matchPrintedImgAndAllowSquareMatchToShapeSize = (
-  frameSize: TSizeInfo,
-  printedImageSize: TSizeInfo
-): boolean => {
-  const imgRatio = printedImageSize.width / printedImageSize.height
-  const { width, height } = frameSize
-  if (width < height) {
-    return imgRatio <= 1
-  } else if (width > height) {
-    return imgRatio >= 1
-  }
-  return true
 }

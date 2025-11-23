@@ -1,11 +1,8 @@
-import { assignFrameSizeByTemplateType } from '@/configs/print-template/templates-helpers'
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { getNaturalSizeOfImage } from '@/utils/helpers'
-import { TPrintedImage, TPrintTemplate, TSizeInfo, TTemplateFrame } from '@/utils/types/global'
+import { TPrintedImage, TTemplateFrame } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
-import { matchPrintedImageToShapeSize } from '../customize/template/TemplateFrame'
-import { toast } from 'react-toastify'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type ImageProps = {
@@ -137,7 +134,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
 
         {/* Image Grid */}
         <div className="flex-1 overflow-y-auto p-3">
-          <div className="grid grid-cols-2 gap-2" ref={imgsContainerRef}>
+          <div className="grid-cols-1 smd:grid-cols-2 grid gap-2" ref={imgsContainerRef}>
             {printedImages.map((img) => (
               <Image
                 key={img.id}

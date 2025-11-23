@@ -1,7 +1,8 @@
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { getInitialContants } from '@/utils/contants'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { StickerElementMenu } from './Menu'
+import { generateUniqueId } from '@/utils/helpers'
 
 type TStickerGroup = {
   name: string
@@ -88,7 +89,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
   // Xử lý chọn sticker
   const handleSelectSticker = (path: string) => {
     useEditedElementStore.getState().addStickerElement({
-      id: crypto.randomUUID(),
+      id: generateUniqueId(),
       path,
       position: {
         x: getInitialContants<number>('ELEMENT_X'),
@@ -108,7 +109,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
       <div onClick={onClose} className="bg-black/50 absolute inset-0 z-10"></div>
       <div className="flex flex-col bg-white w-full max-w-2xl rounded-xl shadow-2xl max-h-[90vh] relative z-20 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
+        <div className="flex items-center justify-between px-4 py-1 border-b border-gray-200">
           <h3 className="text-xl font-bold text-gray-800">Thêm nhãn dán</h3>
           <button
             onClick={onClose}
@@ -247,19 +248,17 @@ const PickerModalWrapper = () => {
       <div className="w-fit">
         <button
           onClick={() => setShowStickerPicker(true)}
-          className="flex flex-col items-center gap-2 cursor-pointer mobile-touch p-3 bg-white rounded-md active:bg-light-orange-cl touch-target transition"
+          className="smd:p-3 p-2 flex flex-col items-center gap-2 cursor-pointer mobile-touch bg-white rounded-md active:bg-light-orange-cl touch-target transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-sticker-icon lucide-sticker text-main-cl -rotate-6"
+            className="lucide lucide-sticker-icon lucide-sticker text-main-cl -rotate-6 w-6 h-6 smd:w-8 smd:h-8"
           >
             <path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z" />
             <path d="M15 3v5a1 1 0 0 0 1 1h5" />
@@ -301,9 +300,40 @@ const StickerMenuWrapper = () => {
 }
 
 export const StickerPicker = () => {
+  const selectedElement = useEditedElementStore((state) => state.selectedElement)
+  const { elementType } = selectedElement || {}
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleSelectElement = () => {
+    // nếu không phải frame và màn hình đang có kích thước nhỏ hơn smd thì ẩn container
+    if (elementType && elementType !== 'sticker' && window.innerWidth < 662) {
+      containerRef.current?.classList.add('hidden')
+    } else {
+      containerRef.current?.classList.remove('hidden')
+    }
+  }
+
+  useEffect(() => {
+    handleSelectElement()
+  }, [elementType])
+
+  useEffect(() => {
+    const displayContainerOnResize = () => {
+      if (window.innerWidth >= 662) {
+        containerRef.current?.classList.remove('hidden')
+      } else {
+        handleSelectElement()
+      }
+    }
+    window.addEventListener('resize', displayContainerOnResize)
+    return () => {
+      window.removeEventListener('resize', displayContainerOnResize)
+    }
+  }, [elementType])
+
   return (
-    <div className="mt-6 w-fit">
-      <h3 className="mb-1 font-bold text-gray-800">Thêm nhãn dán</h3>
+    <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
+      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm nhãn dán</h3>
       <PickerModalWrapper />
       <StickerMenuWrapper />
     </div>

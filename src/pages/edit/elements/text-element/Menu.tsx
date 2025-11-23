@@ -224,49 +224,48 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
   return (
     <div
       ref={menuRef}
-      className="NAME-menu-section NAME-menu-text-element STYLE-hide-scrollbar w-full mt-2"
+      className="NAME-menu-section NAME-menu-text-element STYLE-hide-scrollbar smd:text-base text-sm w-full mt-2"
     >
-      <h3 className="mt-3 mb-1 text-sm font-bold">Tùy chỉnh</h3>
-      <div ref={menuRef} className="grid grid-cols-3 rounded-md gap-2 text-white">
-        <div className="NAME-form-group NAME-form-content col-span-3 flex items-center bg-main-cl rounded px-1 h-9 shadow">
-          <div className="min-w-[22px]">
+      <h3 className="text-xs smd:text-sm mt-3 mb-1 font-bold">Tùy chỉnh</h3>
+      <div
+        ref={menuRef}
+        className="smd:grid-cols-2 2xl:grid-cols-3 spmd:gap-2 sm:grid-rows-2 grid-rows-3 grid-flow-col gap-1 grid rounded-md text-white"
+      >
+        <div className="NAME-form-group NAME-form-content h-8 smd:h-9 smd:col-span-3 col-span-1 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-pen-icon lucide-pen"
+              className="lucide lucide-pen-icon lucide-pen w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
             </svg>
           </div>
           <div className="flex gap-1 ml-1 grow">
             <input
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
               placeholder="Nhập nội dung..."
               onKeyDown={(e) => catchEnter(e, 'font-size')}
               onChange={onContentFieldChange}
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-fontSize flex items-center bg-main-cl rounded px-1 h-9 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-fontSize h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-alarge-small-icon lucide-a-large-small"
+              className="lucide lucide-alarge-small-icon lucide-a-large-small w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="m15 16 2.536-7.328a1.02 1.02 1 0 1 1.928 0L22 16" />
               <path d="M15.697 14h5.606" />
@@ -276,26 +275,24 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
           </div>
           <div className="flex gap-1 ml-1 grow">
             <input
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
               type="text"
               placeholder="Cỡ chữ, VD: 18"
               onKeyDown={(e) => catchEnter(e, 'font-size')}
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-angle flex items-center bg-main-cl rounded px-1 h-9 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-angle h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-refresh-cw-icon lucide-refresh-cw"
+              className="lucide lucide-refresh-cw-icon lucide-refresh-cw w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
               <path d="M21 3v5h-5" />
@@ -305,27 +302,25 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
           </div>
           <div className="flex gap-1 items-center ml-1 grow">
             <input
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
               type="text"
               placeholder="Độ xoay, VD: 22"
               onKeyDown={(e) => catchEnter(e, 'angle')}
             />
-            <span className="text-white text-base font-bold">độ</span>
+            <span className="text-white text-[1em] font-bold">độ</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-position flex items-center bg-main-cl rounded px-1 h-9 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-position smd:col-span-2 2xl:col-span-1 col-span-1 h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-move-icon lucide-move"
+              className="lucide lucide-move-icon lucide-move w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M12 2v20" />
               <path d="m15 19-3 3-3-3" />
@@ -337,53 +332,49 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
           </div>
           <div className="flex ml-1 gap-1">
             <input
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
               type="text"
               placeholder="X, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
             />
             <input
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-10"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
               type="text"
               placeholder="Y, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-zindex flex items-center justify-between bg-main-cl rounded px-1 py-0.5 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-zindex smd:col-span-2 2xl:col-span-1 col-span-1 h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">
+          <div className="mr-0.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-layers2-icon lucide-layers-2"
+              className="lucide lucide-layers2-icon lucide-layers-2 w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M13 13.74a2 2 0 0 1-2 0L2.5 8.87a1 1 0 0 1 0-1.74L11 2.26a2 2 0 0 1 2 0l8.5 4.87a1 1 0 0 1 0 1.74z" />
               <path d="m20 14.285 1.5.845a1 1 0 0 1 0 1.74L13 21.74a2 2 0 0 1-2 0l-8.5-4.87a1 1 0 0 1 0-1.74l1.5-.845" />
             </svg>
           </div>
-          <div className="flex gap-1 grow flex-wrap">
+          <div className="flex grow flex-wrap">
             <button
               onClick={() => onClickButton('zindex-up')}
               className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex gap-0.5 items-center justify-center"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-arrow-up-icon lucide-arrow-up"
+                className="lucide lucide-arrow-up-icon lucide-arrow-up w-5 h-5"
               >
                 <path d="m5 12 7-7 7 7" />
                 <path d="M12 19V5" />
@@ -395,15 +386,13 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-arrow-down-icon lucide-arrow-down"
+                className="lucide lucide-arrow-down-icon lucide-arrow-down w-5 h-5"
               >
                 <path d="M12 5v14" />
                 <path d="m19 12-7 7-7-7" />
@@ -414,7 +403,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
         <div className="NAME-form-group NAME-form-color flex items-stretch justify-center gap-1 rounded">
           <div
             onClick={() => setShowColorPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer w-full gap-1 mobile-touch bg-main-cl rounded shadow px-1 h-9"
+            className="flex items-center justify-center cursor-pointer h-8 smd:h-9 w-full gap-1 mobile-touch bg-main-cl rounded shadow px-1"
           >
             <div className="flex gap-1 mx-1">
               <svg
@@ -448,7 +437,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
         <div className="NAME-form-group NAME-form-font flex items-stretch justify-center gap-1 relative rounded">
           <div
             onClick={() => setShowTextFontPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer gap-1 w-full mobile-touch bg-main-cl rounded shadow px-1 h-9"
+            className="flex items-center justify-center cursor-pointer gap-1 h-8 smd:h-9 w-full mobile-touch bg-main-cl rounded shadow px-1"
           >
             <div className="flex gap-1 mx-1">
               <div>
@@ -473,10 +462,10 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             <TextFontPicker onHideShow={setShowTextFontPicker} onSelectFont={handleSelectFont} />
           )}
         </div>
-        <div className="flex items-center h-full">
+        <div className="sm:row-span-1 row-span-2 flex items-center">
           <button
             onClick={handleClickCheck}
-            className="group w-full h-full flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded p-1"
+            className="group smd:h-8 smd:px-1 px-3 w-full h-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

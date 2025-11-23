@@ -8,10 +8,15 @@ type TUseElementLayerStore = {
   addToElementLayers: (elementLayer: TElementLayerState) => void
   removeFromElementLayers: (elementId: string[]) => void
   updateElementLayerIndex: (elementId: string, newIndex: number) => void
+  resetData: () => void
 }
 
 export const useElementLayerStore = create<TUseElementLayerStore>((set) => ({
   elementLayers: [],
+
+  resetData: () => {
+    set({ elementLayers: [] })
+  },
   setElementLayers: (elementLayers) => set({ elementLayers }),
   addToElementLayers: (newLayer) =>
     set(({ elementLayers }) => {

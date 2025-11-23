@@ -99,12 +99,12 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
   }, [pickedProduct, pickedVariant])
 
   return (
-    <div className="w-full pl-1">
-      <div>
+    <div className="smd:order-1 smd:mt-0 mt-4 order-2 w-full">
+      <div className="pl-1">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{pickedProduct.name}</h1>
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 pl-1">
         <span className="text-3xl text-orange-600">
           <span className="font-bold">
             {formatNumberWithCommas(pickedVariant.priceAmountOneSide)}
@@ -115,20 +115,20 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </span>
       </div>
 
-      <div className="bg-orange-50 border border-orange-100 rounded-lg space-y-2 p-4 my-4">
+      <div className="p-3 smd:p-4 bg-orange-50 border border-orange-100 rounded-lg space-y-2 my-4">
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Người bán</span>
           <span className="font-semibold text-gray-900">Photoism</span>
         </div>
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between gap-2 text-sm">
           <span className="text-gray-800 font-bold">Chăm sóc khách hàng</span>
-          <span className="font-semibold text-orange-600 hover:text-main-hover-cl transition-colors">
+          <span className="font-semibold text-orange-600 text-end whitespace-nowrap">
             0987 654 321
           </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-sm pl-1">
         {pickedVariant.stock > 0 ? (
           <>
             <span className="flex items-center gap-1 font-medium text-orange-600">
@@ -159,12 +159,12 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         )}
       </div>
 
-      <div className="space-y-3 text-sm mt-2">
+      <div className="space-y-3 text-sm mt-2 pl-1">
         <div className="flex items-center">
           <div className="mr-2 text-lg">
             <VietnamFlag />
           </div>
-          <div>
+          <div className="font-medium">
             <span className="text-gray-600">Vận chuyển đến </span>
             <span className="font-bold">Vietnam</span>
           </div>

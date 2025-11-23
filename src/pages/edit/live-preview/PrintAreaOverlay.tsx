@@ -3,6 +3,7 @@ import { FramesDisplayer } from '../customize/template/FrameDisplayer'
 import { cn } from '@/configs/ui/tailwind-utils'
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
@@ -74,7 +75,15 @@ export const PrintAreaOverlay = ({
   ) => {
     const image = e.currentTarget.querySelector<HTMLImageElement>('.NAME-frame-placed-image')
     if (image) {
-      eventEmitter.emit(EInternalEvents.PICK_ELEMENT, frameId, e.currentTarget, 'template-frame')
+      let elementURL: string | undefined = undefined
+      const pickedFrame = useTemplateStore.getState().getFrameById(frameId)
+      if (pickedFrame) {
+        elementURL = pickedFrame.placedImage?.imgURL
+      }
+      useEditedElementStore
+        .getState()
+        .selectElement(frameId, e.currentTarget, 'template-frame', elementURL)
+      // eventEmitter.emit(EInternalEvents.PICK_ELEMENT, frameId, e.currentTarget, 'template-frame')
     } else {
       eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, frameId)
     }

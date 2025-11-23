@@ -23,6 +23,7 @@ type TUseElementStore = {
   removeStickerElement: (stickerId: string) => void
   addTextElement: (textElement: TTextVisualState) => void
   removeTextElement: (textElementId: string) => void
+  resetData: () => void
 }
 
 export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
@@ -30,6 +31,9 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
   stickerElements: [],
   textElements: [],
 
+  resetData: () => {
+    set({ selectedElement: null, stickerElements: [], textElements: [] })
+  },
   addTextElement: (textElement) => {
     const { textElements } = get()
     set({ textElements: [...textElements, textElement] })

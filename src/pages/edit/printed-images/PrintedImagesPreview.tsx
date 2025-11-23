@@ -1,5 +1,5 @@
 import { TPrintedImage } from '@/utils/types/global'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { PrintedImagesModal } from './PrintedImagesModal'
 import { createPortal } from 'react-dom'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
@@ -14,6 +14,7 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
   const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const { elementId, elementType, elementURL } = selectedElement || {}
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const displayedImage = useMemo<TPrintedImage | null>(() => {
     return printedImages.length > 0 ? printedImages[0] : null
@@ -30,19 +31,48 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
+  const handleSelectElement = () => {
+    // nếu không phải frame và màn hình đang có kích thước nhỏ hơn smd thì ẩn container
+    if (elementType && elementType !== 'template-frame' && window.innerWidth < 662) {
+      containerRef.current?.classList.add('hidden')
+    } else {
+      containerRef.current?.classList.remove('hidden')
+    }
+  }
+
+  useEffect(() => {
+    handleSelectElement()
+  }, [elementType])
+
+  useEffect(() => {
+    const displayContainerOnResize = () => {
+      if (window.innerWidth >= 662) {
+        containerRef.current?.classList.remove('hidden')
+      } else {
+        handleSelectElement()
+      }
+    }
+    window.addEventListener('resize', displayContainerOnResize)
+    return () => {
+      window.removeEventListener('resize', displayContainerOnResize)
+    }
+  }, [elementType])
+
   useEffect(() => {
     scrollToSelectedElement()
   }, [elementId, elementType, elementURL])
 
   return (
-    <div className="mt-6 w-full">
-      <h3 className="mb-1 font-bold text-gray-800">Chọn ảnh chụp photobooth</h3>
+    <div ref={containerRef} className="smd:mt-6 mt-2 flex-1">
+      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">
+        Chọn ảnh <span className="smd:inline hidden">chụp photobooth</span>
+      </h3>
       <div className="flex justify-center min-w-[50px] rounded text-main-cl w-fit active:scale-90 transition relative">
         <div onClick={showPrintedImagesModal} className="border-border rounded-md cursor-pointer">
           {displayedImage && (
             <div
               key={displayedImage.id}
-              className="flex items-center h-[50px] overflow-hidden rounded"
+              className="h-10 smd:h-[50px] flex items-center overflow-hidden rounded"
             >
               <img
                 src={displayedImage.url}

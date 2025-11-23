@@ -113,10 +113,6 @@ export const styleFrameByTemplateType = (
   frameIndex: number
 ): React.CSSProperties => {
   switch (templateType) {
-    case '2-horizon':
-      return { minHeight: '15px' }
-    case '2-vertical':
-      return { minWidth: '15px' }
     case '3-left':
       if (frameIndex === 2) return { gridRow: 'span 2 / span 2' }
       return {}

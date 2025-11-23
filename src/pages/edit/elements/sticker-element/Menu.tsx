@@ -1,4 +1,4 @@
-import { useGlobalContext } from '@/contexts/global-context'
+import { useEditedElementStore } from '@/stores/element/element.store'
 import { getInitialContants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TStickerVisualState } from '@/utils/types/global'
@@ -13,7 +13,8 @@ type TStickerElementMenu = {
 
 export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const { pickedElementRoot } = useGlobalContext()
+  const selectedElement = useEditedElementStore((s) => s.selectedElement)
+  const pickedElementRoot = selectedElement?.rootElement || null
 
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
@@ -153,22 +154,23 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
   }, [])
 
   return (
-    <div className="NAME-menu-section NAME-menu-sticker-element STYLE-hide-scrollbar w-full mt-2">
-      <h3 className="mt-3 mb-1 text-sm font-bold">Tùy chỉnh</h3>
-      <div ref={menuRef} className="grid grid-cols-3 rounded-md gap-2 text-white">
-        <div className="NAME-form-group NAME-form-scale flex items-center bg-main-cl rounded px-1 h-9 shadow">
-          <div className="min-w-[22px]">
+    <div className="NAME-menu-section NAME-menu-sticker-element STYLE-hide-scrollbar smd:text-base text-sm w-full mt-2">
+      <h3 className="text-xs smd:text-sm mt-3 mb-1 font-bold">Tùy chỉnh</h3>
+      <div
+        ref={menuRef}
+        className="smd:grid-cols-2 2xl:grid-cols-3 smd:gap-2 sm:grid-rows-1 grid-rows-2 grid-flow-col gap-1 grid rounded-md text-white"
+      >
+        <div className="NAME-form-group NAME-form-scale h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-maximize-icon lucide-maximize text-white"
+              className="lucide lucide-maximize-icon lucide-maximize text-white w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M8 3H5a2 2 0 0 0-2 2v3" />
               <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
@@ -181,13 +183,13 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
               type="text"
               placeholder="Độ co giãn, VD: 55"
               onKeyDown={(e) => catchEnter(e, 'scale')}
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
             />
-            <span className="text-white text-base font-bold">%</span>
+            <span className="text-white text-[1em] font-bold">%</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-angle flex items-center bg-main-cl rounded px-1 py-0.5 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-angle h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -198,7 +200,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"
+              className="lucide lucide-refresh-ccw-icon lucide-refresh-ccw w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <path d="M3 3v5h5" />
@@ -211,45 +213,41 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
               type="text"
               placeholder="Độ xoay, VD: 22"
               onKeyDown={(e) => catchEnter(e, 'angle')}
-              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
+              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
             />
-            <span className="text-white text-base font-bold">độ</span>
+            <span className="text-white text-[1em] font-bold">độ</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-zindex flex items-center justify-between bg-main-cl rounded px-1 py-0.5 shadow">
-          <div className="min-w-[22px]">
+        <div className="NAME-form-group NAME-form-zindex h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">
+          <div className="mr-0.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-layers2-icon lucide-layers-2"
+              className="lucide lucide-layers2-icon lucide-layers-2 w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M13 13.74a2 2 0 0 1-2 0L2.5 8.87a1 1 0 0 1 0-1.74L11 2.26a2 2 0 0 1 2 0l8.5 4.87a1 1 0 0 1 0 1.74z" />
               <path d="m20 14.285 1.5.845a1 1 0 0 1 0 1.74L13 21.74a2 2 0 0 1-2 0l-8.5-4.87a1 1 0 0 1 0-1.74l1.5-.845" />
             </svg>
           </div>
-          <div className="flex gap-1 grow flex-wrap">
+          <div className="flex grow">
             <button
               onClick={() => onClickButton('zindex-up')}
-              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex gap-0.5 items-center justify-center"
+              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 flex items-center justify-center"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-arrow-up-icon lucide-arrow-up"
+                className="lucide lucide-arrow-up-icon lucide-arrow-up w-5 h-5"
               >
                 <path d="m5 12 7-7 7 7" />
                 <path d="M12 19V5" />
@@ -257,7 +255,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
             </button>
             <button
               onClick={() => onClickButton('zindex-down')}
-              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex gap-0.5 items-center justify-center"
+              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex items-center justify-center"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +267,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-arrow-down-icon lucide-arrow-down"
+                className="lucide lucide-arrow-down-icon lucide-arrow-down w-5 h-5"
               >
                 <path d="M12 5v14" />
                 <path d="m19 12-7 7-7-7" />
@@ -278,7 +276,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
           </div>
         </div>
         <div className="NAME-form-group NAME-form-position flex items-center bg-main-cl rounded px-1 py-1 shadow">
-          <div className="min-w-[22px]">
+          <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -289,7 +287,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-move-icon lucide-move"
+              className="lucide lucide-move-icon lucide-move w-4 h-4 smd:w-5 smd:h-5"
             >
               <path d="M12 2v20" />
               <path d="m15 19-3 3-3-3" />
@@ -304,20 +302,20 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
               type="text"
               placeholder="Tọa độ X, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="text-black bg-white rounded px-1 h-6.5 text-base outline-none w-full"
+              className="smd:h-6.5 h-6 text-black bg-white rounded px-1 text-[1em] outline-none w-full"
             />
             <input
               type="text"
               placeholder="Tọa độ Y, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="text-black bg-white rounded px-1 h-6.5 text-base outline-none w-full"
+              className="smd:h-6.5 h-6 text-black bg-white rounded px-1 text-[1em] outline-none w-full"
             />
           </div>
         </div>
-        <div className="flex items-center h-full">
+        <div className="sm:row-span-1 row-span-2 flex items-center">
           <button
             onClick={handleClickCheck}
-            className="group w-full h-full px-1 flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
+            className="group smd:h-8 smd:px-1 h-full px-3 w-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
