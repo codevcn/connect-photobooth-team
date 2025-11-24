@@ -89,7 +89,6 @@ export const AddToCartHandler = ({
             variantId: pickedVariant.id,
             color: pickedVariant.color,
             size: pickedVariant.size,
-            quantity: 1,
           },
           {
             id: pickedSurface.id,

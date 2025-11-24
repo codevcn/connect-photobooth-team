@@ -26,7 +26,7 @@ export class OrderAdapter {
       for (const variant of item.productVariants) {
         items.push({
           variant_id: variant.variantId,
-          quantity: variant.quantity,
+          quantity: 1,
           surfaces: variant.mockupDataList.map((mockup) => {
             const preSentImageSize = mockup.imageData.size
             if (!mockup.preSentImageLink) {

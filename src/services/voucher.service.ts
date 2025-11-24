@@ -2,35 +2,37 @@ import { TVoucher, VoucherValidationResult } from '@/utils/types/global'
 
 class VoucherService {
   // Danh sách voucher mẫu
-  private readonly SAMPLE_VOUCHERS: TVoucher[] = [
-    {
-      code: 'SAVE10',
-      description: 'Giảm 10% cho đơn hàng',
-      discountType: 'percentage',
-      discountValue: 10,
-    },
-    {
-      code: 'SAVE20',
-      description: 'Giảm 20% cho đơn hàng từ 100,000 VND',
-      discountType: 'percentage',
-      discountValue: 20,
-      minOrderValue: 30000,
-      maxDiscount: 50000,
-    },
-    {
-      code: 'SAVE50K',
-      description: 'Giảm 50,000 VND cho đơn hàng từ 200,000 VND',
-      discountType: 'fixed',
-      discountValue: 50000,
-      minOrderValue: 30000,
-    },
-    {
-      code: 'FREESHIP',
-      description: 'Giảm 30,000 VND phí vận chuyển',
-      discountType: 'fixed',
-      discountValue: 30000,
-    },
-  ]
+  private getMockSampleVouchers(): TVoucher[] {
+    return [
+      {
+        code: 'SAVE10',
+        description: 'Giảm 10% cho đơn hàng',
+        discountType: 'percentage',
+        discountValue: 10,
+      },
+      {
+        code: 'SAVE20',
+        description: 'Giảm 20% cho đơn hàng từ 100,000 VND',
+        discountType: 'percentage',
+        discountValue: 20,
+        minOrderValue: 30000,
+        maxDiscount: 50000,
+      },
+      {
+        code: 'SAVE50K',
+        description: 'Giảm 50,000 VND cho đơn hàng từ 200,000 VND',
+        discountType: 'fixed',
+        discountValue: 50000,
+        minOrderValue: 30000,
+      },
+      {
+        code: 'FREESHIP',
+        description: 'Giảm 30,000 VND phí vận chuyển',
+        discountType: 'fixed',
+        discountValue: 30000,
+      },
+    ]
+  }
 
   // Hàm kiểm tra tính hợp lệ của voucher
   async checkVoucherValidity(
@@ -41,7 +43,9 @@ class VoucherService {
     await new Promise((resolve) => setTimeout(resolve, 800))
 
     // Tìm voucher
-    const voucher = this.SAMPLE_VOUCHERS.find((v) => v.code.toLowerCase() === code.toLowerCase())
+    const voucher = this.getMockSampleVouchers().find(
+      (v) => v.code.toLowerCase() === code.toLowerCase()
+    )
 
     if (!voucher) {
       return {
@@ -102,8 +106,9 @@ class VoucherService {
 
   // Lấy một số voucher mẫu
   async getSomeVouchers(): Promise<TVoucher[]> {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    return [...this.SAMPLE_VOUCHERS]
+    // await new Promise((resolve) => setTimeout(resolve, 500))
+    // return [...this.SAMPLE_VOUCHERS]
+    return []
   }
 
   // Format number helper

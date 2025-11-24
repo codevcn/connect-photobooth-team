@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useState } from 'react'
 import { addressService } from '@/services/address.service'
-import { TClientDistrict, TClientProvince } from '@/services/adapter/address.adapter'
+import { TClientDistrict, TClientProvince, TClientWard } from '@/services/adapter/address.adapter'
 
 type TFormErrors = {
   fullName?: string
@@ -19,9 +19,12 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
   ({ errors }, ref) => {
     const [provinces, setProvinces] = useState<TClientProvince[]>([])
     const [districts, setDistricts] = useState<TClientDistrict[]>([])
+    const [wards, setWards] = useState<TClientWard[]>([])
     const [selectedProvinceId, setSelectedProvinceId] = useState<number | null>(null)
+    const [selectedDistrictId, setSelectedDistrictId] = useState<number | null>(null)
     const [isLoadingProvinces, setIsLoadingProvinces] = useState<boolean>(false)
     const [isLoadingDistricts, setIsLoadingDistricts] = useState<boolean>(false)
+    const [isLoadingWards, setIsLoadingWards] = useState<boolean>(false)
 
     // Fetch provinces on mount
     useEffect(() => {
@@ -63,6 +66,29 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
       fetchDistricts()
     }, [selectedProvinceId])
 
+    // Fetch wards when district changes
+    useEffect(() => {
+      if (!selectedDistrictId) {
+        setWards([])
+        return
+      }
+
+      const fetchWards = async () => {
+        setIsLoadingWards(true)
+        try {
+          const data = await addressService.fetchWards(selectedDistrictId)
+          setWards(data)
+        } catch (error) {
+          console.error('Failed to fetch wards:', error)
+          setWards([])
+        } finally {
+          setIsLoadingWards(false)
+        }
+      }
+
+      fetchWards()
+    }, [selectedDistrictId])
+
     const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedOption = e.target.options[e.target.selectedIndex]
       const provinceId = selectedOption.dataset.provinceId
@@ -73,10 +99,32 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
         setSelectedProvinceId(null)
       }
 
-      // Reset district selection
+      // Reset district and ward selection
+      setSelectedDistrictId(null)
       const districtSelect = document.getElementById('city-input') as HTMLSelectElement
+      const wardSelect = document.getElementById('ward-input') as HTMLSelectElement
       if (districtSelect) {
         districtSelect.value = ''
+      }
+      if (wardSelect) {
+        wardSelect.value = ''
+      }
+    }
+
+    const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedOption = e.target.options[e.target.selectedIndex]
+      const districtId = selectedOption.dataset.districtId
+
+      if (districtId) {
+        setSelectedDistrictId(Number(districtId))
+      } else {
+        setSelectedDistrictId(null)
+      }
+
+      // Reset ward selection
+      const wardSelect = document.getElementById('ward-input') as HTMLSelectElement
+      if (wardSelect) {
+        wardSelect.value = ''
       }
     }
 
@@ -169,6 +217,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
               <select
                 id="city-input"
                 name="city"
+                onChange={handleDistrictChange}
                 className="md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all bg-white"
                 disabled={!selectedProvinceId || isLoadingDistricts}
               >
@@ -180,13 +229,38 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
                     : 'Chọn quận/huyện'}
                 </option>
                 {districts.map((district) => (
-                  <option key={district.id} value={district.name}>
+                  <option key={district.id} value={district.name} data-district-id={district.id}>
                     {district.name}
                   </option>
                 ))}
               </select>
               {errors.city && <p className="text-red-600 text-sm mt-0.5 pl-1">{errors.city}</p>}
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="ward-input" className="block text-sm font-medium text-gray-700 mb-1">
+              Phường/Xã
+            </label>
+            <select
+              id="ward-input"
+              name="ward"
+              className="md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all bg-white"
+              disabled={!selectedDistrictId || isLoadingWards}
+            >
+              <option value="">
+                {!selectedDistrictId
+                  ? 'Chọn quận/huyện trước'
+                  : isLoadingWards
+                  ? 'Đang tải...'
+                  : 'Chọn phường/xã'}
+              </option>
+              {wards.map((ward) => (
+                <option key={ward.code} value={ward.name}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

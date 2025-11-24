@@ -2,7 +2,8 @@ import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useNavigate } from 'react-router-dom'
 import { MockupPreview } from './MockupPreview'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { LocalStorageHelper } from '@/utils/localstorage'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -13,6 +14,14 @@ export const Actions = () => {
   const addToCart = () => {
     eventEmitter.emit(EInternalEvents.ADD_TO_CART)
   }
+
+  const updateCartCount = () => {
+    useProductUIDataStore.getState().setCartCount(LocalStorageHelper.countSavedMockupImages())
+  }
+
+  useEffect(() => {
+    updateCartCount()
+  }, [])
 
   return (
     <div className="order-3 py-2">

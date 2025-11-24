@@ -30,6 +30,7 @@ export class LocalStorageHelper {
       elementsVisualState,
       imageData,
       surfaceInfo,
+      quantity: 1,
     }
   }
 
@@ -124,7 +125,7 @@ export class LocalStorageHelper {
     sessionId: string,
     productId: TBaseProduct['id'],
     productVariantId: TClientProductVariant['id'],
-    mockupDataId: string
+    mockupDataId: TMockupData['id']
   ) {
     const data = this.getSavedMockupData()
     if (!data || data.sessionId !== sessionId) return
@@ -150,42 +151,14 @@ export class LocalStorageHelper {
     amount: number
   ) {
     const data = this.getSavedMockupData()
-    console.log('>>> run this 153')
     if (!data || data.sessionId !== sessionId) return
-    console.log('>>> run this 155')
-
     for (const product of data.productsInCart) {
       if (product.productId !== productId) continue
-      console.log('>>> run this 159')
       for (const variant of product.productVariants) {
         if (variant.variantId !== productVariantId) continue
-        console.log('>>> run this 163')
         const mockupIndex = variant.mockupDataList.findIndex((m) => m.id === mockupDataId)
-        console.log('>>> run this 165:', mockupIndex)
         if (mockupIndex >= 0) {
-          const mockupFound = variant.mockupDataList[mockupIndex]
-          console.log('>>> run this 167:', { mockupFound, amount })
-          if (amount > 0) {
-            // Thêm bản sao mockup
-            for (let i = 0; i < amount; i++) {
-              const toPush = this.createMockupData(
-                mockupFound.elementsVisualState,
-                mockupFound.imageData,
-                mockupFound.surfaceInfo,
-                this.generateMockupId()
-              )
-              console.log('>>> toPush:', toPush)
-              variant.mockupDataList.push(toPush)
-            }
-          } else if (amount < 0) {
-            // Xóa bớt mockup
-            console.log('>>> calcu:', Math.min(-amount, variant.mockupDataList.length))
-            variant.mockupDataList.splice(
-              mockupIndex,
-              Math.min(-amount, variant.mockupDataList.length)
-            ) // Đảm bảo không xóa quá số lượng hiện có
-          }
-          console.log('>>> run this 171:', data)
+          variant.mockupDataList[mockupIndex].quantity += amount
           localStorage.setItem(LocalStorageHelper.mockupImageName, JSON.stringify(data))
           return
         }

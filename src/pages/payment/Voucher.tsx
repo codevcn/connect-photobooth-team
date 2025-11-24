@@ -27,7 +27,7 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
       const vouchers = await voucherService.getSomeVouchers()
       setAvailableVouchers(vouchers)
     } catch (error) {
-      console.error('Error fetching vouchers:', error)
+      console.error('>>> Error fetching vouchers:', error)
       setAvailableVouchers([])
     } finally {
       setIsFetchingVouchers(false)
@@ -155,7 +155,7 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
           onKeyDown={(e) => e.key === 'Enter' && !isApplyingVoucher && applyVoucher()}
           placeholder="Nhập mã khuyến mãi"
           disabled={!!appliedVoucher || isApplyingVoucher}
-          className="flex-1 h-10 w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="md:h-10 h-9 flex-1 w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
         <button
           onClick={applyVoucher}

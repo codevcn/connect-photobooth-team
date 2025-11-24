@@ -15,6 +15,7 @@ class ProductService {
     }
 
     const apiProducts = response.data.data
+    console.log('>>> api products:', apiProducts)
 
     // Sử dụng ProductAdapter để convert
     return ProductAdapter.toClientProducts(apiProducts)

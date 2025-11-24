@@ -180,6 +180,7 @@ export type TMockupData = {
     id: number
     type: TSurfaceType
   }
+  quantity: number
 }
 
 export type TProductVariantInCart = {
@@ -189,7 +190,6 @@ export type TProductVariantInCart = {
     title: string
     value: string
   }
-  quantity: number
   mockupDataList: TMockupData[]
 }
 

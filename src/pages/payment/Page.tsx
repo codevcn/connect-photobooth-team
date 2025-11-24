@@ -15,6 +15,7 @@ import { useGlobalContext } from '@/contexts/global-context'
 import { VoucherSection } from '@/pages/payment/Voucher'
 import { ProductList } from '@/pages/payment/ProductList'
 import { useProductStore } from '@/stores/product/product.store'
+import { toast } from 'react-toastify'
 
 interface IPaymentModalProps {
   imgSrc?: string
@@ -66,7 +67,7 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState<string>()
   const products = useProductStore((s) => s.products)
-  console.log('>>> cart items:', cartItems)
+
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
     return cartItems.reduce(
@@ -88,29 +89,34 @@ const PaymentPage = () => {
     amount: number
   ) => {
     if (!sessionId) return
-    console.log('>>> esss:', {
-      sessionId,
-      productId,
-      productVariantId,
-      mockupId,
-      amount,
-    })
+    for (const item of cartItems) {
+      if (item.mockupData.id === mockupId) {
+        if (item.quantity + amount < 1) {
+          toast.error('Số lượng sản phẩm không thể nhỏ hơn 1')
+          break
+        } else if (item.quantity + amount > item.productStock) {
+          toast.error('Số lượng sản phẩm vượt quá tồn kho')
+          break
+        }
+        LocalStorageHelper.updateMockupQuantity(
+          sessionId,
+          productId,
+          productVariantId,
+          mockupId,
+          amount
+        )
+        break
+      }
+    }
     setCartItems((items) =>
-      items.map((item) =>
-        item.mockupData.id === mockupId
+      items.map((item) => {
+        return item.mockupData.id === mockupId
           ? {
               ...item,
               quantity: Math.min(item.productStock, Math.max(1, item.quantity + amount)),
             }
           : item
-      )
-    )
-    LocalStorageHelper.updateMockupQuantity(
-      sessionId,
-      productId,
-      productVariantId,
-      mockupId,
-      amount
+      })
     )
   }
 
@@ -141,7 +147,7 @@ const PaymentPage = () => {
               name: product.productName,
               size: productVariant.size,
               color: productVariant.color,
-              quantity: variant.quantity,
+              quantity: mockupData.quantity,
               originalPrice: productVariant.priceAmountOneSide,
               discountedPrice: productVariant.priceAfterDiscount,
               mockupData: {
@@ -360,7 +366,7 @@ const PaymentPage = () => {
             <div className="w-full mx-auto px-2 py-2">
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center justify-center gap-2 w-full h-[45px] bg-main-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
+                className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full bg-main-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -418,7 +424,7 @@ const PaymentPage = () => {
             {/* Action Button */}
             <button
               onClick={() => navigate('/edit')}
-              className="group relative w-full md:max-w-md lg:max-w-lg mx-auto bg-main-cl hover:bg-dark-main-cl text-white font-bold p-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 overflow-hidden"
+              className="md:text-base text-sm group relative w-full md:max-w-md lg:max-w-lg mx-auto bg-main-cl hover:bg-dark-main-cl text-white font-bold p-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
               <div className="relative flex items-center justify-center gap-3 md:gap-4">
@@ -437,7 +443,7 @@ const PaymentPage = () => {
                   <path d="m12 19-7-7 7-7" />
                   <path d="M19 12H5" />
                 </svg>
-                <span className="text-lg">Quay lại trang chỉnh sửa</span>
+                <span className="text-[1em]">Quay lại trang chỉnh sửa</span>
               </div>
             </button>
           </div>
