@@ -132,70 +132,137 @@ export const styleFrameByTemplateType = (
 
 export const stylePlacedImageByTemplateType = (
   templateType: TTemplateType,
-  frameIndex: number,
-  defaultStyle: React.CSSProperties = {}
+  placedImage: TPlacedImage,
+  frame: TTemplateFrame,
+  defaultStyle: React.CSSProperties = {},
+  isLog?: boolean
 ): React.CSSProperties => {
+  const { width, height, index: frameIndex } = frame
+  const styleForSizeAdjustment: React.CSSProperties = {}
+  if (isLog) {
+    console.log('>>> placed image:', { placedImage, frame })
+  }
+  if (
+    decideFitBy(placedImage.prrintedImageWidth, placedImage.printedImageHeight, width, height) ===
+    'width'
+  ) {
+    styleForSizeAdjustment.width = '100%'
+    styleForSizeAdjustment.height = 'auto'
+  } else {
+    styleForSizeAdjustment.height = '100%'
+    styleForSizeAdjustment.width = 'auto'
+  }
   if (templateType === '2-horizon') {
     if (frameIndex === 1) {
       return {
-        objectPosition: 'bottom',
+        bottom: '0',
+        top: 'auto',
+        left: '0',
+        right: 'auto',
+        ...styleForSizeAdjustment,
       }
     } else {
       return {
-        objectPosition: 'top',
+        top: '0',
+        left: '0',
+        right: 'auto',
+        bottom: 'auto',
+        ...styleForSizeAdjustment,
       }
     }
   } else if (templateType === '2-vertical') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right' }
+      return { right: '0', top: '0', bottom: 'auto', left: 'auto', ...styleForSizeAdjustment }
     } else {
-      return { objectPosition: 'left' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   } else if (templateType === '3-left') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto', ...styleForSizeAdjustment }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left center' }
+      return {
+        left: '0',
+        top: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        transform: 'translateY(-50%)',
+        ...styleForSizeAdjustment,
+      }
     } else {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   } else if (templateType === '3-right') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right center' }
+      return {
+        right: '0',
+        top: '50%',
+        left: 'auto',
+        bottom: 'auto',
+        transform: 'translateY(-50%)',
+        ...styleForSizeAdjustment,
+      }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto', ...styleForSizeAdjustment }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   } else if (templateType === '3-top') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto', ...styleForSizeAdjustment }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto', ...styleForSizeAdjustment }
     } else {
-      return { objectPosition: 'top center' }
+      return {
+        top: '0',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        transform: 'translateX(-50%)',
+        ...styleForSizeAdjustment,
+      }
     }
   } else if (templateType === '3-bottom') {
     if (frameIndex === 1) {
-      return { objectPosition: 'bottom center' }
+      return {
+        bottom: '0',
+        left: '50%',
+        right: 'auto',
+        top: 'auto',
+        transform: 'translateX(-50%)',
+        ...styleForSizeAdjustment,
+      }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   } else if (templateType === '4-horizon') {
-    return { objectPosition: 'center' }
+    return {
+      top: '50% ',
+      left: 'auto',
+      right: 'auto',
+      bottom: 'auto',
+      transform: 'translateY(-50%)',
+      ...styleForSizeAdjustment,
+    }
   } else if (templateType === '4-vertical') {
-    return { objectPosition: 'center' }
+    return {
+      left: '50% ',
+      right: 'auto',
+      top: 'auto',
+      bottom: 'auto',
+      transform: 'translateX(-50%)',
+      ...styleForSizeAdjustment,
+    }
   } else if (templateType === '4-square') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto', ...styleForSizeAdjustment }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto', ...styleForSizeAdjustment }
     } else if (frameIndex === 3) {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   }
   return defaultStyle
@@ -283,18 +350,17 @@ export const assignFrameSizeByTemplateType = (
 // * @param {number} itemH - height ban đầu của item
 // * @returns {object} - { shrinkFirst: 'width'|'height', expandFirst: 'width'|'height' }
 //   */
-// function getFirstMatchedDimension(boxW, boxH, itemW, itemH) {
-//   const scaleW = boxW / itemW
-//   const scaleH = boxH / itemH
-
-//   // Khi co (shrink): chiều có scale nhỏ hơn khớp trước
-//   const shrinkFirst = scaleW < scaleH ? 'width' : 'height'
-
-//   // Khi giãn (expand): chiều có scale lớn hơn khớp trước
-//   const expandFirst = scaleW > scaleH ? 'width' : 'height'
-
-//   return { shrinkFirst, expandFirst }
-// }
+export function decideFitBy(
+  itemW: number,
+  itemH: number,
+  boxW: number,
+  boxH: number
+): 'width' | 'height' {
+  const scaleW = boxW / itemW
+  const scaleH = boxH / itemH
+  // scale nhỏ hơn → giới hạn trước → fit by theo chiều đó
+  return scaleW < scaleH ? 'width' : 'height'
+}
 
 // // Ví dụ
 // const boxW = 200,

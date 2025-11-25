@@ -12,9 +12,17 @@ type TPlacedImageProps = {
   placedImage: TPlacedImage
   templateType: TTemplateType
   frameIndex: TTemplateFrame['index']
+  frame: TTemplateFrame
+  isLog?: boolean
 }
 
-export const PlacedImage = ({ placedImage, templateType, frameIndex }: TPlacedImageProps) => {
+export const PlacedImage = ({
+  placedImage,
+  templateType,
+  frameIndex,
+  frame,
+  isLog,
+}: TPlacedImageProps) => {
   const { placementState } = placedImage
 
   // Hook để kéo ảnh trong frame với ràng buộc boundary
@@ -26,25 +34,22 @@ export const PlacedImage = ({ placedImage, templateType, frameIndex }: TPlacedIm
   // })
 
   return (
-    <div className="NAME-frame-placed-image-wrapper flex w-full h-full relative active:scale-95 transition-transform">
-      <img
-        // ref={imageRef as React.RefObject<HTMLImageElement>}
-        src={placedImage.imgURL}
-        alt="Ảnh in của bạn"
-        className="NAME-frame-placed-image h-full w-full absolute top-0 left-0"
-        style={{
-          objectFit: placementState.objectFit,
-          willChange: 'transform',
-          ...stylePlacedImageByTemplateType(templateType, frameIndex),
-        }}
-        // data-placed-image-meta-data={JSON.stringify(
-        //   typeToObject<TPlacedImageMetaData>({
-        //     frameIndex,
-        //     templateType: templateType,
-        //     placedImageId: placedImage.id,
-        //   })
-        // )}
-      />
-    </div>
+    <img
+      // ref={imageRef as React.RefObject<HTMLImageElement>}
+      src={placedImage.imgURL}
+      alt="Ảnh in của bạn"
+      className="NAME-frame-placed-image h-full w-full absolute top-0 left-0"
+      style={{
+        objectFit: placementState.objectFit,
+        willChange: 'transform',
+        ...stylePlacedImageByTemplateType(templateType, placedImage, frame, {}, isLog),
+      }}
+      // data-placed-image-meta-data={JSON.stringify(
+      //   typeToObject<TPlacedImageMetaData>({
+      //     placedImageInitialSize:,
+      //     frameInitialSize,
+      //   })
+      // )}
+    />
   )
 }

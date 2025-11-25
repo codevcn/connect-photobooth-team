@@ -5,6 +5,7 @@ import { PrintAreaOverlay } from './PrintAreaOverlay'
 import { EditedElementsArea } from './EditedElementsArea'
 import { AddToCartHandler } from './AddToCartHandler'
 import { initPlacedImageStyle } from '../helpers'
+import { adjustSizeOfPlacedImageOnPlaced } from './test'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -29,7 +30,7 @@ export const LivePreview = ({
   }, [pickedProduct, editedPrintSurfaceId])
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
-    usePrintArea(printAreaInfo)
+    usePrintArea(printAreaInfo, adjustSizeOfPlacedImageOnPlaced)
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
     const variantSurface = pickedProduct.variantSurfaces.find(
@@ -71,6 +72,10 @@ export const LivePreview = ({
   useEffect(() => {
     displayProductChangingModal()
   }, [displayedImage])
+
+  useEffect(() => {
+    adjustSizeOfPlacedImageOnPlaced()
+  }, [])
 
   return (
     <div className="w-full smd:w-full min-h-full h-full relative">

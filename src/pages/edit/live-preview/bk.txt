@@ -6,6 +6,13 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useEffect } from 'react'
 import { initPlacedImageStyle } from '../helpers'
+import {
+  styleFrameByTemplateType,
+  styleToFramesDisplayerByTemplateType,
+} from '@/configs/print-template/templates-helpers'
+import { AddImageIcon, TemplateFrame } from '../customize/template/TemplateFrame'
+import { PlacedImage } from '../customize/template/PlacedImage'
+import { adjustSizeOfPlacedImageOnPlaced } from './test'
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
@@ -97,6 +104,10 @@ export const PrintAreaOverlay = ({
     }, 0)
   }, [pickedTemplate])
 
+  useEffect(() => {
+    adjustSizeOfPlacedImageOnPlaced()
+  }, [pickedTemplate])
+
   return (
     <div
       ref={printAreaRef}
@@ -117,7 +128,7 @@ export const PrintAreaOverlay = ({
           : 'transparent',
       }}
     >
-      {pickedTemplate && (
+      {/* {pickedTemplate && (
         <FramesDisplayer
           template={pickedTemplate}
           onClickFrame={handleClickFrame}
@@ -125,36 +136,55 @@ export const PrintAreaOverlay = ({
             container: 'cursor-pointer',
           }}
         />
+      )} */}
+
+      {pickedTemplate && (
+        <div
+          className="NAME-frames-displayer bg-gray-600/30 p-0.5 max-h-full max-w-full cursor-pointer absolute z-10 top-0 left-0"
+          style={{ ...styleToFramesDisplayerByTemplateType(pickedTemplate.type) }}
+        >
+          {pickedTemplate.frames.map((frame) => (
+            <div
+              key={frame.id}
+              style={{
+                ...styleFrameByTemplateType(pickedTemplate.type, frame.index),
+              }}
+              className="NAME-template-frame flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed"
+              onClick={(e) => handleClickFrame(e, frame.id)}
+            >
+              <AddImageIcon />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {pickedTemplate && (
+        <div
+          className="NAME-placed-images-displayer p-0.5 max-h-full max-w-full cursor-pointer absolute top-0 left-0 z-20"
+          style={{ ...styleToFramesDisplayerByTemplateType(pickedTemplate.type) }}
+        >
+          {pickedTemplate.frames.map((frame) => (
+            <div
+              key={frame.id}
+              style={{
+                ...styleFrameByTemplateType(pickedTemplate.type, frame.index),
+              }}
+              className="NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed"
+              onClick={(e) => handleClickFrame(e, frame.id)}
+            >
+              {frame.placedImage && (
+                <PlacedImage
+                  placedImage={frame.placedImage}
+                  templateType={pickedTemplate.type}
+                  frameIndex={frame.index}
+                  frame={frame}
+                  isLog
+                />
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )
-}
-
-export const adjustSizeOfPlacedImageOnPlaced = () => {
-  const imagesDisplayer = document.querySelector<HTMLElement>(
-    '.NAME-print-area-allowed .NAME-placed-images-displayer'
-  )
-  if (!imagesDisplayer) return
-  const adjust = () => {
-    const images = imagesDisplayer.querySelectorAll<HTMLImageElement>('.NAME-frame-placed-image')
-    images.forEach((img) => {
-      if (img.complete) fix(img)
-      else img.onload = () => fix(img)
-    })
-  }
-  adjust()
-
-  function fix(img: HTMLImageElement) {
-    if (img['NAME_isSizeAdjusted']) return
-    const { width, height } = img.getBoundingClientRect()
-    console.log('>>> 17:', { width, height })
-    if (width === 0 || height === 0) return requestAnimationFrame(() => fix(img))
-    img.style.width = width + 'px'
-    img.style.height = height + 'px'
-    const frame = img.closest<HTMLElement>('.NAME-template-frame')
-    if (frame) {
-      frame.style.width = width + 'px'
-      frame.style.height = height + 'px'
-    }
-  }
 }

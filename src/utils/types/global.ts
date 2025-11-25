@@ -373,9 +373,11 @@ export type TProductWithTemplate = TBaseProduct & {
 }
 
 export type TPlacedImageMetaData = {
-  placedImageId: string
-  templateType: TTemplateType
-  frameIndex: TTemplateFrame['index']
+  // placedImageId: string
+  // templateType: TTemplateType
+  // frameIndex: TTemplateFrame['index']
+  placedImageInitialSize: TSizeInfo
+  frameInitialSize: TSizeInfo
 }
 
 export type TProductAttatchedData = {

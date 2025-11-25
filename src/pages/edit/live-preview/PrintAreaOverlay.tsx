@@ -6,6 +6,13 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useEffect } from 'react'
 import { initPlacedImageStyle } from '../helpers'
+import {
+  styleFrameByTemplateType,
+  styleToFramesDisplayerByTemplateType,
+} from '@/configs/print-template/templates-helpers'
+import { AddImageIcon, TemplateFrame } from '../customize/template/TemplateFrame'
+import { PlacedImage } from '../customize/template/PlacedImage'
+import { adjustSizeOfPlacedImageOnPlaced } from './test'
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
