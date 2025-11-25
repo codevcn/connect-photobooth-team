@@ -25,6 +25,7 @@ type TFramesDisplayerProps = {
   displayScrollButton: boolean
   displaySelectingColor: boolean
   allowDragging: boolean
+  scrollable: boolean
 }>
 
 type TFrameBounds = {
@@ -42,6 +43,7 @@ export const FramesDisplayer = ({
   displayScrollButton = false,
   displaySelectingColor = false,
   allowDragging = true,
+  scrollable = true,
 }: TFramesDisplayerProps) => {
   const { frames, type } = template
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
@@ -97,7 +99,6 @@ export const FramesDisplayer = ({
     let maxBottom = 0
     for (const child of listChildRef.current) {
       if (!child) continue
-
       const childRect = child.getBoundingClientRect()
 
       const topDiff = childRect.top - parentRect.top
@@ -115,7 +116,9 @@ export const FramesDisplayer = ({
   }
   useEffect(() => {
     const canMove = handleCanMove()
-    setOffsetY((pre) => pre - canMove)
+    if (canMove != 0) {
+      setOffsetY((pre) => pre - canMove)
+    }
   }, [offsetY])
 
   useEffect(() => {
@@ -183,6 +186,7 @@ export const FramesDisplayer = ({
             childIndex={idx}
             onPointerDown={onPointerDown}
             displaySelectingColor={displaySelectingColor}
+            scrollable={scrollable}
           />
         ))}
       </div>

@@ -134,6 +134,7 @@ export const PrintAreaOverlay = ({
           }}
           displayScrollButton
           displaySelectingColor
+          scrollable={false}
         />
       )}
     </div>

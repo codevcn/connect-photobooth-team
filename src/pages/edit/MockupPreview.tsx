@@ -43,19 +43,12 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
     if (!printAreaContainer) {
       return setError('Không tìm thấy khu vực in trên sản phẩm')
     }
-    const end1 = performance.now()
-    console.log(`%c[MockupPreview] Time to prepare print area: ${end1 - start1} ms`, 'color: #888')
-    const start2 = performance.now()
     saveHtmlAsImage(
       printAreaContainer,
       'image/png',
       4,
       (imageData) => {
         const end2 = performance.now()
-        console.log(
-          `%c[MockupPreview] Time to capture print area image: ${end2 - start2} ms`,
-          'color: #888'
-        )
         setTimeout(() => {
           removeMockPrintArea()
           urlToRevokeRef.current = URL.createObjectURL(imageData)

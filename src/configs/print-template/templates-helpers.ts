@@ -143,9 +143,11 @@ export const stylePlacedImageByTemplateType = (
     decideFitBy(placedImage.prrintedImageWidth, placedImage.printedImageHeight, width, height) ===
     'width'
   ) {
+    console.log('>>> run this 146')
     styleForSizeAdjustment.width = '100%'
     styleForSizeAdjustment.height = 'auto'
   } else {
+    console.log('>>> run this 150')
     styleForSizeAdjustment.height = '100%'
     styleForSizeAdjustment.width = 'auto'
   }
@@ -284,7 +286,13 @@ export const stylePlacedImageByTemplateType = (
       return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
     }
   }
-  return defaultStyle
+  return {
+    ...defaultStyle,
+    ...styleForSizeAdjustment,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  }
 }
 
 export const assignFrameSizeByTemplateType = (

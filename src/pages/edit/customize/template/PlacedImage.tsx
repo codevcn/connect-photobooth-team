@@ -49,6 +49,7 @@ export const PlacedImage = ({
   return (
     <img
       // ref={imageRef as React.RefObject<HTMLImageElement>}
+      onDragStart={(e) => e.preventDefault()}
       ref={handleRef}
       src={placedImage.imgURL}
       alt="Ảnh in của bạn"

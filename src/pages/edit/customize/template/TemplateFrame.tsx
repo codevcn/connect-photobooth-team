@@ -65,6 +65,7 @@ type TemplateFrameProps = {
   childIndex?: number
   onPointerDown?: (e: React.PointerEvent<HTMLDivElement>, frameId: string) => void
   displaySelectingColor: boolean
+  scrollable: boolean
 }>
 
 export const TemplateFrame = ({
@@ -79,6 +80,7 @@ export const TemplateFrame = ({
   childIndex,
   onPointerDown,
   displaySelectingColor = false,
+  scrollable = true,
 }: TemplateFrameProps) => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const frameSelected = selectedElement?.elementId === templateFrame.id
@@ -91,17 +93,18 @@ export const TemplateFrame = ({
         ...styleFrameByTemplateType(templateType, templateFrame.index),
         outline: `${
           displaySelectingColor && frameSelected
-            ? `4px solid ${calContrastForReadableColor(
+            ? `1px solid ${calContrastForReadableColor(
                 useProductUIDataStore.getState().pickedVariant?.color.value || 'var(--vcn-main-cl)'
               )}`
             : 'none'
         }`,
       }}
       className={cn(
-        'NAME-template-frame touch-none relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
+        'NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
         classNames?.container,
         frameSelected && 'z-50',
-        templateFrame.placedImage && 'bg-transparent'
+        templateFrame.placedImage && 'bg-transparent',
+        scrollable ? '' : 'touch-none'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, templateFrame.id) : undefined}
     >
