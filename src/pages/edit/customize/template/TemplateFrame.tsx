@@ -64,6 +64,7 @@ type TemplateFrameProps = {
   registerChild?: (index: number, el: HTMLImageElement | null) => void
   childIndex?: number
   onPointerDown?: (e: React.PointerEvent<HTMLDivElement>, frameId: string) => void
+  displaySelectingColor: boolean
 }>
 
 export const TemplateFrame = ({
@@ -77,6 +78,7 @@ export const TemplateFrame = ({
   registerChild,
   childIndex,
   onPointerDown,
+  displaySelectingColor = false,
 }: TemplateFrameProps) => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const frameSelected = selectedElement?.elementId === templateFrame.id
@@ -88,7 +90,7 @@ export const TemplateFrame = ({
         ...styles?.container,
         ...styleFrameByTemplateType(templateType, templateFrame.index),
         outline: `${
-          frameSelected
+          displaySelectingColor && frameSelected
             ? `4px solid ${calContrastForReadableColor(
                 useProductUIDataStore.getState().pickedVariant?.color.value || 'var(--vcn-main-cl)'
               )}`

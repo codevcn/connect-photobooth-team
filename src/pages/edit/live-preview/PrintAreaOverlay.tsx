@@ -133,6 +133,7 @@ export const PrintAreaOverlay = ({
             container: 'cursor-pointer',
           }}
           displayScrollButton
+          displaySelectingColor
         />
       )}
     </div>

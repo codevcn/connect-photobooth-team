@@ -23,6 +23,7 @@ type TFramesDisplayerProps = {
   }
   onClickFrame: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
   displayScrollButton: boolean
+  displaySelectingColor: boolean
   allowDragging: boolean
 }>
 
@@ -39,6 +40,7 @@ export const FramesDisplayer = ({
   displayerClassNames,
   onClickFrame,
   displayScrollButton = false,
+  displaySelectingColor = false,
   allowDragging = true,
 }: TFramesDisplayerProps) => {
   const { frames, type } = template
@@ -180,6 +182,7 @@ export const FramesDisplayer = ({
             registerChild={registerChild}
             childIndex={idx}
             onPointerDown={onPointerDown}
+            displaySelectingColor={displaySelectingColor}
           />
         ))}
       </div>
