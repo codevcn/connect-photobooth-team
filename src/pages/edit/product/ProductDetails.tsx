@@ -53,7 +53,7 @@ const SizeChartPreview = ({ setShowSizeChart, sizeChartImageURL }: TSizeChartPre
             </p>
 
             <div className="flex justify-center items-end gap-4 h-64 mb-8 relative">
-              <div className="text-center opacity-50 w-full h-full flex items-center justify-center bg-yellow-50 rounded-lg border border-dashed border-orange-300 text-orange-400">
+              <div className="text-center w-full h-full flex items-center justify-center bg-yellow-50 rounded-lg border border-dashed border-orange-300 text-orange-400">
                 <img
                   src={sizeChartImageURL}
                   alt="Bảng size"
