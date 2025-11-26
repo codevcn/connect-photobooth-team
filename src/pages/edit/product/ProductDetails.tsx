@@ -233,61 +233,67 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </div>
 
         <div className="rounded-lg mt-4">
-          <h3 className="text-slate-800 font-bold text-sm mb-2">Màu sắc</h3>
+          <h3 className="text-slate-800 font-bold text-sm mb-2">
+            {pickedVariant.color.withTitleFromServer
+              ? pickedVariant.color.withTitleFromServer.title
+              : 'Màu sắc'}
+          </h3>
           <div className="flex flex-wrap gap-3">
-            {availableColors.map((color) => {
-              const lowercasedColorValue = color.value.toLowerCase()
-              const isSelected = selectedColor.value === color.value
-              return (
-                <button
-                  key={color.value}
-                  onClick={() => handlePickColor(color)}
-                  className={`flex flex-col items-center rounded-full focus:outline-none transition-all mobile-touch`}
-                  title={color.title}
-                >
-                  <div
-                    style={{ backgroundColor: lowercasedColorValue || '#000' }}
-                    className={`${
-                      isSelected
-                        ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
-                        : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
-                    } h-10 w-10 rounded-full cursor-pointer`}
-                  >
-                    {isSelected && (
-                      <div className="w-full h-full rounded-full flex items-center justify-center">
-                        <svg
-                          className={` w-5 h-5 drop-shadow-lg`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          style={{
-                            color: color.value.includes('transparent')
-                              ? 'black'
-                              : getContrastColor(color.value.toLowerCase()) || '#000',
-                          }}
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+            {pickedVariant.color.withTitleFromServer
+              ? pickedVariant.color.withTitleFromServer.text
+              : availableColors.map((color) => {
+                  const lowercasedColorValue = color.value.toLowerCase()
+                  const isSelected = selectedColor.value === color.value
+                  return (
+                    <button
+                      key={color.value}
+                      onClick={() => handlePickColor(color)}
+                      className={`flex flex-col items-center rounded-full focus:outline-none transition-all mobile-touch`}
+                      title={color.title}
+                    >
+                      <div
+                        style={{ backgroundColor: lowercasedColorValue || '#000' }}
+                        className={`${
+                          isSelected
+                            ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
+                            : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
+                        } h-10 w-10 rounded-full cursor-pointer`}
+                      >
+                        {isSelected && (
+                          <div className="w-full h-full rounded-full flex items-center justify-center">
+                            <svg
+                              className={` w-5 h-5 drop-shadow-lg`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              style={{
+                                color: color.value.includes('transparent')
+                                  ? 'black'
+                                  : getContrastColor(color.value.toLowerCase()) || '#000',
+                              }}
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div
-                    className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
-                    style={{
-                      backgroundColor: color.value || '#000',
-                      color: color.value.includes('transparent')
-                        ? 'black'
-                        : getContrastColor(color.value.toLowerCase()) || '#000',
-                    }}
-                  >
-                    {color.title}
-                  </div>
-                </button>
-              )
-            })}
+                      <div
+                        className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
+                        style={{
+                          backgroundColor: color.value || '#000',
+                          color: color.value.includes('transparent')
+                            ? 'black'
+                            : getContrastColor(color.value.toLowerCase()) || '#000',
+                        }}
+                      >
+                        {color.title}
+                      </div>
+                    </button>
+                  )
+                })}
           </div>
         </div>
 
