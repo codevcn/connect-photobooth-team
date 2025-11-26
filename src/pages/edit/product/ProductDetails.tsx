@@ -5,6 +5,7 @@ import {
   contrastFromWhite,
   formatNumberWithCommas,
   friendlyCurrency,
+  getContrastColor,
   sortSizes,
 } from '@/utils/helpers'
 import { TBaseProduct, TClientProductVariant, TProductColor } from '@/utils/types/global'
@@ -255,16 +256,14 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                     {isSelected && (
                       <div className="w-full h-full rounded-full flex items-center justify-center">
                         <svg
-                          className={`${
-                            lowercasedColorValue === 'white' ||
-                            lowercasedColorValue === '#fff' ||
-                            lowercasedColorValue === '#ffffff' ||
-                            lowercasedColorValue === 'rgb(255, 255, 255)'
-                              ? 'text-gray-800'
-                              : 'text-white'
-                          } w-5 h-5 drop-shadow-lg`}
+                          className={` w-5 h-5 drop-shadow-lg`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
+                          style={{
+                            color: color.value.includes('transparent')
+                              ? 'black'
+                              : getContrastColor(color.value.toLowerCase()) || '#000',
+                          }}
                         >
                           <path
                             fillRule="evenodd"
@@ -279,7 +278,9 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                     className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
                     style={{
                       backgroundColor: color.value || '#000',
-                      color: contrastFromWhite(color.value.toLowerCase()) || '#fff',
+                      color: color.value.includes('transparent')
+                        ? 'black'
+                        : getContrastColor(color.value.toLowerCase()) || '#000',
                     }}
                   >
                     {color.title}

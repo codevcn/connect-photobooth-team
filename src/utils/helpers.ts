@@ -504,3 +504,17 @@ export function contrastFromWhite(hex: string): string {
 
   return '#FFFFFF' // còn lại → trả về trắng
 }
+
+export function getContrastColor(bgColor: string): string {
+  // Chuẩn hoá
+  const hex = bgColor.replace('#', '')
+  const r = parseInt(hex.substring(0, 2), 16)
+  const g = parseInt(hex.substring(2, 4), 16)
+  const b = parseInt(hex.substring(4, 6), 16)
+
+  // Tính độ sáng theo công thức perceptual
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b
+
+  // Nếu nền sáng → dùng chữ đen, nền tối → chữ trắng
+  return luminance > 180 ? '#000' : '#fff'
+}

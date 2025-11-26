@@ -7,6 +7,10 @@ export type TProductSize = 'S' | 'M' | 'L' | 'XL' | '2XL' | '3XL'
 export type TProductColor = {
   title: string
   value: string
+  withTitleFromServer?: {
+    title: string
+    text: string
+  }
 }
 
 export type TPrintAreaInfo = {

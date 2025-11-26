@@ -66,7 +66,7 @@ export class ProductAdapter {
     product: TProduct,
     category?: TProductCategory
   ): TClientProductVariant {
-    let colorJSON: { text: string; hex: string }
+    let colorJSON: { text: string; hex: string; title: string }
     try {
       colorJSON = JSON.parse(variant.color)
     } catch (error) {
@@ -77,8 +77,9 @@ export class ProductAdapter {
       name: product.name,
       size: variant.size.toUpperCase() as TProductSize,
       color: {
-        title: colorJSON ? colorJSON.text : "Unknown",
-        value: colorJSON ? colorJSON.hex : "#000000",
+        title: colorJSON ? colorJSON.text : 'Unknown',
+        value: colorJSON ? colorJSON.hex : '#000000',
+        withTitleFromServer: colorJSON && colorJSON.title ? colorJSON : undefined,
       },
       priceAmountOneSide: parseFloat(variant.price_amount_oneside),
       priceAmountBothSide: parseFloat(variant.price_amount_bothside),
