@@ -240,7 +240,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                   title={color.title}
                 >
                   <div
-                    style={{ backgroundColor: lowercasedColorValue || '#fff' }}
+                    style={{ backgroundColor: lowercasedColorValue || '#000' }}
                     className={`${
                       isSelected
                         ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
@@ -273,8 +273,8 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                   <div
                     className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
                     style={{
-                      backgroundColor: color.value || '#fff',
-                      color: color.value === '#fff' ? '#000' : '#fff',
+                      backgroundColor: color.value || '#000',
+                      color: color.value.toLowerCase().includes('#fff') ? '#000' : '#fff',
                     }}
                   >
                     {color.title}

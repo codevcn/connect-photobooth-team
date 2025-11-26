@@ -12,6 +12,7 @@ import { subscribeWithSelector } from 'zustand/middleware'
 import { hardCodedPrintTemplates } from '@/configs/print-template/templates-data'
 import { assignFrameSizeByTemplateType } from '@/configs/print-template/templates-helpers'
 import { initFramePlacedImageByPrintedImage } from '@/pages/edit/helpers'
+import { useEditedElementStore } from '../element/element.store'
 
 type TTemplateStore = {
   allTemplates: TPrintTemplate[]
@@ -127,6 +128,9 @@ export const useTemplateStore = create(
               // } else {
               //   toast.warning('Ảnh không phù hợp với khung hình. Vui lòng chọn ảnh khác.')
               // }
+              useEditedElementStore.getState().updateSelectedElement({
+                elementURL: printedImage.url,
+              })
               break
             }
             frameIndex++
@@ -144,6 +148,9 @@ export const useTemplateStore = create(
                 foundFrameIndex + 1,
                 printedImage
               )
+              useEditedElementStore.getState().updateSelectedElement({
+                elementURL: printedImage.url,
+              })
               // assignFrameSizeByTemplateType(printAreaSize, template.type, foundFrame)
               // if (matchPrintedImgAndAllowSquareMatchToShapeSize(foundFrame, printedImage)) {
               //   foundFrame.placedImage = initFramePlacedImageByPrintedImage(foundFrameIndex + 1, printedImage)
