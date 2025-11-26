@@ -381,59 +381,25 @@ export function detectColorFormat(color: string): 'hex' | 'rgb' | 'unknown' {
 
   return 'unknown'
 }
+export function calContrastForReadableColor(hex: string): string {
+  const c = hex.trim().replace('#', '')
 
-export function calContrastForReadableColor(color: string): string {
-  const c = color.toLowerCase().trim()
+  // Chuyển #RGB → #RRGGBB
+  const normalized =
+    c.length === 3
+      ? c
+          .split('')
+          .map((x) => x + x)
+          .join('')
+      : c
 
-  // Nhóm màu nóng (red/orange/yellow/pink...)
-  const warmColors = new Set([
-    'red',
-    'orange',
-    'yellow',
-    'gold',
-    'tomato',
-    'coral',
-    'salmon',
-    'pink',
-    'crimson',
-    'orangered',
-    'firebrick',
-  ])
+  const r = parseInt(normalized.slice(0, 2), 16)
+  const g = parseInt(normalized.slice(2, 4), 16)
+  const b = parseInt(normalized.slice(4, 6), 16)
 
-  if (warmColors.has(c)) {
-    return '#0066FF' // màu tương phản mạnh với đỏ/cam
-  }
+  // Tính độ sáng theo chuẩn WCAG
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
 
-  // Các màu sáng → return đen
-  const lightColors = new Set([
-    'white',
-    'snow',
-    'ivory',
-    'lightyellow',
-    'beige',
-    'mintcream',
-    'aliceblue',
-    'ghostwhite',
-  ])
-
-  if (lightColors.has(c)) {
-    return 'orange' // màu sáng → trả về đen
-  }
-
-  // Các màu tối → return trắng
-  const darkColors = new Set([
-    'black',
-    'navy',
-    'midnightblue',
-    'darkslateblue',
-    'darkslategray',
-    'brown',
-  ])
-
-  if (darkColors.has(c)) {
-    return '#FFFFFF'
-  }
-
-  // Mặc định nếu không rõ → dùng trắng để đảm bảo dễ đọc
-  return 'orange'
+  // Nếu màu sáng → trả về đen, nếu màu tối → trả về trắng
+  return luminance > 160 ? '#000000' : '#FFFFFF'
 }

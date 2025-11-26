@@ -242,13 +242,22 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                       </div>
                     )}
                   </div>
+                  <span
+                    className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
+                    style={{
+                      backgroundColor: color.value,
+                      color: color.value === '#fff' ? '#000' : '#fff',
+                    }}
+                  >
+                    {color.title}
+                  </span>
                 </button>
               )
             })}
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-12">
           <div className="flex justify-between w-full mb-2">
             <label className="block text-sm font-bold text-slate-900">Kích thước</label>
             {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (

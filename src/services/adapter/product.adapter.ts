@@ -66,13 +66,19 @@ export class ProductAdapter {
     product: TProduct,
     category?: TProductCategory
   ): TClientProductVariant {
+    let colorJSON: { text: string; hex: string }
+    try {
+      colorJSON = JSON.parse(variant.color)
+    } catch (error) {
+      colorJSON = null as any
+    }
     return {
       id: variant.id,
       name: product.name,
       size: variant.size.toUpperCase() as TProductSize,
       color: {
-        title: variant.color,
-        value: variant.color,
+        title: colorJSON ? colorJSON.text : "Unknown",
+        value: colorJSON ? colorJSON.hex : "#000000",
       },
       priceAmountOneSide: parseFloat(variant.price_amount_oneside),
       priceAmountBothSide: parseFloat(variant.price_amount_bothside),
