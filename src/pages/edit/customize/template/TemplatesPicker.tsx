@@ -5,7 +5,7 @@ import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { TemplateFrame } from './TemplateFrame'
 import type React from 'react'
 import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/templates-helpers'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   initFramePlacedImageByPrintedImage,
   matchBestPrintedImageToTemplate,
@@ -133,8 +133,23 @@ export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerPr
       // }
     }
     console.log('>>> templates:', templates)
+    // for (const template of templates) {
+    //   useTemplateStore.get
+    // }
+    // useTemplateStore.getState().initializeAddingTemplates(templates, false)
     return templates
   }, [allTemplates, printedImages])
+
+  useEffect(() => {
+    //lát nữa nếu mà có sửa thì nhớ sửa
+    let index = 0
+    for (const template of finalTemplates) {
+      useTemplateStore
+        .getState()
+        .initializeAddingTemplates([template], index === finalTemplates.length - 1)
+      index++
+    }
+  }, [])
 
   const handlePickTemplate = (template: TPrintTemplate) => {
     const pickedSurface = useProductUIDataStore.getState().pickedSurface

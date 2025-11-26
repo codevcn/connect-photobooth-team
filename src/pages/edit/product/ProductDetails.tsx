@@ -1,7 +1,12 @@
 import { Modal } from '@/components/custom/common/Modal'
 import { VietnamFlag } from '@/components/custom/icons/VietnamFlag'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { formatNumberWithCommas, friendlyCurrency, sortSizes } from '@/utils/helpers'
+import {
+  contrastFromWhite,
+  formatNumberWithCommas,
+  friendlyCurrency,
+  sortSizes,
+} from '@/utils/helpers'
 import { TBaseProduct, TClientProductVariant, TProductColor } from '@/utils/types/global'
 import { useMemo, useState } from 'react'
 import { PrintSurface } from '../print-surface/PrintSurface'
@@ -274,7 +279,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                     className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
                     style={{
                       backgroundColor: color.value || '#000',
-                      color: color.value.toLowerCase().includes('#fff') ? '#000' : '#fff',
+                      color: contrastFromWhite(color.value.toLowerCase()) || '#fff',
                     }}
                   >
                     {color.title}

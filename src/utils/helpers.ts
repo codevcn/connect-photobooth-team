@@ -469,3 +469,38 @@ export function adjustNearF3F4F6(hex: string): string {
 
   return '#f3f4f6' // còn lại → trả về f3f4f6
 }
+
+export function contrastFromWhite(hex: string): string {
+  const normalizeHex = (h: string) => {
+    const c = h.replace('#', '').trim()
+    return c.length === 3
+      ? c
+          .split('')
+          .map((x) => x + x)
+          .join('')
+      : c
+  }
+
+  const toRGB = (h: string) => ({
+    r: parseInt(h.slice(0, 2), 16),
+    g: parseInt(h.slice(2, 4), 16),
+    b: parseInt(h.slice(4, 6), 16),
+  })
+
+  const distance = (
+    c1: { r: number; g: number; b: number },
+    c2: { r: number; g: number; b: number }
+  ) => Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2))
+
+  const input = toRGB(normalizeHex(hex))
+  const white = { r: 255, g: 255, b: 255 }
+
+  const d = distance(input, white)
+
+  // Ngưỡng "gần trắng": 40 là mức hợp lý
+  if (d < 40) {
+    return '#000000' // gần trắng → trả về đen
+  }
+
+  return '#FFFFFF' // còn lại → trả về trắng
+}

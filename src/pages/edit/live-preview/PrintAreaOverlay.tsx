@@ -87,9 +87,11 @@ export const PrintAreaOverlay = ({
     if (image) {
       let elementURL: string | undefined = undefined
       const pickedFrame = useTemplateStore.getState().getFrameById(frameId)
+      console.log('>>> ppppppp:', pickedFrame)
       if (pickedFrame) {
         elementURL = pickedFrame.placedImage?.imgURL
       }
+      console.log('>>> elementURL:', elementURL)
       useEditedElementStore
         .getState()
         .selectElement(frameId, e.currentTarget, 'template-frame', elementURL)
