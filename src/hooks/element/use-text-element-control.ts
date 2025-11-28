@@ -77,9 +77,9 @@ export const useTextElementControl = (
     handleSetElementState: baseHandleSetElementState,
   } = useElementControl(
     elementId,
-    elementRootRef,
-    conatinerElementAbsoluteToRef,
-    printAreaAllowedRef,
+    // elementRootRef,
+    // conatinerElementAbsoluteToRef,
+    // printAreaAllowedRef,
     {
       position: { x: initialPosX, y: initialPosY },
       angle: initialAngle,
