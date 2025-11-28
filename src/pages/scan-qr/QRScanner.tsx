@@ -31,6 +31,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
               if (error) {
                 console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
                 setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
+                toast.error('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
                 return
               }
               if (images) {
@@ -45,6 +46,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
             .catch((err) => {
               console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
               setError('Không thể xử lý mã QR. Vui lòng thử lại.')
+              toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
             })
         }
       },
@@ -105,6 +107,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
           if (error) {
             console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
             setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
+            toast.error(error.message)
             return
           }
           if (images) {
@@ -120,6 +123,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         .catch((err) => {
           console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
           setError('Không thể xử lý mã QR. Vui lòng thử lại.')
+          toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
         })
     }, 500)
   }, [isReady])

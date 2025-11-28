@@ -2,102 +2,7 @@ import { useEditedElementStore } from '@/stores/element/element.store'
 import { StickerElement } from '../elements/sticker-element/StickerElement'
 import { TextElement } from '../elements/text-element/TextElement'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
-import { use, useEffect, useRef } from 'react'
-import {
-  TBaseProduct,
-  TClientProductVariant,
-  TMockupData,
-  TPrintAreaInfo,
-  TProductCartInfo,
-  TProductSize,
-  TProductVariantInCart,
-  TStickerVisualState,
-  TSurfaceType,
-  TTextVisualState,
-} from '@/utils/types/global'
-import { LocalStorageHelper } from '@/utils/localstorage'
-import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { useProductStore } from '@/stores/product/product.store'
 import { useSearchParams } from 'react-router-dom'
-
-/**
- * Restore mockup visual states từ localStorage
- */
-const restoreMockupVisualStates = (mockupId: string) => {
-  const savedMockup = LocalStorageHelper.getSavedMockupData()
-  console.log('>>> savedMockup:', { savedMockup, mockupId })
-  if (!savedMockup) return
-
-  const cartItems = savedMockup.productsInCart
-  let foundMockup: TMockupData | null = null
-  let foundProductVariant: TProductVariantInCart | null = null
-  let foundProductId: TBaseProduct['id'] | null = null
-
-  // Search for the mockup in all cart items
-  for (const item of cartItems) {
-    for (const variant of item.productVariants) {
-      for (const mockupData of variant.mockupDataList) {
-        if (mockupData.id === mockupId) {
-          foundMockup = mockupData
-          foundProductVariant = variant
-          foundProductId = item.productId
-          break
-        }
-      }
-    }
-  }
-  console.log('>>> ko tim thay:', {
-    foundMockup,
-    foundProductVariant,
-    foundProductId,
-  })
-
-  if (!foundMockup || !foundProductVariant || !foundProductId) return
-
-  useEditedElementStore.getState().resetData()
-
-  setTimeout(() => {
-    // Restore text elements
-    const restoredTextElements = foundMockup.elementsVisualState.texts || []
-    console.log('>>> texts:', restoredTextElements)
-    if (restoredTextElements.length > 0) {
-      useEditedElementStore
-        .getState()
-        .setTextElements(restoredTextElements.map((text) => ({ ...text, isFromSaved: true })))
-    }
-
-    // Restore sticker elements
-    const restoredStickerElements = foundMockup.elementsVisualState.stickers || []
-    console.log('>>> stickers:', restoredStickerElements)
-    if (restoredStickerElements.length > 0) {
-      useEditedElementStore
-        .getState()
-        .setStickerElements(
-          restoredStickerElements.map((sticker) => ({ ...sticker, isFromSaved: true }))
-        )
-    }
-
-    // Restore printed image elements
-    const storedTemplates = foundMockup.elementsVisualState.storedTemplates || []
-    console.log('>>> placed images:', storedTemplates)
-    if (storedTemplates && storedTemplates.length > 0) {
-      useEditedElementStore.getState().setStoredTemplate(storedTemplates[0])
-      useEditedElementStore.getState().setDidSetStoredTemplate(true)
-    }
-
-    // Restore product selection
-    const product = useProductStore.getState().getProductById(foundProductId)
-    console.log('>>> product 86:', product)
-    if (!product) return
-    const variantId = foundProductVariant.variantId
-    const variant = product.variants.find((v) => v.id === variantId)
-    if (!variant) return
-    useProductUIDataStore.getState().handlePickVariant(variant)
-
-    // Restore surface type
-    useProductUIDataStore.getState().handlePickVariantSurface(variantId, foundMockup.surfaceInfo.id)
-  }, 0)
-}
 
 type TEditedElementsAreaProps = {
   allowedPrintAreaRef: React.RefObject<HTMLDivElement | null>
@@ -113,22 +18,8 @@ export const EditedElementsArea = ({
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const selectElement = useEditedElementStore((s) => s.selectElement)
   const mockupId = useSearchParams()[0].get('mockupId')
-  const firstRenderRef = useRef(true)
   console.log('>>> [now] mockup id:', { mockupId, stickerElements, textElements })
 
-  useEffect(() => {
-    console.log('>>> run this 115')
-    if (mockupId && firstRenderRef.current) {
-      restoreMockupVisualStates(mockupId)
-      firstRenderRef.current = false
-    }
-  }, [mockupId])
-  useEffect(() => {
-    console.log('>>> stickerElements changed:', stickerElements)
-  }, [stickerElements])
-  useEffect(() => {
-    console.log('>>> textElements changed:', textElements)
-  }, [textElements])
   return (
     <>
       {stickerElements.length > 0 &&

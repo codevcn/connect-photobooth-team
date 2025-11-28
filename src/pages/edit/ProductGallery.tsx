@@ -6,12 +6,13 @@ import { initTheBestTemplateForPrintedImages } from './helpers'
 import { useEffect } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useTemplateStore } from '@/stores/ui/template.store'
+import { useSearchParams } from 'react-router-dom'
 
 type TProductProps = {
   product: TBaseProduct
   initialTemplate: TPrintTemplate
   onPickProduct: (product: TBaseProduct, initialTemplate: TPrintTemplate) => void
-  onInitFirstProduct: (initialTemplate: TPrintTemplate) => void
+  onInitTemplates: (initialTemplate: TPrintTemplate) => void
   isPicked: boolean
 }
 
@@ -19,13 +20,13 @@ const Product = ({
   product,
   initialTemplate,
   onPickProduct,
-  onInitFirstProduct,
+  onInitTemplates,
   isPicked,
 }: TProductProps) => {
   const { printAreaRef, printAreaContainerRef } = usePrintArea(product.printAreaList[0])
 
   useEffect(() => {
-    onInitFirstProduct(initialTemplate)
+    onInitTemplates(initialTemplate)
   }, [])
 
   return (
@@ -56,11 +57,11 @@ type TProductGalleryProps = {
 
 export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const printedImages = usePrintedImageStore((s) => s.printedImages)
-  const initFirstProduct = useProductUIDataStore((s) => s.initFirstProduct)
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const handlePickProduct = useProductUIDataStore((s) => s.handlePickProduct)
   const initializeAddingTemplates = useTemplateStore((s) => s.initializeAddingTemplates)
   const allTemplates = useTemplateStore((s) => s.allTemplates)
+  const mockupId = useSearchParams()[0].get('mockupId')
 
   const scrollToPickedProduct = () => {
     if (pickedProduct) {
@@ -73,13 +74,22 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }
 
-  const handleInitFirstProduct = (initialTemplate: TPrintTemplate) => {
+  const handleInitTemplate = (initialTemplate: TPrintTemplate) => {
     initializeAddingTemplates([initialTemplate])
   }
 
+  const initFirstProduct = () => {
+    console.log('>>> [ddd] mockupId at gallery:', mockupId)
+    if (!mockupId) {
+      if (allTemplates.length > 0) {
+        console.log('>>> [ddd] run this init first product')
+        handlePickProduct(products[0], allTemplates[0])
+      }
+    }
+  }
+
   useEffect(() => {
-    if (allTemplates.length === 0) return
-    initFirstProduct(products[0], allTemplates[0])
+    initFirstProduct()
   }, [allTemplates.length])
 
   useEffect(() => {
@@ -114,7 +124,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
                   printedImages
                 )}
                 onPickProduct={handlePickProduct}
-                onInitFirstProduct={(initialTemplate) => handleInitFirstProduct(initialTemplate)}
+                onInitTemplates={(initialTemplate) => handleInitTemplate(initialTemplate)}
                 isPicked={product.id === pickedProduct?.id}
               />
             )

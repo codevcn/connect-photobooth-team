@@ -1,5 +1,5 @@
 import { usePrintArea } from '@/hooks/use-print-area'
-import { TBaseProduct, TPrintedImage, TProductWithTemplate } from '@/utils/types/global'
+import { TBaseProduct, TPrintedImage } from '@/utils/types/global'
 import { useEffect, useMemo, useRef } from 'react'
 import { PrintAreaOverlay } from './PrintAreaOverlay'
 import { EditedElementsArea } from './EditedElementsArea'
@@ -8,6 +8,9 @@ import { adjustSizeOfPlacedImageOnPlaced } from './test'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { adjustNearF3F4F6 } from '@/utils/helpers'
 import { SectionLoading } from '@/components/custom/Loading'
+import { createPortal } from 'react-dom'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { getCommonContants } from '@/utils/contants'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -17,7 +20,7 @@ type TDisplayedImage = {
 }
 
 type TLivePreviewProps = {
-  pickedProduct: TProductWithTemplate
+  pickedProduct: TBaseProduct
   editedVariantId: TBaseProduct['variants'][number]['id']
   editedPrintSurfaceId: TBaseProduct['printAreaList'][number]['id']
   printedImages: TPrintedImage[]
@@ -31,11 +34,16 @@ export const LivePreview = ({
 }: TLivePreviewProps) => {
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find((printArea) => printArea.id === editedPrintSurfaceId)!
-  }, [pickedProduct, editedPrintSurfaceId])
+  }, [pickedProduct.id, pickedProduct.printAreaList, editedPrintSurfaceId])
   const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
-    usePrintArea(printAreaInfo, adjustSizeOfPlacedImageOnPlaced)
+    usePrintArea(printAreaInfo, () => {
+      setTimeout(() => {
+        eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
+      }, getCommonContants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
+      adjustSizeOfPlacedImageOnPlaced()
+    })
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
     const variantSurface = pickedProduct.variantSurfaces.find(
@@ -87,6 +95,12 @@ export const LivePreview = ({
 
   return (
     <div className="w-full smd:w-full min-h-full h-full relative">
+      {createPortal(
+        <div className="bg-red-600 h-12 w-12 fixed top-0 left-0 z-1000">
+          <div>oke</div>
+        </div>,
+        document.body
+      )}
       <AddToCartHandler
         checkIfAnyElementOutOfBounds={checkIfAnyElementOutOfBounds}
         printAreaContainerRef={printAreaContainerRef}

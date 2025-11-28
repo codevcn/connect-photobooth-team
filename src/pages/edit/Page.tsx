@@ -1,15 +1,24 @@
-import { TBaseProduct, TPrintedImage } from '@/utils/types/global'
+import {
+  TBaseProduct,
+  TMockupData,
+  TPrintedImage,
+  TProductVariantInCart,
+} from '@/utils/types/global'
 import { ProductGallery } from './ProductGallery'
 import { ProductDetails } from './product/ProductDetails'
 import { Customization } from './customize/Customization'
 import { LivePreview } from './live-preview/LivePreview'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { AdditionalInformation } from './product/AdditionalInformation'
 import { Actions } from './Actions'
 import { useFontLoader } from '@/hooks/use-font'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
+import { useTemplateStore } from '@/stores/ui/template.store'
+import { useSearchParams } from 'react-router-dom'
+import { useProductStore } from '@/stores/product/product.store'
+import { LocalStorageHelper } from '@/utils/localstorage'
 
 const AddingToCartLoadingModal = () => {
   const isLoading = useProductUIDataStore((s) => s.isAddingToCart)
@@ -25,6 +34,82 @@ const AddingToCartLoadingModal = () => {
   )
 }
 
+/**
+ * Restore mockup visual states từ localStorage
+ */
+const restoreMockupVisualStates = (mockupId: string) => {
+  const savedMockup = LocalStorageHelper.getSavedMockupData()
+  console.log('>>> [ddd] savedMockup:', { savedMockup, mockupId })
+  if (!savedMockup) return
+
+  const cartItems = savedMockup.productsInCart
+  let foundMockup: TMockupData | null = null
+  let foundProductVariant: TProductVariantInCart | null = null
+  let foundProductId: TBaseProduct['id'] | null = null
+
+  // Search for the mockup in all cart items
+  for (const item of cartItems) {
+    for (const variant of item.productVariants) {
+      for (const mockupData of variant.mockupDataList) {
+        if (mockupData.id === mockupId) {
+          foundMockup = mockupData
+          foundProductVariant = variant
+          foundProductId = item.productId
+          break
+        }
+      }
+    }
+  }
+  console.log('>>> [ddd] ko tim thay:', {
+    foundMockup,
+    foundProductVariant,
+    foundProductId,
+  })
+
+  if (!foundMockup || !foundProductVariant || !foundProductId) return
+
+  useEditedElementStore.getState().resetData()
+
+  setTimeout(() => {
+    // Restore text elements
+    const restoredTextElements = foundMockup.elementsVisualState.texts || []
+    console.log('>>> [ddd] texts:', restoredTextElements)
+    if (restoredTextElements.length > 0) {
+      useEditedElementStore
+        .getState()
+        .setTextElements(restoredTextElements.map((text) => ({ ...text, isFromSaved: true })))
+    }
+
+    // Restore sticker elements
+    const restoredStickerElements = foundMockup.elementsVisualState.stickers || []
+    console.log('>>> [ddd] stickers:', restoredStickerElements)
+    if (restoredStickerElements.length > 0) {
+      useEditedElementStore
+        .getState()
+        .setStickerElements(
+          restoredStickerElements.map((sticker) => ({ ...sticker, isFromSaved: true }))
+        )
+    }
+
+    // Restore product, variant, surface, and template
+    const product = useProductStore.getState().getProductById(foundProductId)
+    console.log('>>> [ddd] product 86:', product)
+    if (!product) return
+    const variantId = foundProductVariant.variantId
+    const variant = product.variants.find((v) => v.id === variantId)
+    console.log('>>> [ddd] variant:', variant)
+    if (!variant) return
+    const surface = product.printAreaList.find((s) => s.id === foundMockup.surfaceInfo.id)
+    console.log('>>> [ddd] surface:', surface)
+    if (!surface) return
+    const storedTemplates = foundMockup.elementsVisualState.storedTemplates || []
+    console.log('>>> [ddd] storedTemplates:', storedTemplates)
+    useProductUIDataStore
+      .getState()
+      .handlePickProductOnRestore(product, storedTemplates[0], variant, surface)
+  }, 0)
+}
+
 type TEditPageProps = {
   products: TBaseProduct[]
   printedImages: TPrintedImage[]
@@ -36,6 +121,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
   const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
   const { loadAllFonts } = useFontLoader()
+  const mockupId = useSearchParams()[0].get('mockupId')
+  const firstRenderRef = useRef(true)
 
   useEffect(() => {
     const listenClickOnPage = (e: MouseEvent) => {
@@ -59,18 +146,19 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       }
     }
 
-    // Chỉ reset data khi KHÔNG có mockupId (không restore mockup đã lưu)
-    const searchParams = new URLSearchParams(window.location.search)
-    const mockupId = searchParams.get('mockupId')
-    if (!mockupId) {
-      useEditedElementStore.getState().resetData()
-      useElementLayerStore.getState().resetData()
+    if (mockupId && firstRenderRef.current) {
+      restoreMockupVisualStates(mockupId)
+      firstRenderRef.current = false
     }
 
     loadAllFonts()
     document.body.addEventListener('click', listenClickOnPage)
     return () => {
       document.body.removeEventListener('click', listenClickOnPage)
+      useEditedElementStore.getState().resetData()
+      useElementLayerStore.getState().resetData()
+      useProductUIDataStore.getState().resetData()
+      useTemplateStore.getState().resetData()
     }
   }, [])
 

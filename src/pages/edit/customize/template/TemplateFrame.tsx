@@ -100,6 +100,7 @@ export const TemplateFrame = ({
               )}`
             : 'none'
         }`,
+        borderStyle: displaySelectingColor ? (frameSelected ? 'solid' : 'dashed') : undefined,
       }}
       className={cn(
         'NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',

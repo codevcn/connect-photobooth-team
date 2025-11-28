@@ -45,15 +45,10 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
         const dataset = document.body
           .querySelector<HTMLElement>('.NAME-frames-displayer-print-area')
           ?.getAttribute('data-visual-state')
-        console.log(
-          '>>> ele:',
-          document.body.querySelector<HTMLElement>('.NAME-frames-displayer-print-area')
-        )
         if (dataset) {
-          console.log('>>> da lay dc dataset:', { dataset })
           elementsVisualState.storedTemplates?.push({
             ...pickedTemplate,
-            offsetY: JSON.parse(dataset).offsetY,
+            initialVisualState: JSON.parse(dataset).initialVisualState,
           })
         }
       }

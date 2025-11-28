@@ -2,7 +2,6 @@ import {
   TBaseProduct,
   TClientProductVariant,
   TPrintTemplate,
-  TProductWithTemplate,
   TProductColor,
   TPrintAreaInfo,
   TProductAttatchedData,
@@ -11,7 +10,7 @@ import { create } from 'zustand'
 import { useTemplateStore } from './template.store'
 
 type TProductUIDataStore = {
-  pickedProduct: TProductWithTemplate | null
+  pickedProduct: TBaseProduct | null
   pickedVariant: TClientProductVariant | null
   pickedSurface: TBaseProduct['printAreaList'][number] | null
   isAddingToCart: boolean
@@ -26,8 +25,7 @@ type TProductUIDataStore = {
   ) => void
   addProductNote: (productId: TBaseProduct['id'], note: string) => void
   getProductAttachedData: (productId: TBaseProduct['id']) => TProductAttatchedData | undefined
-  handlePickProduct: (prod: TBaseProduct, initialTemplate: TPrintTemplate) => void
-  initFirstProduct: (prod: TBaseProduct, initialTemplate: TPrintTemplate) => void
+  handlePickProduct: (prod: TBaseProduct, initialTemplate?: TPrintTemplate) => void
   handlePickVariant: (variant: TClientProductVariant) => void
   handlePickColor: (color: TProductColor) => void
   handlePickSize: (selectedColor: TProductColor, size: string) => void
@@ -37,15 +35,33 @@ type TProductUIDataStore = {
   ) => void
   setIsAddingToCart: (isAdding: boolean) => void
   setCartCount: (count: number) => void
+  handlePickProductOnRestore: (
+    product: TBaseProduct,
+    initialTemplate: TPrintTemplate,
+    initialVariant: TClientProductVariant,
+    initialSurface: TPrintAreaInfo
+  ) => void
+  resetData: () => void
 }
 
 export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => ({
-  pickedProduct: null,
-  pickedVariant: null,
-  pickedSurface: null,
+  pickedProduct: null, // dc khởi tạo từ products gallery, restore
+  pickedVariant: null, // dc khởi tạo từ products gallery, restore
+  pickedSurface: null, // dc khởi tạo từ products gallery, restore
   isAddingToCart: false,
   cartCount: 0,
   productsAttachedData: [],
+
+  resetData: () => {
+    set({
+      pickedProduct: null,
+      pickedVariant: null,
+      pickedSurface: null,
+      isAddingToCart: false,
+      cartCount: 0,
+      productsAttachedData: [],
+    })
+  },
 
   getProductAttachedData: (productId) => {
     return (get().productsAttachedData || []).find((data) => data.productId === productId)
@@ -115,16 +131,30 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     }
   },
 
-  handlePickProduct: (product, initialTemplate) => {
-    set({ pickedProduct: { ...product, template: initialTemplate } })
-    set({ pickedVariant: product.variants[0] })
-    set({ pickedSurface: product.printAreaList[0] })
-    useTemplateStore.getState().pickTemplate(initialTemplate.id, product.printAreaList[0])
+  handlePickProductOnRestore: (product, initialTemplate, initialVariant, initialSurface) => {
+    console.log('>>> [ddd] handle Pick Product On Restore:', {
+      product,
+      initialTemplate,
+      initialVariant,
+      initialSurface,
+    })
+    set({
+      pickedProduct: product,
+      pickedVariant: initialVariant,
+      pickedSurface: initialSurface,
+    })
+    useTemplateStore.getState().pickTemplateOnRestore(initialTemplate, initialSurface)
   },
 
-  initFirstProduct: (product: TBaseProduct, initialTemplate: TPrintTemplate) => {
-    if (get().pickedProduct) return
-    get().handlePickProduct(product, initialTemplate)
+  handlePickProduct: (product, initialTemplate) => {
+    set({
+      pickedProduct: product,
+      pickedVariant: product.variants[0],
+      pickedSurface: product.printAreaList[0],
+    })
+    if (initialTemplate) {
+      useTemplateStore.getState().pickTemplate(initialTemplate.id, product.printAreaList[0])
+    }
   },
 
   handlePickVariant: (variant) => {

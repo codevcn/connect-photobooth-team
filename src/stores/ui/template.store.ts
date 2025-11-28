@@ -34,14 +34,45 @@ type TTemplateStore = {
   updateFrameImageURL: (newURL: string, frameId: string, newIdForImageOfURL?: string) => void
   removeFrameImage: (frameId: string) => void
   updatePickedTemplate: (template: TPrintTemplate) => void
+  pickTemplateOnRestore: (templateId: TPrintTemplate, printAreaForTemplate: TPrintAreaInfo) => void
+  resetData: () => void
 }
 
 export const useTemplateStore = create(
   subscribeWithSelector<TTemplateStore>((set, get) => ({
-    allTemplates: [],
-    pickedTemplate: null,
+    allTemplates: [], // dc khởi tạo từ products gallery
+    pickedTemplate: null, // dc khởi tạo từ products gallery, retore
     showTemplatePicker: false,
     pickedFrame: undefined,
+
+    resetData: () => {
+      set({
+        allTemplates: [],
+        pickedTemplate: null,
+        showTemplatePicker: false,
+        pickedFrame: undefined,
+      })
+    },
+    pickTemplateOnRestore: (template, printAreaForTemplate) => {
+      console.log('>>> [ddd] pick Template On Restore Params:', template)
+      const { pickedTemplate, allTemplates } = get()
+      const templateId = template.id
+      const finalTemplate = allTemplates.find((t) => t.id === templateId)
+      if (!finalTemplate) return
+      finalTemplate.initialVisualState = {
+        ...(template.initialVisualState || {}),
+      }
+      if (pickedTemplate && pickedTemplate.id === finalTemplate.id) return
+      for (const frame of finalTemplate.frames) {
+        assignFrameSizeByTemplateType(
+          { width: printAreaForTemplate.area.printW, height: printAreaForTemplate.area.printH },
+          finalTemplate.type,
+          frame
+        )
+      }
+      console.log('>>> [ddd] template picked on restore:', finalTemplate)
+      set({ pickedTemplate: finalTemplate })
+    },
 
     getFrameByFrameIdAndTemplateId: (frameId, templateId) => {
       const { allTemplates } = get()
@@ -81,7 +112,7 @@ export const useTemplateStore = create(
       })
     },
 
-    pickTemplate: (templateId: TPrintTemplate['id'], printAreaForTemplate) => {
+    pickTemplate: (templateId, printAreaForTemplate) => {
       const { pickedTemplate, allTemplates } = get()
       const template = allTemplates.find((t) => t.id === templateId)
       if (!template) return

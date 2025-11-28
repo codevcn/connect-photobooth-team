@@ -1,6 +1,5 @@
 import {
   TElementType,
-  TPrintTemplate,
   TStickerVisualState,
   TStoredTemplate,
   TTextVisualState,
@@ -18,8 +17,6 @@ type TUseElementStore = {
   selectedElement: TSelectedElement | null
   stickerElements: TStickerVisualState[]
   textElements: TTextVisualState[]
-  storedTemplate: TStoredTemplate | null
-  didSetStoredTemplate: boolean
 
   // Actions
   selectElement: (
@@ -35,30 +32,20 @@ type TUseElementStore = {
   addTextElement: (textElements: TTextVisualState[]) => void
   removeTextElement: (textElementId: string) => void
   resetData: () => void
-  setDidSetStoredTemplate: (didSet: boolean) => void
   setStickerElements: (stickers: TStickerVisualState[]) => void
   setTextElements: (textElements: TTextVisualState[]) => void
-  setStoredTemplate: (storedTemplate: TStoredTemplate) => void
 }
 
 export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
   selectedElement: null,
   stickerElements: [],
   textElements: [],
-  storedTemplate: null,
-  didSetStoredTemplate: false,
 
   setStickerElements: (stickers) => {
     set({ stickerElements: stickers })
   },
   setTextElements: (textElements) => {
     set({ textElements })
-  },
-  setDidSetStoredTemplate: (didSet) => {
-    set({ didSetStoredTemplate: didSet })
-  },
-  setStoredTemplate: (storedTemplate) => {
-    set({ storedTemplate })
   },
   updateSelectedElement: (updatedElement) => {
     const { selectedElement } = get()
@@ -70,8 +57,6 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
       selectedElement: null,
       stickerElements: [],
       textElements: [],
-      storedTemplate: null,
-      didSetStoredTemplate: false,
     })
   },
   addTextElement: (addedTextElements) => {

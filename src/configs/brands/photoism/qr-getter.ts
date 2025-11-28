@@ -11,7 +11,7 @@ type TGetImageDataProgressCallback = (
 
 let count = 0
 const getLinkByCount = () => {
-  return 'http://localhost:3000/images/image-to-test.jpg'
+  return 'http://192.168.2.6:3000/images/image-to-test.jpg'
   // if (count === 1) {
   //   count++
   //   return 'https://photobooth-public.s3.ap-southeast-1.amazonaws.com/d63a64aa48c6c4989dd7.jpg'
@@ -301,7 +301,12 @@ class QRGetter {
       const fileId = await this.getFileId(url, onProgress)
       const data = await this.getFileInfo(fileId, onProgress)
       console.log('>>> data:', data)
-      await this.fetchImageData(data.content.fileInfo.picFile.path, onProgress)
+      try {
+        await this.fetchImageData(data.content.fileInfo.picFile.path, onProgress)
+      } catch (err) {
+        console.error('>>> Lỗi lấy dữ liệu hình ảnh tại local:', err)
+        onProgress(0, null, err as Error)
+      }
     } catch (err) {
       console.error('>>> Lỗi lấy dữ liệu hình ảnh tại local:', err)
       onProgress(0, null, err as Error)
@@ -334,7 +339,6 @@ class QRGetter {
   async handleImageData(url: string, onProgress: TGetImageDataProgressCallback): Promise<void> {
     const finalImageDataList: TUserInputImage[] = []
     await this.extractImageDataAtLocal(url, async (percentage, imgList, error) => {
-      console.log('>>> Progress extractImageDataAtLocal:', percentage)
       onProgress(percentage, null, error)
       if (imgList) {
         finalImageDataList.push(...imgList)

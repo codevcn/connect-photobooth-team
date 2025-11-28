@@ -1,10 +1,11 @@
-import { TElementMountType, TStickerVisualState } from '@/utils/types/global'
+import { TElementRelativeProps, TElementMountType, TStickerVisualState } from '@/utils/types/global'
 import { useCallback, useEffect, useRef } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useElementControl } from '@/hooks/element/use-element-control'
 import { getNaturalSizeOfImage, typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '../../helpers'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 const MAX_ZOOM: number = 4
 const MIN_ZOOM: number = 0.2
@@ -41,7 +42,7 @@ export const StickerElement = ({
     forDrag: { ref: refForDrag },
     state: { position, angle, scale, zindex },
     handleSetElementState,
-  } = useElementControl(id, rootRef, printAreaContainerRef, {
+  } = useElementControl(id, rootRef, printAreaContainerRef, elementContainerRef, {
     maxZoom: MAX_ZOOM,
     minZoom: MIN_ZOOM,
     angle: element.angle,
@@ -152,14 +153,11 @@ export const StickerElement = ({
   useEffect(() => {
     if (!isSelected) return
     eventEmitter.emit(EInternalEvents.SYNC_ELEMENT_PROPS, id, 'sticker')
-  }, [scale, angle, position, isSelected, id])
+  }, [scale, angle, position.x, position.y, isSelected, id])
 
   useEffect(() => {
     initElement()
     handleAddElementLayer()
-  }, [])
-
-  useEffect(() => {
     eventEmitter.on(EInternalEvents.SUBMIT_STICKER_ELE_PROPS, listenSubmitEleProps)
     return () => {
       eventEmitter.off(EInternalEvents.SUBMIT_STICKER_ELE_PROPS, listenSubmitEleProps)
@@ -189,7 +187,7 @@ export const StickerElement = ({
       }}
       className={`${
         isSelected ? 'shadow-[0_0_0_2px_#f54900]' : ''
-      } NAME-root-element NAME-element-type-sticker absolute h-fit w-fit touch-none z-6`}
+      } NAME-root-element NAME-element-type-sticker absolute transition h-fit w-fit touch-none z-6`}
       onClick={pickElement}
       data-visual-state={JSON.stringify(
         typeToObject<TStickerVisualState>({

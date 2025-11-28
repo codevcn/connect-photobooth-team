@@ -54,6 +54,7 @@ const FramesDisplayer = ({
           styles={frameStyles}
           classNames={frameClassNames}
           onClickFrame={onClickFrame}
+          displayPlusIcon={false}
         />
       ))}
     </div>

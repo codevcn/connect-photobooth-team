@@ -12,6 +12,7 @@ export enum EInternalEvents {
   HIDE_SHOW_PRINTED_IMAGES_MODAL = 'HIDE_SHOW_PRINTED_IMAGES_MODAL',
   CROP_PRINTED_IMAGE_ON_FRAME = 'CROP_PRINTED_IMAGE_ON_FRAME',
   ADD_TO_CART = 'ADD_TO_CART',
+  ELEMENTS_OUT_OF_BOUNDS_CHANGED = 'ELEMENTS_OUT_OF_BOUNDS_CHANGED',
 }
 
 interface IInternalEvents {
@@ -56,6 +57,7 @@ interface IInternalEvents {
     frameIdToAddPrintedImage?: string
   ) => void
   [EInternalEvents.ADD_TO_CART]: () => void
+  [EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED]: () => void
 }
 
 class EventEmitter<IEvents extends IInternalEvents> {

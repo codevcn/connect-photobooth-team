@@ -167,9 +167,7 @@ export type TStickerVisualState = TElementVisualBaseState & {
   width?: number
 }
 
-export type TStoredTemplate = TPrintTemplate & {
-  offsetY: number
-}
+export type TStoredTemplate = TPrintTemplate
 
 export type TElementsVisualState = Partial<{
   stickers: TStickerVisualState[]
@@ -303,6 +301,9 @@ export type TPrintTemplate = {
   frames: TTemplateFrame[]
   type: TTemplateType
   framesCount: TFramesCount
+  initialVisualState?: Partial<{
+    offsetY: number
+  }>
 }
 
 export type TBaseRectType = 'horizontal' | 'vertical' | 'square'
@@ -378,10 +379,6 @@ export type TBoxBoundingInfo = {
   height: number
 }
 
-export type TProductWithTemplate = TBaseProduct & {
-  template: TPrintTemplate
-}
-
 export type TPlacedImageMetaData = {
   // placedImageId: string
   // templateType: TTemplateType
@@ -401,3 +398,10 @@ export type TPosition = {
 }
 
 export type TElementMountType = 'from-new' | 'from-saved'
+
+export type TElementRelativeProps = {
+  element: {
+    left: number
+    top: number
+  }
+}

@@ -61,6 +61,25 @@ export const FramesDisplayer = ({
   const restoredOffsetYRef = useRef(0)
   const startYRef = useRef(0)
   const startOffsetRef = useRef(0)
+  const minTopRef = useRef<number>(Infinity)
+  const maxBottomRef = useRef<number>(-Infinity)
+  const firstCollectForDraggingRef = useRef(true)
+
+  // const finalFrames = useMemo<TTemplateFrame[]>(() => {
+  //   if (!mockupId) return template.frames
+  //   if (!didSetStoredTemplate) return []
+  //   let frames = storedTemplate ? storedTemplate.frames : template.frames
+  //   if (storedTemplate) {
+  //     restoredOffsetYRef.current = storedTemplate.offsetY
+  //   }
+  //   return frames
+  // }, [
+  //   didSetStoredTemplate,
+  //   storedTemplate?.id,
+  //   storedTemplate?.offsetY,
+  //   template.id,
+  //   template.frames,
+  // ])
 
   const restoreOffsetY = () => {
     requestAnimationFrame(() => {
@@ -97,6 +116,10 @@ export const FramesDisplayer = ({
     startYRef.current = e.clientY
     console.log('>>> [fff] on Pointer Down 2:', { offsetY })
     startOffsetRef.current = offsetY
+    if (firstCollectForDraggingRef.current) {
+      initDataForDragging()
+      firstCollectForDraggingRef.current = false
+    }
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
@@ -107,33 +130,55 @@ export const FramesDisplayer = ({
     listChildRef.current[index] = el
   }
 
+  const initDataForDragging = () => {
+    const parent = displayerRef.current
+    if (!parent) return
+    const parentRect = parent.getBoundingClientRect()
+    minTopRef.current = Infinity
+    maxBottomRef.current = -Infinity
+    for (const child of listChildRef.current) {
+      if (!child) continue
+      const childRect = child.getBoundingClientRect()
+      const topDiff =
+        childRect.top - parentRect.top < 0 ? parentRect.top : childRect.top - parentRect.top
+      const bottomDiff =
+        childRect.bottom - parentRect.bottom > 0
+          ? parentRect.bottom
+          : childRect.bottom - parentRect.bottom
+      if (topDiff < minTopRef.current) {
+        minTopRef.current = topDiff
+      }
+      if (bottomDiff > maxBottomRef.current) {
+        maxBottomRef.current = bottomDiff
+      }
+    }
+  }
+
   useEffect(() => {
     setOffsetY(0)
+    firstCollectForDraggingRef.current = true
   }, [template.id, pickedProductId])
 
-  const handleCanMove = (
-    preOffsetY: number,
-    nextOffsetY: number,
-    direction: 'up' | 'down'
-  ): number => {
+  const handleCanMove = (nextOffsetY: number, delta: number): number => {
+    const absNextOffsetY = Math.abs(nextOffsetY)
+    console.log('>>> [fff] next offset y:', absNextOffsetY)
     const parent = displayerRef.current
     if (!parent) return nextOffsetY
     const parentRect = parent.getBoundingClientRect()
     let limitedTopChildRect: DOMRect | null = null
     let limitedBottomChildRect: DOMRect | null = null
     let limitedTop = Infinity
-    let limitedBottom = Infinity
+    let limitedBottom = -Infinity
     for (const child of listChildRef.current) {
       if (!child) continue
       const childRect = child.getBoundingClientRect()
       const topDiff = childRect.top - parentRect.top
       const bottomDiff = parentRect.bottom - childRect.bottom
-      console.log('>>> [fff1] diff 777:', { topDiff, bottomDiff })
       if (topDiff < limitedTop) {
         limitedTop = topDiff
         limitedTopChildRect = childRect
       }
-      if (bottomDiff < limitedBottom) {
+      if (bottomDiff > limitedBottom) {
         limitedBottom = bottomDiff
         limitedBottomChildRect = childRect
       }
@@ -150,13 +195,12 @@ export const FramesDisplayer = ({
       //   maxBottomRef.current = bottomDiff
       // }
     }
-    console.log('>>> [fff1] limited:', { limitedTopChildRect, limitedBottomChildRect, parentRect })
     if (!limitedTopChildRect || !limitedBottomChildRect) return nextOffsetY
     const totalTopDiff = limitedTopChildRect.top - parentRect.top
     const totalBottomDiff = parentRect.bottom - limitedBottomChildRect.bottom
-    console.log('>>> [fff1] total:', { totalTopDiff, totalBottomDiff, preOffsetY, nextOffsetY })
-    if (direction === 'up' && totalTopDiff < 0) return preOffsetY
-    if (direction === 'down' && totalBottomDiff < 0) return preOffsetY
+    console.log('>>> [fff] total:', { totalTopDiff, totalBottomDiff })
+    if (totalTopDiff < 0) return Math.abs(totalTopDiff)
+    if (totalBottomDiff < 0) return Math.abs(totalBottomDiff)
     //  if (-nextOffsetY > minTopRef.current) return -minTopRef.current
     // if (-nextOffsetY < maxBottomRef.current) return -maxBottomRef.current
     return nextOffsetY
@@ -167,9 +211,10 @@ export const FramesDisplayer = ({
       if (!dragging) return
       const delta = e.clientY - startYRef.current
       const next = startOffsetRef.current + delta
+      console.log('>>> [fff] handle move:', { next, delta, startOffset: startOffsetRef.current })
 
       setOffsetY((prev) => {
-        const canMoveOffsetY = handleCanMove(prev, next, delta < 0 ? 'up' : 'down')
+        const canMoveOffsetY = handleCanMove(next, delta)
         console.log('>>> [fff] can move y:', canMoveOffsetY)
         return canMoveOffsetY
       })

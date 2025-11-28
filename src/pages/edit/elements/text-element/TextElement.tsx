@@ -36,7 +36,7 @@ export const TextElement = ({
     forDrag: { ref: refForDrag },
     state: { position, angle, zindex, fontSize, textColor, content, fontFamily, fontWeight },
     handleSetElementState,
-  } = useTextElementControl(id, rootRef, printAreaContainerRef, {
+  } = useTextElementControl(id, rootRef, printAreaContainerRef, elementContainerRef, {
     maxFontSize: MAX_TEXT_FONT_SIZE,
     minFontSize: MIN_TEXT_FONT_SIZE,
     position: element.position,
@@ -148,16 +148,13 @@ export const TextElement = ({
   }
 
   useEffect(() => {
-    initElement()
-    handleAddElementLayer()
-  }, [])
-
-  useEffect(() => {
     if (!isSelected) return
     eventEmitter.emit(EInternalEvents.SYNC_ELEMENT_PROPS, id, 'text')
   }, [fontSize, angle, position, isSelected, id])
 
   useEffect(() => {
+    initElement()
+    handleAddElementLayer()
     eventEmitter.on(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
     return () => {
       eventEmitter.off(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)

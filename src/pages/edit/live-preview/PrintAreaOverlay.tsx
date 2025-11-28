@@ -8,6 +8,7 @@ import type React from 'react'
 import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/templates-helpers'
 import { TemplateFrame } from '../customize/template/TemplateFrame'
 import { FramesDisplayer } from '../customize/template/FrameDisplayer'
+import { getCommonContants } from '@/utils/contants'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -165,7 +166,7 @@ export const PrintAreaOverlay = ({
     <div
       ref={printAreaRef}
       className={cn(
-        'NAME-print-area-allowed z-6 border border-white border-dashed flex justify-center items-center absolute transition-all duration-300',
+        'NAME-print-area-allowed z-6 border border-white border-dashed flex justify-center items-center absolute transition',
         printAreaOptions?.className,
         displayWarningOverlay
           ? isOutOfBounds
@@ -179,6 +180,8 @@ export const PrintAreaOverlay = ({
             ? 'rgba(239, 68, 68, 0.1)'
             : 'rgba(96, 165, 250, 0.1)'
           : 'transparent',
+        animationDuration:
+          getCommonContants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 'ms',
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >
