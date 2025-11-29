@@ -152,81 +152,240 @@ export class ProductAdapter {
   }
 }
 
+/**
+ * Helper: Tìm hoặc tạo color trong material (khi không có scent)
+ */
+function getOrCreateColorInMaterial(
+  material: TMaterialAttribute,
+  colorValue: string,
+  colorTitle?: string | null,
+  hex?: string | null
+): TColorAttribute {
+  if (!material.colors) material.colors = []
+  let color = material.colors.find((c) => c.value === colorValue)
+  if (!color) {
+    color = {
+      value: colorValue,
+      displayValue: colorTitle ?? colorValue,
+      title: colorTitle ?? colorValue,
+      hex: hex ?? undefined,
+      displayType: hex ? 'swatch' : 'label',
+      sizes: [],
+    }
+    material.colors.push(color)
+  }
+  return color
+}
+
+/**
+ * Helper: Thêm size vào material nếu chưa tồn tại
+ */
+function addSizeToMaterial(
+  material: TMaterialAttribute,
+  sizeValue: string,
+  sizeTitle?: string | null
+): void {
+  if (!material.sizes) material.sizes = []
+  const exists = material.sizes.some((s) => s.value === sizeValue)
+  if (!exists) {
+    material.sizes.push({
+      value: sizeValue,
+      displayValue: sizeTitle ?? sizeValue,
+      title: sizeTitle ?? sizeValue,
+    })
+  }
+}
+
+/**
+ * Helper: Tìm hoặc tạo scent trong material
+ */
+function getOrCreateScent(
+  material: TMaterialAttribute,
+  scentValue: string,
+  scentTitle?: string | null
+): TScentAttribute {
+  let scent = material.scents!.find((s) => s.value === scentValue)
+  if (!scent) {
+    scent = {
+      value: scentValue,
+      displayValue: scentTitle ?? scentValue,
+      title: scentTitle ?? scentValue,
+      colors: [],
+    }
+    material.scents!.push(scent)
+  }
+  return scent
+}
+
+/**
+ * Helper: Tìm hoặc tạo color trong scent
+ */
+function getOrCreateColor(
+  scent: TScentAttribute,
+  colorValue: string,
+  colorTitle?: string | null,
+  hex?: string | null
+): TColorAttribute {
+  let color = scent.colors!.find((c) => c.value === colorValue)
+  if (!color) {
+    color = {
+      value: colorValue,
+      displayValue: colorTitle ?? colorValue,
+      title: colorTitle ?? colorValue,
+      hex: hex ?? undefined,
+      displayType: hex ? 'swatch' : 'label',
+      sizes: [],
+    }
+    scent.colors!.push(color)
+  }
+  return color
+}
+
+/**
+ * Helper: Thêm size vào color nếu chưa tồn tại
+ */
+function addSizeToColor(
+  color: TColorAttribute,
+  sizeValue: string,
+  sizeTitle?: string | null
+): void {
+  const exists = color.sizes!.some((s) => s.value === sizeValue)
+  if (!exists) {
+    color.sizes!.push({
+      value: sizeValue,
+      displayValue: sizeTitle ?? sizeValue,
+      title: sizeTitle ?? sizeValue,
+    })
+  }
+}
+
+/**
+ * Helper: Thêm size vào scent nếu chưa tồn tại
+ */
+function addSizeToScent(
+  scent: TScentAttribute,
+  sizeValue: string,
+  sizeTitle?: string | null
+): void {
+  if (!scent.sizes) scent.sizes = []
+  const exists = scent.sizes.some((s) => s.value === sizeValue)
+  if (!exists) {
+    scent.sizes.push({
+      value: sizeValue,
+      displayValue: sizeTitle ?? sizeValue,
+      title: sizeTitle ?? sizeValue,
+    })
+  }
+}
+
+/**
+ * Helper: Xử lý variant có scent
+ */
+function processVariantWithScent(
+  material: TMaterialAttribute,
+  attrs: TProductVariant['attributes_json']
+): void {
+  const { scent, scentTitle, color, colorTitle, hex, size, sizeTitle } = attrs
+  
+  const scentObj = getOrCreateScent(material, scent!, scentTitle)
+
+  if (color !== null && color !== undefined) {
+    // Case: material + scent + color [+ size]
+    const colorObj = getOrCreateColor(scentObj, color, colorTitle, hex)
+    if (size) {
+      addSizeToColor(colorObj, size, sizeTitle)
+    }
+  } else if (size) {
+    // Case: material + scent + size (NO COLOR)
+    addSizeToScent(scentObj, size, sizeTitle)
+  }
+}
+
+/**
+ * Helper: Xử lý variant không có scent
+ */
+function processVariantWithoutScent(
+  material: TMaterialAttribute,
+  attrs: TProductVariant['attributes_json']
+): void {
+  const { color, colorTitle, hex, size, sizeTitle } = attrs
+
+  if (color !== null && color !== undefined) {
+    // Case: material + color [+ size] (NO SCENT)
+    const colorObj = getOrCreateColorInMaterial(material, color, colorTitle, hex)
+    if (size) {
+      addSizeToColor(colorObj, size, sizeTitle)
+    }
+  } else if (size) {
+    // Case: material + size (NO SCENT, NO COLOR)
+    addSizeToMaterial(material, size, sizeTitle)
+  }
+}
+
+/**
+ * Helper: Track titles từ variants
+ */
+function trackTitles(
+  attrs: TProductVariant['attributes_json'],
+  titles: {
+    material: string | null
+    scent: string | null
+    color: string | null
+    size: string | null
+  }
+): void {
+  if (!titles.material && attrs.materialTitle) titles.material = attrs.materialTitle
+  if (!titles.scent && attrs.scentTitle) titles.scent = attrs.scentTitle
+  if (!titles.color && attrs.colorTitle) titles.color = attrs.colorTitle
+  if (!titles.size && attrs.sizeTitle) titles.size = attrs.sizeTitle
+}
+
+/**
+ * Build hierarchical product attributes từ variants
+ * Hierarchy: material → scent → color → size
+ */
 function buildProductAttributes(variants: TProductVariant[]): TProductAttributes {
   const materialsMap = new Map<string, TMaterialAttribute>()
+  const titles = { material: null, scent: null, color: null, size: null } as {
+    material: string | null
+    scent: string | null
+    color: string | null
+    size: string | null
+  }
 
-  for (const v of variants) {
-    const { material, materialTitle, scent, scentTitle, color, colorTitle, hex, size, sizeTitle } =
-      v.attributes_json
+  for (const variant of variants) {
+    const attrs = variant.attributes_json
+    if (!attrs.material) continue
 
-    if (!material) continue
+    trackTitles(attrs, titles)
 
-    // --- MATERIAL ---
-    if (!materialsMap.has(material)) {
-      materialsMap.set(material, {
-        value: material,
-        displayValue: materialTitle ?? material,
-        title: materialTitle ?? material,
+    // Get or create material
+    if (!materialsMap.has(attrs.material)) {
+      materialsMap.set(attrs.material, {
+        value: attrs.material,
+        displayValue: attrs.materialTitle ?? attrs.material,
+        title: attrs.materialTitle ?? attrs.material,
         scents: [],
       })
     }
 
-    const materialObj = materialsMap.get(material)!
+    const material = materialsMap.get(attrs.material)!
 
-    // --- SCENT ---
-    let scentObj: TScentAttribute | undefined = undefined
-    if (scent) {
-      scentObj = materialObj.scents!.find((s) => s.value === scent)
-      if (!scentObj) {
-        scentObj = {
-          value: scent,
-          displayValue: scentTitle ?? scent,
-          title: scentTitle ?? scent,
-          colors: [],
-        }
-        materialObj.scents!.push(scentObj)
-      }
-    }
-
-    // --- COLOR ---
-    let colorList = scentObj?.colors ?? materialObj.scents?.[0]?.colors ?? []
-
-    let colorObj: TColorAttribute | undefined = undefined
-    if (color) {
-      colorObj = colorList.find((c) => c.value === color)
-      if (!colorObj) {
-        colorObj = {
-          value: color,
-          displayValue: colorTitle ?? color,
-          title: colorTitle ?? color,
-          hex: hex ?? undefined,
-          displayType: hex ? 'swatch' : 'label',
-          sizes: [],
-        }
-        colorList.push(colorObj)
-      }
-    }
-
-    // --- SIZE ---
-    if (size && colorObj) {
-      const exists = colorObj.sizes!.some((s) => s.value === size)
-      if (!exists) {
-        colorObj.sizes!.push({
-          value: size,
-          displayValue: sizeTitle ?? size,
-          title: sizeTitle ?? size,
-        })
-      }
+    // Process variant based on scent presence
+    if (attrs.scent) {
+      processVariantWithScent(material, attrs)
+    } else {
+      processVariantWithoutScent(material, attrs)
     }
   }
 
   return {
     materials: {
-      title: 'Chất liệu',
+      title: titles.material || 'Chất liệu',
       options: Array.from(materialsMap.values()),
     },
-    scents: undefined, // Optional: auto-flatten if you need global scents
-    colors: undefined, // Optional
-    sizes: undefined, // Optional
+    scents: titles.scent ? { title: titles.scent, options: [] } : undefined,
+    colors: titles.color ? { title: titles.color, options: [] } : undefined,
+    sizes: titles.size ? { title: titles.size, options: [] } : undefined,
   }
 }

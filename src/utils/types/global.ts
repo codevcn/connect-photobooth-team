@@ -33,9 +33,12 @@ export type TColorAttribute = TAttributeOption & {
 
 export type TMaterialAttribute = TAttributeOption & {
   scents?: TScentAttribute[] // Scents available for this material
+  colors?: TColorAttribute[] // Colors available directly under material (when no scent)
+  sizes?: TSizeAttribute[] // Sizes available directly under material (when no scent, no color)
 }
 export type TScentAttribute = TAttributeOption & {
   colors?: TColorAttribute[] // Colors available for this scent
+  sizes?: TSizeAttribute[] // Sizes available directly under scent (when no color)
 }
 export type TSizeAttribute = TAttributeOption
 

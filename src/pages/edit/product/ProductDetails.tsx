@@ -156,6 +156,21 @@ const getAllColorsWithDisplayStatus = (
   const colorSet = new Set<string>()
 
   for (const material of mergedAttributes.materials.options) {
+    // Colors directly under material (when no scent)
+    if (material.colors) {
+      for (const color of material.colors) {
+        if (!colorSet.has(color.value)) {
+          colorSet.add(color.value)
+          // Kiểm tra color có thuộc material được chọn và không có scent được chọn
+          const isDisplayed =
+            (!selectedMaterial || material.value === selectedMaterial) &&
+            !selectedScent // Only show if no scent selected
+          allColors.push({ ...color, isDisplayed })
+        }
+      }
+    }
+
+    // Colors under scents
     if (material.scents) {
       for (const scent of material.scents) {
         if (scent.colors) {
@@ -193,8 +208,56 @@ const getAllSizesWithDisplayStatus = (
   const sizeSet = new Set<string>()
 
   for (const material of mergedAttributes.materials.options) {
+    // Sizes directly under material (when no scent, no color)
+    if (material.sizes) {
+      for (const size of material.sizes) {
+        if (!sizeSet.has(size.value)) {
+          sizeSet.add(size.value)
+          const isDisplayed =
+            (!selectedMaterial || material.value === selectedMaterial) &&
+            !selectedScent && // Only show if no scent selected
+            !selectedColor // Only show if no color selected
+          allSizes.push({ ...size, isDisplayed })
+        }
+      }
+    }
+
+    // Sizes under colors directly in material (when no scent)
+    if (material.colors) {
+      for (const color of material.colors) {
+        if (color.sizes) {
+          for (const size of color.sizes) {
+            if (!sizeSet.has(size.value)) {
+              sizeSet.add(size.value)
+              const isDisplayed =
+                (!selectedMaterial || material.value === selectedMaterial) &&
+                !selectedScent && // Only show if no scent selected
+                (!selectedColor || color.value === selectedColor)
+              allSizes.push({ ...size, isDisplayed })
+            }
+          }
+        }
+      }
+    }
+
+    // Sizes under scents and colors
     if (material.scents) {
       for (const scent of material.scents) {
+        // Sizes directly under scent (when no color)
+        if (scent.sizes) {
+          for (const size of scent.sizes) {
+            if (!sizeSet.has(size.value)) {
+              sizeSet.add(size.value)
+              const isDisplayed =
+                (!selectedMaterial || material.value === selectedMaterial) &&
+                (!selectedScent || scent.value === selectedScent) &&
+                !selectedColor // Only show if no color selected
+              allSizes.push({ ...size, isDisplayed })
+            }
+          }
+        }
+
+        // Sizes under colors
         if (scent.colors) {
           for (const color of scent.colors) {
             if (color.sizes) {
@@ -264,11 +327,23 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
     ]
   )
 
+  // Check if sections should be shown (has at least one option in selected parent)
+  const shouldShowScents = availableScents.some((scent) => scent.isDisplayed)
+  const shouldShowColors = availableColors.some((color) => color.isDisplayed)
+  const shouldShowSizes = availableSizes.some((size) => size.isDisplayed)
+
   const firstProductImageURL = pickedProduct.detailImages[0] || null
 
   const hintForSizeChart: string = 'none'
 
-  console.log('>>> [proddd] picked variant:', pickedVariant)
+  console.log('>>> [proddd] picked variant:', {
+    pickedVariant,
+    mergedAttributes,
+    selectedAttributes,
+    availableScents,
+    availableColors,
+    availableSizes,
+  })
   return (
     <div className="smd:order-1 smd:mt-0 mt-4 order-2 w-full">
       <div className="pl-1 pt-2">
@@ -354,9 +429,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         {/* Material Section */}
         {mergedAttributes.materials && (
           <div className="rounded-lg mt-4">
-            <h3 className="text-slate-800 font-bold text-sm mb-2">
-              {mergedAttributes.materials.title}
-            </h3>
+            <h3 className="text-slate-800 font-bold text-sm mb-2">Chất liệu</h3>
             <div className="flex flex-wrap gap-2">
               {mergedAttributes.materials.options.map((material) => {
                 const isSelected = selectedAttributes.material === material.value
@@ -388,7 +461,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         )}
 
         {/* Scent Section */}
-        {availableScents.length > 0 && (
+        {availableScents.length > 0 && shouldShowScents && (
           <div className="rounded-lg mt-4">
             <h3 className="text-slate-800 font-bold text-sm mb-2">Mùi hương</h3>
             <div className="flex flex-wrap gap-2">
@@ -431,7 +504,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         )}
 
         {/* Color Section */}
-        {availableColors.length > 0 && (
+        {availableColors.length > 0 && shouldShowColors && (
           <div className="rounded-lg mt-4">
             <h3 className="text-slate-800 font-bold text-sm mb-2">Màu sắc</h3>
             <div className="flex flex-wrap gap-3">
@@ -548,7 +621,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         )}
 
         {/* Size Section */}
-        {availableSizes.length > 0 && (
+        {availableSizes.length > 0 && shouldShowSizes && (
           <div className="mt-4">
             <div className="flex justify-between w-full mb-2">
               <label className="block text-sm font-bold text-slate-900">Kích thước</label>
