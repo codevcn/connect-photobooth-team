@@ -28,10 +28,15 @@ export type TAttributeOption = {
 export type TColorAttribute = TAttributeOption & {
   hex?: string // Hex color code (#000000)
   displayType: 'swatch' | 'label' // Case 1,2: swatch if hex exists, else label
+  sizes?: TSizeAttribute[] // Sizes available for this color
 }
 
-export type TMaterialAttribute = TAttributeOption
-export type TScentAttribute = TAttributeOption
+export type TMaterialAttribute = TAttributeOption & {
+  scents?: TScentAttribute[] // Scents available for this material
+}
+export type TScentAttribute = TAttributeOption & {
+  colors?: TColorAttribute[] // Colors available for this scent
+}
 export type TSizeAttribute = TAttributeOption
 
 /**
