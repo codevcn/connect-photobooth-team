@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 
-const ignoreZoomByPrintAreaAllowed = (e: Event) => {
-  return !!(e.target as HTMLElement).closest('.NAME-print-area-allowed')
+const ignoreZoomByPrintAreaAllowed = (
+  e: React.MouseEvent<HTMLDivElement, MouseEvent> | React.TouchEvent<HTMLDivElement> | WheelEvent
+) => {
+  return (
+    !!(e.target as HTMLElement).closest('.NAME-print-area-allowed') ||
+    !!(e.target as HTMLElement).closest('.NAME-root-element')
+  )
 }
 
 // Hook để xử lý zoom và pan
@@ -11,6 +16,12 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setScale(2)
+    }, 3000)
+  }, [])
 
   // State cho pinch zoom
   const [isPinching, setIsPinching] = useState(false)
@@ -63,7 +74,7 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   }, [scale, position, minZoom, maxZoom])
 
   // Xử lý kéo (pan)
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (ignoreZoomByPrintAreaAllowed(e)) return
     setIsDragging(true)
     setDragStart({
@@ -72,7 +83,7 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     })
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (ignoreZoomByPrintAreaAllowed(e)) return
     if (!isDragging) return
 
@@ -87,7 +98,7 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   }
 
   // Xử lý touch cho mobile với pinch-to-zoom
-  const handleTouchStart = (e: TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (ignoreZoomByPrintAreaAllowed(e)) return
 
     if (e.touches.length === 2) {
@@ -96,7 +107,10 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
       setIsPinching(true)
       setIsDragging(false)
 
-      const distance = getDistance(e.touches[0], e.touches[1])
+      const distance = getDistance(
+        e.touches[0] as unknown as Touch,
+        e.touches[1] as unknown as Touch
+      )
       setInitialPinchDistance(distance)
       setInitialPinchScale(scale)
 
@@ -104,7 +118,7 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
       const container = containerRef.current
       if (container) {
         const rect = container.getBoundingClientRect()
-        const center = getCenter(e.touches[0], e.touches[1])
+        const center = getCenter(e.touches[0] as unknown as Touch, e.touches[1] as unknown as Touch)
         setPinchCenter({
           x: center.x - rect.left,
           y: center.y - rect.top,
@@ -120,14 +134,17 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     }
   }
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (ignoreZoomByPrintAreaAllowed(e)) return
 
     if (isPinching && e.touches.length === 2) {
       // Xử lý pinch zoom
       e.preventDefault()
 
-      const currentDistance = getDistance(e.touches[0], e.touches[1])
+      const currentDistance = getDistance(
+        e.touches[0] as unknown as Touch,
+        e.touches[1] as unknown as Touch
+      )
       const scaleChange = currentDistance / initialPinchDistance
       const newScale = Math.min(Math.max(initialPinchScale * scaleChange, minZoom), maxZoom)
 
@@ -147,7 +164,7 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     }
   }
 
-  const handleTouchEnd = (e: TouchEvent) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length < 2) {
       setIsPinching(false)
     }

@@ -101,7 +101,7 @@ export const LivePreview = ({
       className="smd:w-full overflow-hidden w-full min-h-full h-full relative touch-none"
     >
       {createPortal(
-        <div className="bg-red-600 h-12 w-12 fixed top-0 left-0 z-1000">
+        <div className="bg-blue-600 h-12 w-12 fixed top-0 left-0 z-1000">
           <div>oke</div>
         </div>,
         document.body

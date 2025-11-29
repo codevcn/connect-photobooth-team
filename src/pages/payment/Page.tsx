@@ -145,8 +145,11 @@ const PaymentPage = () => {
               productId: product.productId,
               productVariantId: productVariant.id,
               name: product.productName,
-              size: productVariant.attributes.size,
-              color: productVariant.attributes.color,
+              size: productVariant.attributes.size || 'S',
+              color: {
+                title: productVariant.attributes.color || 'Black',
+                value: productVariant.attributes.color || 'Black',
+              },
               quantity: mockupData.quantity,
               originalPrice: productVariant.priceAmountOneSide,
               discountedPrice: productVariant.priceAfterDiscount,
