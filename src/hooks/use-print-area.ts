@@ -219,8 +219,10 @@ export const usePrintArea = (
       if (editContainer) {
         for (const element of editableElements) {
           const rect = element.getBoundingClientRect()
+          console.log('>>> [uuu] rect:', rect)
 
           const containerRect = editContainer.getBoundingClientRect()
+          console.log('>>> [uuu] container rect:', containerRect)
 
           // Chuyển đổi tọa độ element về tọa độ tương đối với container
           const relativeRect = {

@@ -129,6 +129,7 @@ type TPrintAreaOverlayProps = {
       container: string
     }
   }
+  containerScale?: number
 }>
 
 export const PrintAreaOverlay = ({
@@ -138,6 +139,7 @@ export const PrintAreaOverlay = ({
   displayWarningOverlay = true,
   printedImages,
   frameDisplayerOptions,
+  containerScale = 1,
 }: TPrintAreaOverlayProps) => {
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
   console.log('>>> [ddd] view picked template:', pickedTemplate)
@@ -197,6 +199,7 @@ export const PrintAreaOverlay = ({
           displaySelectingColor
           scrollable={false}
           printedImages={printedImages}
+          containerScale={containerScale}
         />
       )}
     </div>

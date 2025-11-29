@@ -1,4 +1,5 @@
 import {
+  TPosition,
   TPrintedImage,
   TPrintTemplate,
   TStoredTemplate,
@@ -37,6 +38,7 @@ type TFramesDisplayerProps = {
   displaySelectingColor: boolean
   allowDragging: boolean
   scrollable: boolean
+  containerScale?: number
 }>
 
 export const FramesDisplayer = ({
@@ -51,26 +53,122 @@ export const FramesDisplayer = ({
   allowDragging = true,
   scrollable = true,
   printedImages,
+  containerScale = 1,
 }: TFramesDisplayerProps) => {
   const { type } = template
   const mockupId = useSearchParams()[0].get('mockupId')
   const pickedProductId = useProductUIDataStore((s) => s.pickedProduct?.id)
-  const [offsetY, setOffsetY] = useState(0) // margin-top động
-  const [dragging, setDragging] = useState(false)
   const restoredOffsetYRef = useRef(0)
-  const startYRef = useRef(0)
-  const startOffsetRef = useRef(0)
+  const hasRestoredRef = useRef(false)
 
   const restoreOffsetY = () => {
     requestAnimationFrame(() => {
       console.log('>>> [fff] res gg:', restoredOffsetYRef.current)
       if (restoredOffsetYRef.current !== 0) {
-        setOffsetY(restoredOffsetYRef.current)
+        setPosition((pos) => {
+          if (pos.y !== restoredOffsetYRef.current) {
+            return { ...pos, y: restoredOffsetYRef.current }
+          }
+          return pos
+        })
       }
     })
   }
 
-  const hasRestoredRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const elementsBoxRef = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStart = useRef<TPosition>({ x: 0, y: 0 })
+
+  // Tính toán biên của container B dựa trên tất cả các thẻ con C
+  const calculateBoundingBox = () => {
+    const containerB = elementsBoxRef.current
+    if (!containerB) return null
+
+    const children = containerB.querySelectorAll<HTMLElement>('.NAME-frame-placed-image')
+    if (children.length === 0) return null
+
+    let minX = Infinity,
+      minY = Infinity
+    let maxX = -Infinity,
+      maxY = -Infinity
+
+    children.forEach((child) => {
+      const rect = child.getBoundingClientRect()
+      const bRect = containerB.getBoundingClientRect()
+
+      // Tính toán vị trí tương đối so với container B
+      const relativeLeft = rect.left - bRect.left
+      const relativeTop = rect.top - bRect.top
+      const relativeRight = relativeLeft + rect.width
+      const relativeBottom = relativeTop + rect.height
+
+      minX = Math.min(minX, relativeLeft)
+      minY = Math.min(minY, relativeTop)
+      maxX = Math.max(maxX, relativeRight)
+      maxY = Math.max(maxY, relativeBottom)
+    })
+
+    return {
+      left: minX,
+      top: minY,
+      right: maxX,
+      bottom: maxY,
+      width: maxX - minX,
+      height: maxY - minY,
+    }
+  }
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault()
+    setIsDragging(true)
+    dragStart.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    }
+  }
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return
+
+    const containerA = containerRef.current
+    const containerB = elementsBoxRef.current
+    if (!containerA || !containerB) return
+
+    // Tính toán vị trí mới
+    let newX = e.clientX - dragStart.current.x
+    let newY = e.clientY - dragStart.current.y
+
+    // Lấy kích thước container A
+    const aRect = containerA.getBoundingClientRect()
+    const aWidth = aRect.width
+    const aHeight = aRect.height
+
+    // Lấy biên của container B dựa trên các thẻ con C
+    const bBounds = calculateBoundingBox()
+
+    if (bBounds) {
+      // Giới hạn di chuyển dựa trên biên của các thẻ con C
+      // Biên trái: không cho phép biên trái của C vượt qua biên trái của A
+      const minX = -bBounds.left
+      // Biên phải: không cho phép biên phải của C vượt qua biên phải của A
+      const maxX = aWidth - bBounds.right
+      // Biên trên: không cho phép biên trên của C vượt qua biên trên của A
+      const minY = -bBounds.top
+      // Biên dưới: không cho phép biên dưới của C vượt qua biên dưới của A
+      const maxY = aHeight - bBounds.bottom
+
+      newX = Math.max(minX, Math.min(maxX, newX))
+      newY = Math.max(minY, Math.min(maxY, newY))
+    }
+
+    setPosition({ x: newX / containerScale, y: newY / containerScale })
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search)
@@ -81,116 +179,38 @@ export const FramesDisplayer = ({
     }
   }, [pickedProductId, template.id])
 
-  const onPointerDown = (e: React.PointerEvent, frameId: string): void => {
-    console.log('>>> [fff] on Pointer Down 1:', { allowDragging })
-    if (!allowDragging) return
-    if (useTemplateStore.getState().pickedTemplate?.frames.some((f) => !f.placedImage)) return
-    setDragging(true)
-    startYRef.current = e.clientY
-    console.log('>>> [fff] on Pointer Down 2:', { offsetY })
-    startOffsetRef.current = offsetY
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-  }
-
-  const displayerRef = useRef<HTMLDivElement | null>(null)
-  const listChildRef = useRef<Array<HTMLDivElement | null>>([])
-
-  const registerChild = (index: number, el: HTMLImageElement | null) => {
-    listChildRef.current[index] = el
-  }
-
   useEffect(() => {
-    setOffsetY(0)
+    setPosition({ x: 0, y: 0 })
   }, [template.id, pickedProductId])
 
-  const handleCanMove = (
-    preOffsetY: number,
-    nextOffsetY: number,
-    direction: 'up' | 'down'
-  ): number => {
-    const parent = displayerRef.current
-    if (!parent) return nextOffsetY
-    const parentRect = parent.getBoundingClientRect()
-    let limitedTopChildRect: DOMRect | null = null
-    let limitedBottomChildRect: DOMRect | null = null
-    let limitedTop = Infinity
-    let limitedBottom = Infinity
-    for (const child of listChildRef.current) {
-      if (!child) continue
-      const childRect = child.getBoundingClientRect()
-      const topDiff = childRect.top - parentRect.top
-      const bottomDiff = parentRect.bottom - childRect.bottom
-      console.log('>>> [fff1] diff 777:', { topDiff, bottomDiff })
-      if (topDiff < limitedTop) {
-        limitedTop = topDiff
-        limitedTopChildRect = childRect
-      }
-      if (bottomDiff < limitedBottom) {
-        limitedBottom = bottomDiff
-        limitedBottomChildRect = childRect
-      }
-      // const topDiff =
-      //   childRect.top - parentRect.top < 0 ? parentRect.top : childRect.top - parentRect.top
-      // const bottomDiff =
-      //   childRect.bottom - parentRect.bottom > 0
-      //     ? parentRect.bottom
-      //     : childRect.bottom - parentRect.bottom
-      // if (topDiff < minTopRef.current) {
-      //   minTopRef.current = topDiff
-      // }
-      // if (bottomDiff > maxBottomRef.current) {
-      //   maxBottomRef.current = bottomDiff
-      // }
-    }
-    console.log('>>> [fff1] limited:', { limitedTopChildRect, limitedBottomChildRect, parentRect })
-    if (!limitedTopChildRect || !limitedBottomChildRect) return nextOffsetY
-    const totalTopDiff = limitedTopChildRect.top - parentRect.top
-    const totalBottomDiff = parentRect.bottom - limitedBottomChildRect.bottom
-    console.log('>>> [fff1] total:', { totalTopDiff, totalBottomDiff, preOffsetY, nextOffsetY })
-    if (direction === 'up' && totalTopDiff < 0) return preOffsetY
-    if (direction === 'down' && totalBottomDiff < 0) return preOffsetY
-    //  if (-nextOffsetY > minTopRef.current) return -minTopRef.current
-    // if (-nextOffsetY < maxBottomRef.current) return -maxBottomRef.current
-    return nextOffsetY
-  }
-
   useEffect(() => {
-    const handleMove = (e: PointerEvent) => {
-      if (!dragging) return
-      const delta = e.clientY - startYRef.current
-      const next = startOffsetRef.current + delta
-
-      setOffsetY((prev) => {
-        const canMoveOffsetY = handleCanMove(prev, next, delta < 0 ? 'up' : 'down')
-        console.log('>>> [fff] can move y:', canMoveOffsetY)
-        return canMoveOffsetY
-      })
+    if (isDragging) {
+      window.addEventListener('pointermove', handleMouseMove)
+      window.addEventListener('pointerup', handleMouseUp)
+      return () => {
+        window.removeEventListener('pointermove', handleMouseMove)
+        window.removeEventListener('pointerup', handleMouseUp)
+      }
     }
-
-    const handleUp = (e: Event) => {
-      if (!dragging) return
-      setDragging(false)
-    }
-
-    window.addEventListener('pointermove', handleMove)
-    window.addEventListener('pointerup', handleUp)
-    return () => {
-      window.removeEventListener('pointermove', handleMove)
-      window.removeEventListener('pointerup', handleUp)
-    }
-  }, [dragging])
+  }, [isDragging, position])
 
   return (
-    <div ref={displayerRef} className="relative w-full h-full overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
       <div
+        ref={elementsBoxRef}
+        onPointerDown={handleMouseDown}
         className={cn(
-          'NAME-frames-displayer relative p-0.5 h-full w-full',
+          'NAME-frames-displayer absolute p-0.5 h-full w-full',
           displayerClassNames?.container
         )}
-        style={{ ...styleToFramesDisplayerByTemplateType(type), marginTop: offsetY }}
+        style={{
+          ...styleToFramesDisplayerByTemplateType(type),
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
         data-visual-state={JSON.stringify(
           typeToObject<Pick<TStoredTemplate, 'initialVisualState'>>({
-            initialVisualState: { offsetY },
+            initialVisualState: { offsetY: position.y },
           })
         )}
       >
@@ -203,9 +223,7 @@ export const FramesDisplayer = ({
             styles={frameStyles}
             classNames={frameClassNames}
             onClickFrame={onClickFrame}
-            registerChild={registerChild}
             childIndex={idx}
-            onPointerDown={onPointerDown}
             displaySelectingColor={displaySelectingColor}
             scrollable={scrollable}
             onImageLoad={() => {

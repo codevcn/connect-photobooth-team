@@ -1,7 +1,15 @@
 import { Modal } from '@/components/custom/common/Modal'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { formatNumberWithCommas, friendlyCurrency, getContrastColor } from '@/utils/helpers'
-import { TBaseProduct, TClientProductVariant, TProductColor } from '@/utils/types/global'
+import {
+  TBaseProduct,
+  TClientProductVariant,
+  TColorAttribute,
+  TMaterialAttribute,
+  TScentAttribute,
+  TSizeAttribute,
+  TProductAttributes,
+} from '@/utils/types/global'
 import { useMemo, useState } from 'react'
 import { PrintSurface } from '../print-surface/PrintSurface'
 
@@ -67,111 +75,274 @@ const SizeChartPreview = ({ setShowSizeChart, sizeChartImageURL }: TSizeChartPre
   )
 }
 
-function sortVariantsBySize(variants: TClientProductVariant[]): TClientProductVariant[] {
-  const baseOrder: Record<string, number> = {
-    s: 1,
-    m: 2,
-    l: 3,
-    xl: 4,
-  }
-
-  const getRank = (size: string): number => {
-    const s = size.toLowerCase().trim()
-
-    // 2xl, 3xl, 4xl...
-    const match = /^(\d+)xl$/.exec(s)
-    if (match) {
-      const n = parseInt(match[1], 10)
-      return 4 + n // xl=4 → 2xl=5 → 3xl=6...
-    }
-
-    // Size cơ bản
-    if (baseOrder[s] !== undefined) {
-      return baseOrder[s]
-    }
-
-    // Size lạ → đẩy ra cuối
-    return 999
-  }
-
-  return [...variants].sort((a, b) => getRank(a.size) - getRank(b.size))
-}
-
 type TProductDetailsProps = {
   pickedProduct: TBaseProduct
   pickedVariant: TClientProductVariant
 }
 
+/**
+ * Helper: Tìm variant khớp với attributes đã chọn
+ */
+const findVariantByAttributes = (
+  variants: TClientProductVariant[],
+  selectedAttrs: Record<string, string>
+): TClientProductVariant | null => {
+  return (
+    variants.find((variant) => {
+      const attrs = variant.attributes
+      return (
+        (!selectedAttrs.material || attrs.material === selectedAttrs.material) &&
+        (!selectedAttrs.scent || attrs.scent === selectedAttrs.scent) &&
+        (!selectedAttrs.color || attrs.color === selectedAttrs.color) &&
+        (!selectedAttrs.size || attrs.size?.toUpperCase() === selectedAttrs.size?.toUpperCase())
+      )
+    }) || null
+  )
+}
+
+type TDisplayedScent = TScentAttribute & {
+  isDisplayed: boolean
+}
+
+type TDisplayedColor = TColorAttribute & {
+  isDisplayed: boolean
+}
+
+type TDisplayedSize = TSizeAttribute & {
+  isDisplayed: boolean
+}
+
+/**
+ * Helper: Lấy tất cả scents và đánh dấu isDisplayed dựa trên material đã chọn
+ */
+const getAllScentsWithDisplayStatus = (
+  mergedAttributes: TProductAttributes,
+  selectedMaterial?: string
+): TDisplayedScent[] => {
+  if (!mergedAttributes.materials) return []
+
+  // Lấy tất cả scents từ tất cả materials
+  const allScents: TDisplayedScent[] = []
+  const scentSet = new Set<string>()
+
+  for (const material of mergedAttributes.materials.options) {
+    if (material.scents) {
+      for (const scent of material.scents) {
+        if (!scentSet.has(scent.value)) {
+          scentSet.add(scent.value)
+          // Kiểm tra scent có thuộc material được chọn không
+          const isDisplayed = selectedMaterial ? material.value === selectedMaterial : true
+          allScents.push({ ...scent, isDisplayed })
+        }
+      }
+    }
+  }
+
+  return allScents
+}
+
+/**
+ * Helper: Lấy tất cả colors và đánh dấu isDisplayed dựa trên material và scent đã chọn
+ */
+const getAllColorsWithDisplayStatus = (
+  mergedAttributes: TProductAttributes,
+  selectedMaterial?: string,
+  selectedScent?: string
+): TDisplayedColor[] => {
+  if (!mergedAttributes.materials) return []
+
+  // Lấy tất cả colors từ tất cả materials và scents
+  const allColors: TDisplayedColor[] = []
+  const colorSet = new Set<string>()
+
+  for (const material of mergedAttributes.materials.options) {
+    // Colors directly under material (when no scent)
+    if (material.colors) {
+      for (const color of material.colors) {
+        if (!colorSet.has(color.value)) {
+          colorSet.add(color.value)
+          // Kiểm tra color có thuộc material được chọn và không có scent được chọn
+          const isDisplayed =
+            (!selectedMaterial || material.value === selectedMaterial) && !selectedScent // Only show if no scent selected
+          allColors.push({ ...color, isDisplayed })
+        }
+      }
+    }
+
+    // Colors under scents
+    if (material.scents) {
+      for (const scent of material.scents) {
+        if (scent.colors) {
+          for (const color of scent.colors) {
+            if (!colorSet.has(color.value)) {
+              colorSet.add(color.value)
+              // Kiểm tra color có thuộc material và scent được chọn không
+              const isDisplayed =
+                (!selectedMaterial || material.value === selectedMaterial) &&
+                (!selectedScent || scent.value === selectedScent)
+              allColors.push({ ...color, isDisplayed })
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return allColors
+}
+
+/**
+ * Helper: Lấy tất cả sizes và đánh dấu isDisplayed dựa trên material, scent và color đã chọn
+ */
+const getAllSizesWithDisplayStatus = (
+  mergedAttributes: TProductAttributes,
+  selectedMaterial?: string,
+  selectedScent?: string,
+  selectedColor?: string
+): TDisplayedSize[] => {
+  if (!mergedAttributes.materials) return []
+
+  // Lấy tất cả sizes từ tất cả materials, scents và colors
+  const allSizes: TDisplayedSize[] = []
+  const sizeSet = new Set<string>()
+
+  for (const material of mergedAttributes.materials.options) {
+    // Sizes directly under material (when no scent, no color)
+    if (material.sizes) {
+      for (const size of material.sizes) {
+        if (!sizeSet.has(size.value)) {
+          sizeSet.add(size.value)
+          const isDisplayed =
+            (!selectedMaterial || material.value === selectedMaterial) &&
+            !selectedScent && // Only show if no scent selected
+            !selectedColor // Only show if no color selected
+          allSizes.push({ ...size, isDisplayed })
+        }
+      }
+    }
+
+    // Sizes under colors directly in material (when no scent)
+    if (material.colors) {
+      for (const color of material.colors) {
+        if (color.sizes) {
+          for (const size of color.sizes) {
+            if (!sizeSet.has(size.value)) {
+              sizeSet.add(size.value)
+              const isDisplayed =
+                (!selectedMaterial || material.value === selectedMaterial) &&
+                !selectedScent && // Only show if no scent selected
+                (!selectedColor || color.value === selectedColor)
+              allSizes.push({ ...size, isDisplayed })
+            }
+          }
+        }
+      }
+    }
+
+    // Sizes under scents and colors
+    if (material.scents) {
+      for (const scent of material.scents) {
+        // Sizes directly under scent (when no color)
+        if (scent.sizes) {
+          for (const size of scent.sizes) {
+            if (!sizeSet.has(size.value)) {
+              sizeSet.add(size.value)
+              const isDisplayed =
+                (!selectedMaterial || material.value === selectedMaterial) &&
+                (!selectedScent || scent.value === selectedScent) &&
+                !selectedColor // Only show if no color selected
+              allSizes.push({ ...size, isDisplayed })
+            }
+          }
+        }
+
+        // Sizes under colors
+        if (scent.colors) {
+          for (const color of scent.colors) {
+            if (color.sizes) {
+              for (const size of color.sizes) {
+                if (!sizeSet.has(size.value)) {
+                  sizeSet.add(size.value)
+                  // Kiểm tra size có thuộc material, scent và color được chọn không
+                  const isDisplayed =
+                    (!selectedMaterial || material.value === selectedMaterial) &&
+                    (!selectedScent || scent.value === selectedScent) &&
+                    (!selectedColor || color.value === selectedColor)
+                  allSizes.push({ ...size, isDisplayed })
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return allSizes
+}
+
 export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetailsProps) => {
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [selectedImageToPreview, setSelectedImageToPreview] = useState<string>()
-  const { size: selectedSize, color: selectedColor } = pickedVariant
-  const handlePickColor = useProductUIDataStore((s) => s.handlePickColor)
-  const handlePickSize = useProductUIDataStore((s) => s.handlePickSize)
-  const handlePickMaterial = useProductUIDataStore((s) => s.handlePickMaterial)
-  const handlePickScent = useProductUIDataStore((s) => s.handlePickScent)
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(() => {
+    const attrs: Record<string, string> = {}
+    if (pickedVariant.attributes.material) attrs.material = pickedVariant.attributes.material
+    if (pickedVariant.attributes.scent) attrs.scent = pickedVariant.attributes.scent
+    if (pickedVariant.attributes.color) attrs.color = pickedVariant.attributes.color
+    if (pickedVariant.attributes.size) attrs.size = pickedVariant.attributes.size
+    return attrs
+  })
+  const handlePickVariant = useProductUIDataStore((s) => s.handlePickVariant)
 
-  // Lấy danh sách chất liệu unique
-  const availableMaterials = useMemo(() => {
-    const set = new Set<string>()
-    const list: Array<{ key: string; label: string }> = []
-    for (const v of pickedProduct.variants) {
-      if (v.material) {
-        if (!set.has(v.material)) {
-          set.add(v.material)
-          list.push({ key: v.material, label: v.material })
-        }
-      }
-    }
-    return list
-  }, [pickedProduct])
+  const { mergedAttributes } = pickedProduct
 
-  // Lấy danh sách mùi hương theo chất liệu đang chọn (nếu có)
-  const availableScents = useMemo(() => {
-    const set = new Set<string>()
-    const list: Array<{ key: string; label: string }> = []
-    for (const v of pickedProduct.variants) {
-      const matchMaterial = pickedVariant.material ? v.material === pickedVariant.material : true
-      if (matchMaterial && v.scent) {
-        if (!set.has(v.scent)) {
-          set.add(v.scent)
-          list.push({ key: v.scent, label: v.scent })
-        }
-      }
-    }
-    return list
-  }, [pickedProduct, pickedVariant.material])
+  // Get all options with display status based on current selections
+  const availableScents = useMemo(
+    () => getAllScentsWithDisplayStatus(mergedAttributes, selectedAttributes.material),
+    [mergedAttributes, selectedAttributes.material]
+  )
+  const availableColors = useMemo(
+    () =>
+      getAllColorsWithDisplayStatus(
+        mergedAttributes,
+        selectedAttributes.material,
+        selectedAttributes.scent
+      ),
+    [mergedAttributes, selectedAttributes.material, selectedAttributes.scent]
+  )
+  const availableSizes = useMemo(
+    () =>
+      getAllSizesWithDisplayStatus(
+        mergedAttributes,
+        selectedAttributes.material,
+        selectedAttributes.scent,
+        selectedAttributes.color
+      ),
+    [
+      mergedAttributes,
+      selectedAttributes.material,
+      selectedAttributes.scent,
+      selectedAttributes.color,
+    ]
+  )
 
-  // Lấy danh sách màu theo material & scent hiện tại
-  const availableColors = useMemo(() => {
-    const map = new Map<string, TProductColor>()
-    for (const v of pickedProduct.variants) {
-      const matchMaterial = pickedVariant.material ? v.material === pickedVariant.material : true
-      const matchScent = pickedVariant.scent ? v.scent === pickedVariant.scent : true
-      if (matchMaterial && matchScent) {
-        if (!map.has(v.color.value)) {
-          map.set(v.color.value, v.color)
-        }
-      }
-    }
-    return Array.from(map.values())
-  }, [pickedProduct, pickedVariant.material, pickedVariant.scent])
-
-  // Lấy danh sách size có sẵn theo màu + material/scent hiện tại
-  const availableSizesForColor = useMemo(() => {
-    const filtered = pickedProduct.variants.filter(
-      (v) =>
-        v.color.value === pickedVariant.color.value &&
-        (pickedVariant.material ? v.material === pickedVariant.material : true) &&
-        (pickedVariant.scent ? v.scent === pickedVariant.scent : true)
-    )
-    return sortVariantsBySize(filtered)
-  }, [pickedProduct, pickedVariant])
+  // Check if sections should be shown (has at least one option in selected parent)
+  const shouldShowScents = availableScents.some((scent) => scent.isDisplayed)
+  const shouldShowColors = availableColors.some((color) => color.isDisplayed)
+  const shouldShowSizes = availableSizes.some((size) => size.isDisplayed)
 
   const firstProductImageURL = pickedProduct.detailImages[0] || null
 
   const hintForSizeChart: string = 'none'
 
+  console.log('>>> [proddd] picked variant:', {
+    pickedVariant,
+    mergedAttributes,
+    selectedAttributes,
+    availableScents,
+    availableColors,
+    availableSizes,
+  })
   return (
     <div className="smd:order-1 smd:mt-0 mt-4 order-2 w-full">
       <div className="pl-1 pt-2">
@@ -254,28 +425,33 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           </div>
         </div>
 
-        {/* Chất liệu */}
-        {availableMaterials.length > 0 && (
+        {/* Material Section */}
+        {mergedAttributes.materials && (
           <div className="rounded-lg mt-4">
-            <h3 className="text-slate-800 font-bold text-sm mb-2">
-              {pickedVariant.materialTitle && pickedVariant.materialTitle.trim().length > 0
-                ? pickedVariant.materialTitle
-                : 'Chất liệu'}
-            </h3>
+            <h3 className="text-slate-800 font-bold text-sm mb-2">Chất liệu</h3>
             <div className="flex flex-wrap gap-2">
-              {availableMaterials.map((m) => {
-                const isSelected = pickedVariant.material === m.key
+              {mergedAttributes.materials.options.map((material) => {
+                const isSelected = selectedAttributes.material === material.value
                 return (
                   <button
-                    key={m.key}
-                    onClick={() => handlePickMaterial(m.key)}
-                    className={`px-3 py-1 font-bold rounded-lg transition-all mobile-touch ${
+                    key={material.value}
+                    onClick={() => {
+                      // Reset dependent attributes when material changes
+                      const newAttrs = { material: material.value }
+                      setSelectedAttributes(newAttrs)
+                      const matchedVariant = findVariantByAttributes(
+                        pickedProduct.variants,
+                        newAttrs
+                      )
+                      if (matchedVariant) handlePickVariant(matchedVariant)
+                    }}
+                    className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
                       isSelected
                         ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
                         : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
                     }`}
                   >
-                    {m.label}
+                    {material.displayValue}
                   </button>
                 )
               })}
@@ -283,28 +459,42 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           </div>
         )}
 
-        {/* Mùi hương */}
-        {availableScents.length > 0 && (
+        {/* Scent Section */}
+        {availableScents.length > 0 && shouldShowScents && (
           <div className="rounded-lg mt-4">
-            <h3 className="text-slate-800 font-bold text-sm mb-2">
-              {pickedVariant.scentTitle && pickedVariant.scentTitle.trim().length > 0
-                ? pickedVariant.scentTitle
-                : 'Mùi hương'}
-            </h3>
+            <h3 className="text-slate-800 font-bold text-sm mb-2">Mùi hương</h3>
             <div className="flex flex-wrap gap-2">
-              {availableScents.map((s) => {
-                const isSelected = pickedVariant.scent === s.key
+              {availableScents.map((scent: TDisplayedScent) => {
+                const isSelected = selectedAttributes.scent === scent.value
+                const isDisabled = !scent.isDisplayed
                 return (
                   <button
-                    key={s.key}
-                    onClick={() => handlePickScent(s.key)}
-                    className={`px-3 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                      isSelected
+                    key={scent.value}
+                    onClick={() => {
+                      if (!isDisabled) {
+                        // Reset dependent attributes (color, size) when scent changes
+                        const newAttrs = {
+                          material: selectedAttributes.material,
+                          scent: scent.value,
+                        }
+                        setSelectedAttributes(newAttrs)
+                        const matchedVariant = findVariantByAttributes(
+                          pickedProduct.variants,
+                          newAttrs
+                        )
+                        if (matchedVariant) handlePickVariant(matchedVariant)
+                      }
+                    }}
+                    disabled={isDisabled}
+                    className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
+                      isDisabled
+                        ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
+                        : isSelected
                         ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
                         : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
                     }`}
                   >
-                    {s.label}
+                    {scent.displayValue}
                   </button>
                 )
               })}
@@ -312,44 +502,60 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           </div>
         )}
 
-        {/* Màu sắc */}
-        <div className="rounded-lg mt-4">
-          <h3 className="text-slate-800 font-bold text-sm mb-2">
-            {pickedVariant.color.withTitleFromServer
-              ? pickedVariant.color.withTitleFromServer.title
-              : 'Màu sắc'}
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {pickedVariant.color.withTitleFromServer
-              ? pickedVariant.color.withTitleFromServer.text
-              : availableColors.map((color) => {
-                  const lowercasedColorValue = color.value.toLowerCase()
-                  const isSelected = selectedColor.value === color.value
+        {/* Color Section */}
+        {availableColors.length > 0 && shouldShowColors && (
+          <div className="rounded-lg mt-4">
+            <h3 className="text-slate-800 font-bold text-sm mb-2">Màu sắc</h3>
+            <div className="flex flex-wrap gap-3">
+              {availableColors.map((color: TDisplayedColor) => {
+                const isSelected = selectedAttributes.color === color.value
+                const isDisabled = !color.isDisplayed
+
+                if (color.displayType === 'swatch' && color.hex) {
+                  // Case 1: Display color swatch with hex
                   return (
                     <button
                       key={color.value}
-                      onClick={() => handlePickColor(color)}
-                      className={`flex flex-col items-center rounded-full focus:outline-none transition-all mobile-touch`}
-                      title={color.title}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          // Reset dependent attributes (size) when color changes
+                          const newAttrs = {
+                            material: selectedAttributes.material,
+                            scent: selectedAttributes.scent,
+                            color: color.value,
+                          }
+                          setSelectedAttributes(newAttrs)
+                          const matchedVariant = findVariantByAttributes(
+                            pickedProduct.variants,
+                            newAttrs
+                          )
+                          if (matchedVariant) handlePickVariant(matchedVariant)
+                        }
+                      }}
+                      disabled={isDisabled}
+                      className={`flex flex-col items-center rounded-full focus:outline-none transition active:scale-90 ${
+                        isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      title={color.displayValue}
                     >
                       <div
-                        style={{ backgroundColor: lowercasedColorValue || '#000' }}
+                        style={{ backgroundColor: color.hex }}
                         className={`${
-                          isSelected
+                          isDisabled
+                            ? 'ring-1 ring-gray-300 ring-offset-2 grayscale'
+                            : isSelected
                             ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
                             : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
-                        } h-10 w-10 rounded-full cursor-pointer`}
+                        } h-10 w-10 rounded-full`}
                       >
-                        {isSelected && (
+                        {isSelected && !isDisabled && (
                           <div className="w-full h-full rounded-full flex items-center justify-center">
                             <svg
-                              className={` w-5 h-5 drop-shadow-lg`}
+                              className="w-5 h-5 drop-shadow-lg"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                               style={{
-                                color: color.value.includes('transparent')
-                                  ? 'black'
-                                  : getContrastColor(color.value.toLowerCase()) || '#000',
+                                color: getContrastColor(color.hex) || '#000',
                               }}
                             >
                               <path
@@ -362,66 +568,124 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                         )}
                       </div>
                       <div
-                        className="text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block"
+                        className={`text-[12px] font-medium rounded-md py-0.5 px-1.5 mt-2 inline-block ${
+                          isDisabled ? 'grayscale' : ''
+                        }`}
                         style={{
-                          backgroundColor: color.value || '#000',
-                          color: color.value.includes('transparent')
-                            ? 'black'
-                            : getContrastColor(color.value.toLowerCase()) || '#000',
+                          backgroundColor: color.hex,
+                          color: getContrastColor(color.hex) || '#000',
                         }}
                       >
-                        {color.title}
+                        {color.displayValue}
                       </div>
                     </button>
                   )
-                })}
+                } else {
+                  // Case 2: Display as label (no hex)
+                  return (
+                    <button
+                      key={color.value}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          // Reset dependent attributes (size) when color changes
+                          const newAttrs = {
+                            material: selectedAttributes.material,
+                            scent: selectedAttributes.scent,
+                            color: color.value,
+                          }
+                          setSelectedAttributes(newAttrs)
+                          const matchedVariant = findVariantByAttributes(
+                            pickedProduct.variants,
+                            newAttrs
+                          )
+                          if (matchedVariant) handlePickVariant(matchedVariant)
+                        }
+                      }}
+                      disabled={isDisabled}
+                      className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
+                        isDisabled
+                          ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
+                          : isSelected
+                          ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                          : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                      }`}
+                    >
+                      {color.displayValue}
+                    </button>
+                  )
+                }
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Kích thước */}
-        <div className="mt-4">
-          <div className="flex justify-between w-full mb-2">
-            <label className="block text-sm font-bold text-slate-900">
-              {pickedVariant.sizeTitle && pickedVariant.sizeTitle.trim().length > 0
-                ? pickedVariant.sizeTitle
-                : 'Kích thước'}
-            </label>
-            {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
-              <button
-                onClick={() => setShowSizeChart(true)}
-                className="cursor-pointer mobile-touch text-main-cl underline text-sm font-medium hover:text-secondary-cl"
-              >
-                Bảng size
-              </button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {availableSizesForColor.length > 0 ? (
-              availableSizesForColor.map((variant) => {
-                const isSelected = selectedSize === variant.size
-                const isOutOfStock = variant.stock === 0
+        {/* Size Section */}
+        {availableSizes.length > 0 && shouldShowSizes && (
+          <div className="mt-4">
+            <div className="flex justify-between w-full mb-2">
+              <label className="block text-sm font-bold text-slate-900">Kích thước</label>
+              {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
+                <button
+                  onClick={() => setShowSizeChart(true)}
+                  className="cursor-pointer mobile-touch text-main-cl underline text-sm font-medium hover:text-secondary-cl"
+                >
+                  Bảng size
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {availableSizes.map((size: TDisplayedSize) => {
+                const isSelected =
+                  selectedAttributes.size?.toUpperCase() === size.value.toUpperCase()
+                const isScopeDisabled = !size.isDisplayed
+
+                // Find variant with this size to check stock
+                const variantForSize = findVariantByAttributes(pickedProduct.variants, {
+                  material: selectedAttributes.material,
+                  scent: selectedAttributes.scent,
+                  color: selectedAttributes.color,
+                  size: size.value,
+                })
+                const isOutOfStock = !variantForSize || variantForSize.stock === 0
+                const isDisabled = isScopeDisabled || isOutOfStock
+
                 return (
                   <button
-                    key={variant.id}
-                    onClick={() => !isOutOfStock && handlePickSize(selectedColor, variant.size)}
-                    disabled={isOutOfStock}
+                    key={size.value}
+                    onClick={() => {
+                      if (!isDisabled) {
+                        const newAttrs = {
+                          material: selectedAttributes.material,
+                          scent: selectedAttributes.scent,
+                          color: selectedAttributes.color,
+                          size: size.value,
+                        }
+                        setSelectedAttributes(newAttrs)
+                        const matchedVariant = findVariantByAttributes(
+                          pickedProduct.variants,
+                          newAttrs
+                        )
+                        if (matchedVariant) handlePickVariant(matchedVariant)
+                      }
+                    }}
+                    disabled={isDisabled}
                     className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                      isOutOfStock
-                        ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed line-through'
+                      isDisabled
+                        ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed ${
+                            isOutOfStock ? 'line-through' : 'opacity-50'
+                          }`
                         : isSelected
                         ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
                         : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
                     }`}
                   >
-                    {variant.size}
+                    {size.displayValue}
                   </button>
                 )
-              })
-            ) : (
-              <p className="text-sm text-gray-500 italic">Vui lòng chọn thuộc tính ở trên</p>
-            )}
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         <PrintSurface printSurfaces={pickedProduct.printAreaList} pickedVariant={pickedVariant} />
       </div>

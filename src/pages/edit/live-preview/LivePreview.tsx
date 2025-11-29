@@ -5,13 +5,12 @@ import { PrintAreaOverlay } from './PrintAreaOverlay'
 import { EditedElementsArea } from './EditedElementsArea'
 import { AddToCartHandler } from './AddToCartHandler'
 import { adjustSizeOfPlacedImageOnPlaced } from './test'
-import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { adjustNearF3F4F6 } from '@/utils/helpers'
+import { adjustNearF3F4F6, getFinalColorValue } from '@/utils/helpers'
 import { SectionLoading } from '@/components/custom/Loading'
 import { createPortal } from 'react-dom'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { getCommonContants } from '@/utils/contants'
-import { useUniversalZoomForEditBackground } from '@/hooks/element/use-zoom-edit-background'
+import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -33,35 +32,10 @@ export const LivePreview = ({
   editedPrintSurfaceId,
   printedImages,
 }: TLivePreviewProps) => {
-  const printAreaInfo = useMemo<TPrintAreaInfo>(() => {
-    const base = pickedProduct.printAreaList.find((pa) => pa.id === editedPrintSurfaceId)!
-    // Tìm variant surface tương ứng để override vùng in nếu có transformArea
-    const vs = pickedProduct.variantSurfaces.find(
-      (v) => v.variantId === editedVariantId && v.surfaceId === editedPrintSurfaceId
-    )
-    const transformArea = vs?.transformArea
-    if (vs && transformArea) {
-      return {
-        ...base,
-        area: {
-          printX: transformArea.printX,
-          printY: transformArea.printY,
-          printW: transformArea.printW,
-          printH: transformArea.printH,
-          widthRealPx: transformArea.widthRealPx,
-          heightRealPx: transformArea.heightRealPx,
-        },
-      }
-    }
-    return base
-  }, [
-    pickedProduct.id,
-    pickedProduct.printAreaList,
-    pickedProduct.variantSurfaces,
-    editedVariantId,
-    editedPrintSurfaceId,
-  ])
-  const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
+  const printAreaInfo = useMemo(() => {
+    return pickedProduct.printAreaList.find((printArea) => printArea.id === editedPrintSurfaceId)!
+  }, [pickedProduct.id, pickedProduct.printAreaList, editedPrintSurfaceId])
+  const { containerRef, scale, position, handlers } = useZoomEditBackground(0.3, 5)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
     usePrintArea(printAreaInfo, () => {
@@ -70,16 +44,6 @@ export const LivePreview = ({
       }, getCommonContants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
       adjustSizeOfPlacedImageOnPlaced()
     })
-
-  const [position, setPosition] = useState<TPosition>({ x: 0, y: 0 })
-  const [scale, setScale] = useState<number>(1)
-  const { refForZoom } = useUniversalZoomForEditBackground(
-    {},
-    setScale,
-    setPosition,
-    scale,
-    position
-  )
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
     const variantSurface = pickedProduct.variantSurfaces.find(
@@ -130,9 +94,14 @@ export const LivePreview = ({
   }, [])
 
   return (
-    <div className="w-full smd:w-full min-h-full h-full relative overflow-hidden">
+    <div
+      ref={containerRef}
+      {...handlers}
+      onDragStart={(e) => e.preventDefault()}
+      className="smd:w-full overflow-hidden w-full min-h-full h-full relative touch-none"
+    >
       {createPortal(
-        <div className="bg-red-600 h-12 w-12 fixed top-0 left-0 z-1000">
+        <div className="bg-blue-600 h-12 w-12 fixed top-0 left-0 z-1000">
           <div>oke</div>
         </div>,
         document.body
@@ -150,14 +119,11 @@ export const LivePreview = ({
       <div
         ref={(node) => {
           printAreaContainerRef.current = node
-          refForZoom.current = node
         }}
         className="NAME-print-area-container w-full h-full overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
         style={{
-          backgroundColor: adjustNearF3F4F6(pickedVariant?.color.value || '#ffffff'),
-          backgroundSize: 'cover',
+          backgroundColor: adjustNearF3F4F6(getFinalColorValue() || '#ffffff'),
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-          transformOrigin: '0 0',
         }}
       >
         <div
@@ -180,7 +146,10 @@ export const LivePreview = ({
           isOutOfBounds={isOutOfBounds}
           displayWarningOverlay
           printedImages={printedImages}
-          frameDisplayerOptions={{ classNames: { container: 'NAME-frames-displayer-print-area' } }}
+          frameDisplayerOptions={{
+            classNames: { container: 'NAME-frames-displayer-print-area' },
+          }}
+          containerScale={scale}
         />
         <EditedElementsArea
           allowedPrintAreaRef={printAreaRef}

@@ -330,12 +330,6 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
       <h3 className="text-xs smd:text-sm mt-3 mb-1 font-bold">Tùy chỉnh</h3>
       <div className="s2xl:grid-cols-3 smd:grid-cols-2 sms:grid-cols-4 grid-cols-2 spmd:gap-2 gap-1 grid rounded-md">
         <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
-          <CropImageModalWrapper frameId={frameId} imageUrl={printedImageURL} />
-        </div>
-        <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
-          <RemovePrintedElementFromFrame frameId={frameId} />
-        </div>
-        <div className="NAME-form-group NAME-form-crop h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
           <ChangePrintedImage frameId={frameId} />
         </div>
         <div className="flex items-center justify-center h-8 smd:h-9 mobile-touch cursor-pointer border-2 border-main-cl z-30 text-white bg-main-cl rounded hover:bg-white hover:text-main-cl w-full">

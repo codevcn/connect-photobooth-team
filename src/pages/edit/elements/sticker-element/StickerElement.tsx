@@ -102,7 +102,7 @@ export const StickerElement = ({
       path,
       (naturalWidth, naturalHeight) => {
         let cssText = `
-          height: ${75}px;
+          height: ${50}px;
           aspect-ratio: ${naturalWidth} / ${naturalHeight};
         `
         display.style.cssText = cssText
@@ -179,7 +179,7 @@ export const StickerElement = ({
         transform: `scale(${scale}) rotate(${angle}deg)`,
         zIndex: zindex,
         ...(mountType === 'from-new'
-          ? { height: '75px' }
+          ? { height: '50px' }
           : {
               height: `${height}px`,
               width: `${width}px`,

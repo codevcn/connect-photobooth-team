@@ -21,6 +21,7 @@ const PageWrapper = () => {
       setProducts(data)
       setFetched(true)
     } catch (error) {
+      console.log('>>> error:', error)
       setError('Không thể tải dữ liệu sản phẩm. Vui lòng thử lại sau.')
     }
   }
