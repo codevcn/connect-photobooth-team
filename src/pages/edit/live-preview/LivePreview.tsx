@@ -34,8 +34,10 @@ export const LivePreview = ({
   printedImages,
 }: TLivePreviewProps) => {
   const printAreaInfo = useMemo(() => {
-    return pickedProduct.printAreaList.find((printArea) => printArea.id === pickedSurfaceId)!
-  }, [pickedProduct.id, pickedProduct.printAreaList, pickedSurfaceId])
+    return pickedProduct.printAreaList.find(
+      (printArea) => printArea.id === pickedSurfaceId && printArea.variantId === editedVariantId
+    )!
+  }, [pickedProduct.id, pickedProduct.printAreaList, pickedSurfaceId, editedVariantId])
 
   const { containerRef, scale, position, handlers } = useZoomEditBackground(0.8, 5)
 
@@ -127,6 +129,14 @@ export const LivePreview = ({
         />
       </div>
       <div
+        style={{ display: isOutOfBounds ? 'block' : 'none' }}
+        className="NAME-out-of-bounds-overlay-warning absolute inset-0 bg-red-600/20 z-5"
+      >
+        <p className="absolute top-0 left-0 text-sm text-white font-medium bg-red-600 px-3 py-1 rounded-br-md">
+          Ngoài phạm vi in cho phép
+        </p>
+      </div>
+      <div
         ref={(node) => {
           printAreaContainerRef.current = node
         }}
@@ -136,14 +146,6 @@ export const LivePreview = ({
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
         }}
       >
-        <div
-          style={{ display: isOutOfBounds ? 'block' : 'none' }}
-          className="NAME-out-of-bounds-overlay-warning absolute inset-0 bg-red-600/20 z-5"
-        >
-          <p className="absolute top-0 left-0 text-sm text-white font-medium bg-red-600 px-3 py-1 rounded-br-md">
-            Ngoài phạm vi in cho phép
-          </p>
-        </div>
         <img
           src={displayedImage.imageURL}
           alt={displayedImage.altText}

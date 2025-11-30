@@ -85,11 +85,47 @@ export const useElementControl = (
     zindex: initialZindex = createInitialConstants<number>('ELEMENT_ZINDEX'),
     mountType,
   } = initialParams || {}
-  const elementLayers = useElementLayerStore((s) => s.elementLayers)
   const [position, setPosition] = useState<TElementVisualBaseState['position']>({
     x: initialPosition?.x || createInitialConstants<number>('ELEMENT_X'),
     y: initialPosition?.y || createInitialConstants<number>('ELEMENT_Y'),
   })
+
+  const handleSetElementPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
+    if (
+      validateElementPositionValue(elementRootRef, containerForElementAbsoluteToRef, posX, posY)
+    ) {
+      setPosition({ x: posX, y: posY })
+    }
+  }
+
+  const handleSetSinglePosition = (posX?: TPosition['x'], posY?: TPosition['y']) => {
+    const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
+    const rootElement = elementRootRef.current
+    if (!containerForElementAbsoluteTo || !rootElement) return
+    const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
+    const rootElementRect = rootElement.getBoundingClientRect()
+    if (posX && posX > 0) {
+      let parsedValue = posX
+      if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width) {
+        parsedValue = containerForElementAbsoluteToRect.width - rootElementRect.width - 5
+      }
+      setPosition((prev) => ({
+        ...prev,
+        x: parsedValue,
+      }))
+    } else if (posY && posY > 0) {
+      let parsedValue = posY
+      if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height) {
+        parsedValue = containerForElementAbsoluteToRect.height - rootElementRect.height - 5
+      }
+      setPosition((prev) => ({
+        ...prev,
+        y: parsedValue,
+      }))
+    }
+  }
+
+  const elementLayers = useElementLayerStore((s) => s.elementLayers)
   const [scale, setScale] = useState<TElementVisualBaseState['scale']>(initialZoom)
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
@@ -103,11 +139,7 @@ export const useElementControl = (
     setCurrentRotation: setAngle,
     currentPosition: position,
     setCurrentPosition: (pos) => {
-      if (
-        validateElementPositionValue(elementRootRef, containerForElementAbsoluteToRef, pos.x, pos.y)
-      ) {
-        setPosition(pos)
-      }
+      handleSetElementPosition(pos.x, pos.y)
     },
   })
   const {
@@ -128,17 +160,12 @@ export const useElementControl = (
     currentZoom: scale,
     setCurrentZoom: setScale,
   })
-  console.log('>>> [sc] scale factor 0:', scaleFactor)
   const { ref: refForDrag } = useDragElement({
     disabled: isRotating || isZooming,
     currentPosition: position,
     scaleFactor,
     setCurrentPosition: (pos) => {
-      if (
-        validateElementPositionValue(elementRootRef, containerForElementAbsoluteToRef, pos.x, pos.y)
-      ) {
-        setPosition(pos)
-      }
+      handleSetElementPosition(pos.x, pos.y)
     },
     postFunctionDrag: () => {
       const element = elementRootRef.current
@@ -150,53 +177,33 @@ export const useElementControl = (
   })
 
   const validateInputValueAndSet = (
-    value: string | number,
-    type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex'
+    value: string | number | [TPosition['x'], TPosition['y']],
+    type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex' | 'posXY'
   ) => {
-    let parsedValue: number | string = value
-    if (typeof value === 'number') {
-      if (value < 0) return
-      const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
-      const rootElement = elementRootRef.current
-      if (!containerForElementAbsoluteTo || !rootElement) return
-      const containerForElementAbsoluteToRect =
-        containerForElementAbsoluteTo.getBoundingClientRect()
-      const rootElementRect = rootElement.getBoundingClientRect()
-      if (
-        type === 'posX' &&
-        value > containerForElementAbsoluteToRect.width - rootElementRect.width
-      ) {
-        parsedValue = containerForElementAbsoluteToRect.width - rootElementRect.width - 5
-      }
-      if (
-        type === 'posY' &&
-        value > containerForElementAbsoluteToRect.height - rootElementRect.height
-      ) {
-        parsedValue = containerForElementAbsoluteToRect.height - rootElementRect.height - 5
-      }
-    }
     switch (type) {
+      case 'posXY':
+        handleSetElementPosition((value as Array<number>)[0], (value as Array<number>)[1])
+        break
       case 'posX':
-        setPosition((prev) => ({ ...prev, x: parsedValue as number }))
+        handleSetSinglePosition(value as number, undefined)
         break
       case 'posY':
-        setPosition((prev) => ({ ...prev, y: parsedValue as number }))
+        handleSetSinglePosition(undefined, value as number)
         break
       case 'scale':
         if (minZoom) {
           if ((value as number) < minZoom) {
-            parsedValue = minZoom
+            setScale(minZoom)
           }
         }
         if (maxZoom) {
           if ((value as number) > maxZoom) {
-            parsedValue = maxZoom
+            setScale(maxZoom)
           }
         }
-        setScale(parsedValue as number)
         break
       case 'angle':
-        setAngle(parsedValue as number)
+        setAngle(value as number)
         break
     }
   }

@@ -27,7 +27,6 @@ export class ProductAdapter {
     if (apiProduct.surfaces.length === 0) return null
 
     const clientVariants = this.toClientVariants(apiProduct)
-    console.log('>>> to print area list:', this.toPrintAreaList(apiProduct))
     return {
       id: apiProduct.id,
       url: apiProduct.base_image_url,
@@ -125,7 +124,13 @@ export class ProductAdapter {
       const surface = apiProduct.surfaces.find((s) => s.id === mockup.surface_id)
       if (!surface) continue
       sortedSurfaces.push(
-        this.toPrintAreaInfo(mockup, surface, apiProduct.base_image_url, mockup.variant_id)
+        this.toPrintAreaInfo(
+          mockup,
+          surface,
+          apiProduct.base_image_url,
+          mockup.variant_id,
+          apiProduct.id
+        )
       )
     }
     return sortedSurfaces
@@ -138,10 +143,12 @@ export class ProductAdapter {
     mockup: TProductMockup,
     surface: TProductSurface,
     fallbackImageUrl: string,
-    variantId: number
+    variantId: number,
+    productId: TProduct['id']
   ): TPrintAreaInfo {
     const transform = mockup.transform_json
     const surfaceArea = surface.print_areas
+    console.log('>>> [serser]:', { transform, surfaceArea, productId, variantId })
     return {
       id: mockup.surface_id,
       variantId,

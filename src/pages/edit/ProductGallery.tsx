@@ -23,7 +23,8 @@ const Product = ({
   onInitTemplates,
   isPicked,
 }: TProductProps) => {
-  const { printAreaRef, printAreaContainerRef } = usePrintArea(product.printAreaList[0])
+  const firstPrintArea = product.printAreaList[0]
+  const { printAreaRef, printAreaContainerRef } = usePrintArea(firstPrintArea)
 
   useEffect(() => {
     onInitTemplates(initialTemplate)
@@ -40,7 +41,7 @@ const Product = ({
       onClick={() => onPickProduct(product, initialTemplate)}
     >
       <img
-        src={product.url || '/images/placeholder.svg'}
+        src={firstPrintArea.imageUrl || '/images/placeholder.svg'}
         alt={product.name}
         className="NAME-product-image min-h-full max-h-full w-full h-full object-contain rounded-xl"
       />
