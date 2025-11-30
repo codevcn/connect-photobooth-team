@@ -196,7 +196,7 @@ export const LivePreview = ({
       ref={containerRef}
       {...handlers}
       onDragStart={(e) => e.preventDefault()}
-      className="smd:w-full overflow-hidden w-full min-h-full h-full relative"
+      className="smd:w-full overflow-hidden w-full min-h-full h-full relative flex items-center justify-center"
     >
       {createPortal(
         <div className="bg-blue-600 h-12 w-12 fixed top-0 left-0 z-1000">
@@ -227,7 +227,7 @@ export const LivePreview = ({
         className="NAME-print-area-container w-full h-full min-h-[150px] overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
         style={{
           backgroundColor: adjustNearF3F4F6(getFinalColorValue() || '#ffffff'),
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          transform: `scale(${scale})`,
         }}
       >
         <div
