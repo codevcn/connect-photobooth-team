@@ -9,6 +9,7 @@ import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/t
 import { TemplateFrame } from '../customize/template/TemplateFrame'
 import { FramesDisplayer } from '../customize/template/FrameDisplayer'
 import { createCommonConstants } from '@/utils/contants'
+import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -142,6 +143,8 @@ export const PrintAreaOverlay = ({
   containerScale = 1,
 }: TPrintAreaOverlayProps) => {
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
+  const editMode = useEditModeStore((s) => s.editMode)
+
   console.log('>>> [ddd] view picked template:', pickedTemplate)
 
   const handleClickFrame = (
@@ -187,7 +190,7 @@ export const PrintAreaOverlay = ({
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >
-      {pickedTemplate && (
+      {editMode === 'with-template' && pickedTemplate && (
         <FramesDisplayer
           template={pickedTemplate}
           onClickFrame={handleClickFrame}

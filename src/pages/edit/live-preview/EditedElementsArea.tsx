@@ -3,6 +3,7 @@ import { StickerElement } from '../elements/sticker-element/StickerElement'
 import { TextElement } from '../elements/text-element/TextElement'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useSearchParams } from 'react-router-dom'
+import { PrintedImageElement } from '../elements/printed-image/PrintedImageElement'
 
 type TEditedElementsAreaProps = {
   allowedPrintAreaRef: React.RefObject<HTMLDivElement | null>
@@ -15,6 +16,7 @@ export const EditedElementsArea = ({
 }: TEditedElementsAreaProps) => {
   const stickerElements = useEditedElementStore((s) => s.stickerElements)
   const textElements = useEditedElementStore((s) => s.textElements)
+  const printedImages = useEditedElementStore((s) => s.printedImages)
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const selectElement = useEditedElementStore((s) => s.selectElement)
   const mockupId = useSearchParams()[0].get('mockupId')
@@ -50,6 +52,23 @@ export const EditedElementsArea = ({
             removeTextElement={(elementId) => {
               useElementLayerStore.getState().removeFromElementLayers([elementId])
               useEditedElementStore.getState().removeTextElement(elementId)
+            }}
+            printAreaContainerRef={printAreaContainerRef}
+          />
+        ))}
+
+      {printedImages.length > 0 &&
+        printedImages.map((element) => (
+          <PrintedImageElement
+            key={element.id}
+            element={element}
+            elementContainerRef={allowedPrintAreaRef}
+            mountType={mockupId ? 'from-saved' : 'from-new'}
+            isSelected={selectedElement?.elementId === element.id}
+            selectElement={selectElement}
+            removePrintedImageElement={(elementId) => {
+              useElementLayerStore.getState().removeFromElementLayers([elementId])
+              useEditedElementStore.getState().removePrintedImageElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
           />

@@ -213,11 +213,6 @@ export type TElementVisualBaseState = {
   zindex: number
 }
 
-export type TPrintedImageVisualState = TElementVisualBaseState & {
-  id: string
-  url: string
-}
-
 export type TTextVisualState = Omit<TElementVisualBaseState, 'scale'> & {
   id: string
   fontSize: number
@@ -236,12 +231,15 @@ export type TStickerVisualState = TElementVisualBaseState & {
   width?: number
 }
 
+export type TPrintedImageVisualState = TStickerVisualState
+
 export type TStoredTemplate = TPrintTemplate
 
 export type TElementsVisualState = Partial<{
   stickers: TStickerVisualState[]
   storedTemplates: TStoredTemplate[]
   texts: TTextVisualState[]
+  printedImages: TPrintedImageVisualState[]
 }>
 
 export type TMockupImageData = {
@@ -481,3 +479,5 @@ export type TElementRelativeProps = {
     top: number
   }
 }
+
+export type TEditMode = 'with-template' | 'no-template'

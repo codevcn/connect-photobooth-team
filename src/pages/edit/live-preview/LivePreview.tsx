@@ -1,10 +1,9 @@
 import { usePrintArea } from '@/hooks/use-print-area'
-import { TBaseProduct, TPosition, TPrintedImage, TPrintAreaInfo } from '@/utils/types/global'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { TBaseProduct, TPrintedImage } from '@/utils/types/global'
+import { useEffect, useMemo, useRef } from 'react'
 import { PrintAreaOverlay } from './PrintAreaOverlay'
 import { EditedElementsArea } from './EditedElementsArea'
 import { AddToCartHandler } from './AddToCartHandler'
-import { adjustSizeOfPlacedImageOnPlaced } from './test'
 import { adjustNearF3F4F6, getFinalColorValue } from '@/utils/helpers'
 import { SectionLoading } from '@/components/custom/Loading'
 import { createPortal } from 'react-dom'
@@ -12,6 +11,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { createCommonConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
 import { tempObject } from '@/stores/temp/temp.store'
+import { adjustSizeOfPlacedImageOnPlaced } from '../helpers'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']

@@ -311,10 +311,6 @@ export const StickerMenuWrapper = () => {
 }
 
 export const StickerPicker = () => {
-  const selectedElement = useEditedElementStore((state) => state.selectedElement)
-  const { elementType } = selectedElement || {}
-  const containerRef = useRef<HTMLDivElement>(null)
-
   const handleSelectElement = () => {
     // nếu không phải frame và màn hình đang có kích thước nhỏ hơn smd thì ẩn container
     // if (elementType && elementType !== 'sticker' && window.innerWidth < 662) {
@@ -324,26 +320,26 @@ export const StickerPicker = () => {
     // }
   }
 
-  useEffect(() => {
-    handleSelectElement()
-  }, [elementType])
+  // useEffect(() => {
+  //   handleSelectElement()
+  // }, [elementType])
 
-  useEffect(() => {
-    // const displayContainerOnResize = () => {
-    //   if (window.innerWidth >= 662) {
-    //     containerRef.current?.classList.remove('hidden')
-    //   } else {
-    //     handleSelectElement()
-    //   }
-    // }
-    // window.addEventListener('resize', displayContainerOnResize)
-    // return () => {
-    //   window.removeEventListener('resize', displayContainerOnResize)
-    // }
-  }, [elementType])
+  // useEffect(() => {
+  //   const displayContainerOnResize = () => {
+  //     if (window.innerWidth >= 662) {
+  //       containerRef.current?.classList.remove('hidden')
+  //     } else {
+  //       handleSelectElement()
+  //     }
+  //   }
+  //   window.addEventListener('resize', displayContainerOnResize)
+  //   return () => {
+  //     window.removeEventListener('resize', displayContainerOnResize)
+  //   }
+  // }, [elementType])
 
   return (
-    <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
+    <div className="smd:mt-4 mt-2 flex-1">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm nhãn dán</h3>
       <PickerModalWrapper />
       {/* <StickerMenuWrapper /> */}

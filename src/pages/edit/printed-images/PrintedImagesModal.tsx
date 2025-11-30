@@ -1,9 +1,12 @@
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { getNaturalSizeOfImage } from '@/utils/helpers'
+import { generateUniqueId, getNaturalSizeOfImage } from '@/utils/helpers'
 import { TPrintedImage, TTemplateFrame } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
+import { useEditModeStore } from '@/stores/ui/edit-mode.store'
+import { useEditedElementStore } from '@/stores/element/element.store'
+import { createInitialConstants } from '@/utils/contants'
 
 type ImageProps = {
   img: TPrintedImage
@@ -62,27 +65,49 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     pickedFrameId: undefined,
   })
   const [showPrintedImagesModal, setShowPrintedImagesModal] = useState(false)
+  const editMode = useEditModeStore((s) => s.editMode)
 
   const handleAddPrintedImageToFrame = (printedImg: TPrintedImage) => {
-    console.log('>>> [ddd] printed img:', printedImg)
     const pickedPrintSurface = useProductUIDataStore.getState().pickedSurface
-    console.log('>>> [ddd] picked Print Surface:', pickedPrintSurface)
     if (!pickedPrintSurface) return
     const { pickedFrameId } = dataOnOpenRef.current
-    console.log('>>> [ddd] picked Frame ID:', pickedFrameId)
     const printAreaSize = {
       width: pickedPrintSurface.area.printW,
       height: pickedPrintSurface.area.printH,
     }
-    console.log('>>> [ddd] print Area Size:', printAreaSize)
     useTemplateStore.getState().addImageToFrame(printedImg, printAreaSize, pickedFrameId)
     setShowPrintedImagesModal(false)
   }
 
   const listenHideShowPrintedImagesModal = (show: boolean, frameId?: TTemplateFrame['id']) => {
-    console.log('>>> [ddd] frame id:', frameId)
     dataOnOpenRef.current = { pickedFrameId: frameId }
     setShowPrintedImagesModal(show)
+  }
+
+  const handleAddImageToPrintArea = (printedImg: TPrintedImage) => {
+    useEditedElementStore.getState().addPrintedImageElements([
+      {
+        id: generateUniqueId(),
+        path: printedImg.url,
+        position: {
+          x: createInitialConstants<number>('ELEMENT_X'),
+          y: createInitialConstants<number>('ELEMENT_Y'),
+        },
+        angle: createInitialConstants<number>('ELEMENT_ROTATION'),
+        scale: createInitialConstants<number>('ELEMENT_ZOOM'),
+        zindex: createInitialConstants<number>('ELEMENT_ZINDEX'),
+        mountType: 'from-new',
+      },
+    ])
+    setShowPrintedImagesModal(false)
+  }
+
+  const handlePickPrintedImage = (printedImg: TPrintedImage) => {
+    if (editMode === 'with-template') {
+      handleAddPrintedImageToFrame(printedImg)
+    } else {
+      handleAddImageToPrintArea(printedImg)
+    }
   }
 
   useEffect(() => {
@@ -141,7 +166,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
                 key={img.id}
                 img={img}
                 imgsContainerRef={imgsContainerRef}
-                onClickImage={handleAddPrintedImageToFrame}
+                onClickImage={handlePickPrintedImage}
               />
             ))}
           </div>

@@ -2,7 +2,7 @@ import { useRotateElement } from '@/hooks/element/use-rotate-element'
 import { usePinchElement } from '@/hooks/element/use-pinch-element'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createInitialConstants } from '@/utils/contants'
 import {
   TElementMountType,
@@ -70,7 +70,6 @@ export const useElementControl = (
     x: initialPosition?.x || createInitialConstants<number>('ELEMENT_X'),
     y: initialPosition?.y || createInitialConstants<number>('ELEMENT_Y'),
   })
-  const firstDragAndScaleOnAllowedPrintAreaChangeRef = useRef<boolean>(true)
   const [scale, setScale] = useState<TElementVisualBaseState['scale']>(initialZoom)
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
@@ -167,6 +166,7 @@ export const useElementControl = (
       validateInputValueAndSet(angle, 'angle')
     }
     if (zindex) {
+      console.log('>>> zindex:', zindex)
       useElementLayerStore.getState().updateElementLayerIndex(elementId, zindex)
     }
   }

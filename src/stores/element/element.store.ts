@@ -1,7 +1,7 @@
 import {
   TElementType,
+  TPrintedImageVisualState,
   TStickerVisualState,
-  TStoredTemplate,
   TTextVisualState,
 } from '@/utils/types/global'
 import { create } from 'zustand'
@@ -17,6 +17,7 @@ type TUseElementStore = {
   selectedElement: TSelectedElement | null
   stickerElements: TStickerVisualState[]
   textElements: TTextVisualState[]
+  printedImages: TPrintedImageVisualState[]
 
   // Actions
   selectElement: (
@@ -34,13 +35,33 @@ type TUseElementStore = {
   resetData: () => void
   setStickerElements: (stickers: TStickerVisualState[]) => void
   setTextElements: (textElements: TTextVisualState[]) => void
+  setPrintedImageElements: (printedImages: TPrintedImageVisualState[]) => void
+  addPrintedImageElements: (printedImages: TPrintedImageVisualState[]) => void
+  removePrintedImageElement: (printedImageId: string) => void
 }
 
 export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
   selectedElement: null,
   stickerElements: [],
   textElements: [],
+  printedImages: [],
 
+  removePrintedImageElement: (printedImageId) => {
+    const { printedImages, selectedElement } = get()
+    // Chỉ set selectedElement = null nếu printed image đang xóa chính là printed image đang được chọn
+    const shouldClearSelection = selectedElement?.elementId === printedImageId
+    set({
+      printedImages: printedImages.filter((printedImage) => printedImage.id !== printedImageId),
+      ...(shouldClearSelection ? { selectedElement: null } : {}),
+    })
+  },
+  setPrintedImageElements: (printedImages) => {
+    set({ printedImages })
+  },
+  addPrintedImageElements: (printedImages) => {
+    const { printedImages: existingPrintedImages } = get()
+    set({ printedImages: [...existingPrintedImages, ...printedImages] })
+  },
   setStickerElements: (stickers) => {
     set({ stickerElements: stickers })
   },

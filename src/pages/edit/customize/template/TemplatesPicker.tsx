@@ -7,6 +7,7 @@ import type React from 'react'
 import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/templates-helpers'
 import { useEffect, useMemo } from 'react'
 import { assignMockFrameSizeToTemplate, initFramePlacedImageByPrintedImage } from '../../helpers'
+import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -63,14 +64,9 @@ const FramesDisplayer = ({
 
 type TTemplatePickerProps = {
   printedImages: TPrintedImage[]
-} & Partial<{
-  classNames: Partial<{
-    templatesList: string
-    templateItem: string
-  }>
-}>
+}
 
-export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerProps) => {
+export const TemplatesPicker = ({ printedImages }: TTemplatePickerProps) => {
   const allTemplates = useTemplateStore((s) => s.allTemplates)
 
   const finalTemplates = useMemo(() => {
@@ -119,21 +115,49 @@ export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerPr
   const handlePickTemplate = (template: TPrintTemplate) => {
     const pickedSurface = useProductUIDataStore.getState().pickedSurface
     if (!pickedSurface) return
+    useEditModeStore.getState().setEditMode('with-template')
     useTemplateStore.getState().pickTemplate(template.id, pickedSurface)
+  }
+
+  const handlePickNoTemplate = () => {
+    useEditModeStore.getState().setEditMode('no-template')
   }
 
   return (
     <div className="NAME-sss w-full">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Chọn mẫu in</h3>
-      <div className={classNames?.templatesList}>
+      <div className="smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
+        <div
+          onClick={handlePickNoTemplate}
+          className="flex items-center justify-center flex-col aspect-square min-h-16 border border-dashed p-1 border-gray-600 rounded bg-white mobile-touch cursor-pointer transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-circle-x-icon lucide-circle-x text-gray-500"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6" />
+            <path d="m9 9 6 6" />
+          </svg>
+          <p className="text-gray-700 text-xs mt-1 text-center w-fit font-medium">
+            Không <span className="smd:inline hidden">sử dụng</span> mẫu
+          </p>
+        </div>
         {finalTemplates.map((template) => (
           <div
             key={template.id}
             onClick={() => handlePickTemplate(template)}
-            className={cn(
-              'flex items-center justify-center min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition',
-              classNames?.templateItem
-            )}
+            className={
+              'flex items-center justify-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition'
+            }
           >
             <FramesDisplayer
               template={template}

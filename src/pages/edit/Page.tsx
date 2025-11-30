@@ -22,6 +22,7 @@ import { LocalStorageHelper } from '@/utils/localstorage'
 import { TemplateFrameMenu } from './customize/template/TemplateFrameMenu'
 import { StickerElementMenu } from './elements/sticker-element/Menu'
 import { TextElementMenu } from './elements/text-element/Menu'
+import { PrintedImageElementMenu } from './elements/printed-image/Menu'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -39,6 +40,8 @@ const TemplateFrameMenuResponsive = () => {
           />
         ) : elementType === 'sticker' ? (
           <StickerElementMenu elementId={elementId} onClose={cancelSelectingElement} />
+        ) : elementType === 'printed-image' ? (
+          <PrintedImageElementMenu elementId={elementId} onClose={cancelSelectingElement} />
         ) : (
           <TextElementMenu elementId={elementId} onClose={cancelSelectingElement} />
         )}
@@ -105,6 +108,20 @@ const restoreMockupVisualStates = (mockupId: string) => {
       useEditedElementStore
         .getState()
         .setTextElements(restoredTextElements.map((text) => ({ ...text, isFromSaved: true })))
+    }
+
+    // Restore printed image elements
+    const restoredPrintedImageElements = foundMockup.elementsVisualState.printedImages || []
+    console.log('>>> [ddd] printedImages:', restoredPrintedImageElements)
+    if (restoredPrintedImageElements.length > 0) {
+      useEditedElementStore
+        .getState()
+        .setPrintedImageElements(
+          restoredPrintedImageElements.map((printedImage) => ({
+            ...printedImage,
+            isFromSaved: true,
+          }))
+        )
     }
 
     // Restore sticker elements

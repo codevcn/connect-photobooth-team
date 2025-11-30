@@ -2,7 +2,6 @@ import {
   TPrintTemplate,
   TTemplateFrame,
   TPrintedImage,
-  TPlacedImage,
   TSizeInfo,
   TPrintAreaInfo,
 } from '@/utils/types/global'
@@ -170,7 +169,7 @@ export const useTemplateStore = create(
         for (const template of templates) {
           if (template.id === currentTemplateId) {
             const foundFrameIndex = template.frames.findIndex((f) => !f.placedImage)
-            console.log('>>> found frame index:', foundFrameIndex)
+            console.log('>>> [ddd] found frame index:', foundFrameIndex)
             console.log('>>> [ddd] template frames:', template.frames)
             if (foundFrameIndex >= 0) {
               const foundFrame = template.frames[foundFrameIndex]

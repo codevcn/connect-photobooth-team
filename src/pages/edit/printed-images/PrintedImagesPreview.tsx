@@ -6,11 +6,11 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TemplateFrameMenu } from '../customize/template/TemplateFrameMenu'
 import { useEditedElementStore } from '@/stores/element/element.store'
 
-type TPrintedImagesProps = {
+type PrintedImageForTemplateProps = {
   printedImages: TPrintedImage[]
 }
 
-export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => {
+const PrintedImageForTemplate = ({ printedImages }: PrintedImageForTemplateProps) => {
   const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const { elementId, elementType, elementURL } = selectedElement || {}
@@ -69,7 +69,7 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
   }, [elementId, elementType, elementURL])
 
   return (
-    <div ref={containerRef} className="smd:mt-6 col-span-2 mt-2 flex-1">
+    <div className="w-full">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">
         Chọn ảnh <span className="smd:inline hidden">chụp photobooth</span>
       </h3>
@@ -100,6 +100,18 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
           />
         </div>
       )}
+    </div>
+  )
+}
+
+type TPrintedImagesPreviewProps = {
+  printedImages: TPrintedImage[]
+}
+
+export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesPreviewProps) => {
+  return (
+    <div className="smd:mt-6 col-span-2 mt-2 flex-1 flex gap-2 justify-between">
+      <PrintedImageForTemplate printedImages={printedImages} />
     </div>
   )
 }

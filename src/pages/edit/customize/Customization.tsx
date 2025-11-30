@@ -1,12 +1,9 @@
-import { TElementType, TPrintedImage } from '@/utils/types/global'
+import { TPrintedImage } from '@/utils/types/global'
 import { PrintedImagesPreview } from '../printed-images/PrintedImagesPreview'
 import { TemplatesPicker } from './template/TemplatesPicker'
 import { StickerMenuWrapper, StickerPicker } from '../elements/sticker-element/StickerPicker'
 import { TextEditor, TextMenuWrapper } from '../elements/text-element/TextEditor'
-import { useEffect } from 'react'
-import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { useTemplateStore } from '@/stores/ui/template.store'
-import { useEditedElementStore } from '@/stores/element/element.store'
+import { PrintedImageMenuWrapper } from '../elements/printed-image/MenuWrapper'
 
 const Instructions = () => {
   return (
@@ -44,22 +41,6 @@ type TCustomizeProps = {
 }
 
 export const Customization = ({ printedImages }: TCustomizeProps) => {
-  // useEffect(() => {
-  //   eventEmitter.on(
-  //     EInternalEvents.PICK_ELEMENT,
-  //     (elementId: string, element: HTMLElement, elementType: TElementType) => {
-  //       let elementURL: string | undefined = undefined
-  //       if (elementType === 'template-frame') {
-  //         const pickedFrame = useTemplateStore.getState().getFrameById(elementId)
-  //         if (pickedFrame) {
-  //           elementURL = pickedFrame.placedImage?.imgURL
-  //         }
-  //       }
-  //       useEditedElementStore.getState().selectElement(elementId, element, elementType, elementURL)
-  //     }
-  //   )
-  // }, [])
-
   return (
     <div className="smd:order-2 smd:mt-2 smd:px-3 px-2 py-3 mt-0 order-1 border-border rounded-lg bg-gray-100">
       <h3 className="text-xs smd:text-sm text-center font-bold text-gray-800 uppercase tracking-wide">
@@ -67,21 +48,15 @@ export const Customization = ({ printedImages }: TCustomizeProps) => {
       </h3>
       <Instructions />
       <div className="smd:mt-6 mt-1 overflow-hidden relative w-full">
-        <TemplatesPicker
-          printedImages={printedImages}
-          classNames={{
-            templatesList:
-              'smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll',
-            templateItem: 'aspect-square',
-          }}
-        />
-        <div className="grid grid-cols-1 smd:grid-cols-2 flex-wrap gap-3">
+        <TemplatesPicker printedImages={printedImages} />
+        <div className="gap-2 grid grid-cols-1 smd:grid-cols-2 flex-wrap mt-2">
           <PrintedImagesPreview printedImages={printedImages} />
           <div className="flex col-span-2 gap-2">
             <StickerPicker />
             <TextEditor />
           </div>
         </div>
+        <PrintedImageMenuWrapper />
         <TextMenuWrapper />
         <StickerMenuWrapper />
       </div>

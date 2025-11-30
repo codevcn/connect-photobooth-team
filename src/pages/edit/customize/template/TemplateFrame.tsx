@@ -105,7 +105,7 @@ export const TemplateFrame = ({
       className={cn(
         'NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
         classNames?.container,
-        frameSelected && 'z-50',
+        frameSelected && 'z-90',
         templateFrame.placedImage && 'bg-transparent',
         scrollable ? '' : 'touch-none'
       )}

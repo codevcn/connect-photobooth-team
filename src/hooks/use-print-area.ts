@@ -278,7 +278,7 @@ export const usePrintArea = (
       // Nếu ảnh đã load xong
       if (imageElement.complete && imageElement.naturalWidth > 0) {
         // Delay nhỏ để đảm bảo DOM đã render xong
-        const timeoutId = setTimeout(updatePrintAreaWhenImageLoaded, 100)
+        const timeoutId = setTimeout(updatePrintAreaWhenImageLoaded, 150)
         return () => clearTimeout(timeoutId)
       } else {
         // Nếu ảnh chưa load, đợi event load

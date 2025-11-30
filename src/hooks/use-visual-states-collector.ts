@@ -16,7 +16,21 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
       const elementsVisualState: TElementsVisualState = {
         texts: [],
         stickers: [],
+        printedImages: [],
         storedTemplates: [],
+      }
+
+      for (const element of document.body.querySelectorAll<HTMLElement>(
+        '.NAME-element-type-printed-image'
+      )) {
+        const visualState = element.getAttribute('data-visual-state')
+        if (!visualState) continue
+        const visualStateObj = JSON.parse(visualState)
+        elementsVisualState.printedImages?.push({
+          ...visualStateObj,
+          height: element.offsetHeight / visualStateObj.scale,
+          width: element.offsetWidth / visualStateObj.scale,
+        })
       }
 
       for (const element of document.body.querySelectorAll<HTMLElement>(
