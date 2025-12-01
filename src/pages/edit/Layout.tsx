@@ -9,7 +9,7 @@ import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store
 const PageWrapper = () => {
   const [error, setError] = useState<string | null>(null)
   const products = useProductStore((s) => s.products)
-  const setProducts = useProductStore((s) => s.setProducts)
+  const setProducts = useProductStore((s) => s.setProducts) //>>> checked: OK
   const printedImages = usePrintedImageStore((s) => s.printedImages)
   const [fetched, setFetched] = useState<boolean>(false)
   const navigate = useNavigate()

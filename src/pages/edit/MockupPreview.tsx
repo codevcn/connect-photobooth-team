@@ -13,12 +13,14 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
   const { saveHtmlAsImage } = useHtmlToCanvas()
   const previewImageRef = useRef<HTMLImageElement>(null)
   const previewImageContainerRef = useRef<HTMLDivElement>(null)
+  const didRunEffectRef = useRef(false)
 
   /**
    * Tạo preview bằng cách capture screenshot của print area
    * Sử dụng modern-screenshot để có chất lượng cao
    */
   const generatePreview = () => {
+    console.log('>>> [clean] goi ham generate Preview')
     const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
     if (!container) {
       return setError('Không tìm thấy khu vực chỉnh sửa')
@@ -54,7 +56,6 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
       'image/png',
       4,
       (imageData) => {
-        const end2 = performance.now()
         setTimeout(() => {
           removeMockPrintArea()
           urlToRevokeRef.current = URL.createObjectURL(imageData)
@@ -64,12 +65,15 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
         }, 100)
       },
       (error) => {
+        console.log('>>> [err] error:', error)
         setError('Không thể tạo bản xem trước. Vui lòng thử lại.')
       }
     )
   }
 
   useEffect(() => {
+    if (didRunEffectRef.current) return
+    didRunEffectRef.current = true
     requestAnimationFrame(() => {
       generatePreview()
     })

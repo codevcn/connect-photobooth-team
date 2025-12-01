@@ -5,6 +5,7 @@ import { useElementControl } from '@/hooks/element/use-element-control'
 import { getNaturalSizeOfImage, typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '../../helpers'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 
 const MAX_ZOOM: number = 4
 const MIN_ZOOM: number = 0.5
@@ -34,6 +35,7 @@ export const PrintedImageElement = ({
 }: TPrintedImageElementProps) => {
   const { path, id, mountType, height, width } = element
   const rootRef = useRef<HTMLElement | null>(null)
+  const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
   const {
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
@@ -80,12 +82,14 @@ export const PrintedImageElement = ({
     const rootRect = root.getBoundingClientRect()
     const printAreaContainerRect = printAreaContainer.getBoundingClientRect()
     handleSetElementState(
-      elementContainerRect.left +
+      (elementContainerRect.left +
         (elementContainerRect.width - rootRect.width) / 2 -
-        printAreaContainerRect.left,
-      elementContainerRect.top +
+        printAreaContainerRect.left) /
+        scaleFactor,
+      (elementContainerRect.top +
         (elementContainerRect.height - rootRect.height) / 2 -
-        printAreaContainerRect.top
+        printAreaContainerRect.top) /
+        scaleFactor
     )
     captureCurrentElementPosition(root, printAreaContainer)
   }

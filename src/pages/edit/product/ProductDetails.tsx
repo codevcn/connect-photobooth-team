@@ -9,7 +9,7 @@ type TProductDetailsProps = {
 
 export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetailsProps) => {
   return (
-    <div className="smd:order-1 smd:mt-2 order-2 w-full flex flex-col">
+    <div className="smd:order-1 order-2 w-full flex flex-col">
       <div className="smd:order-1 order-2 pl-1 pt-2">
         <h1 className="sm:text-3xl smd:mt-0 mt-2 text-2xl font-bold text-slate-900 mb-2">
           {pickedProduct.name}
@@ -27,7 +27,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </span>
       </div>
 
-      <div className="smd:order-3 order-4 smd:p-3 p-2 bg-orange-50 border border-orange-100 rounded-lg space-y-2 my-4">
+      <div className="smd:order-3 order-4 smd:p-3 p-2 bg-orange-50 border border-orange-100 rounded-lg space-y-2 my-2">
         <div className="flex items-center justify-between gap-2 text-sm">
           <span className="text-gray-800 font-bold">Chăm sóc khách hàng</span>
           <span className="font-semibold text-orange-600 text-end whitespace-nowrap">

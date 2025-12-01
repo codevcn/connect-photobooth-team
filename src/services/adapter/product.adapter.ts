@@ -26,14 +26,13 @@ export class ProductAdapter {
     if (apiProduct.variants.length === 0) return null
     if (apiProduct.surfaces.length === 0) return null
 
-    const clientVariants = this.toClientVariants(apiProduct)
     return {
       id: apiProduct.id,
       url: apiProduct.base_image_url,
       name: apiProduct.name,
       description: apiProduct.description,
       detailImages: apiProduct.detail_img,
-      variants: clientVariants,
+      variants: this.toClientVariants(apiProduct),
       inNewLine: false,
       printAreaList: this.toPrintAreaList(apiProduct),
       // variantSurfaces: this.toMockups(apiProduct.mockups),
@@ -148,7 +147,6 @@ export class ProductAdapter {
   ): TPrintAreaInfo {
     const transform = mockup.transform_json
     const surfaceArea = surface.print_areas
-    console.log('>>> [serser]:', { transform, surfaceArea, productId, variantId })
     return {
       id: mockup.surface_id,
       variantId,
@@ -239,6 +237,7 @@ function buildProductAttributes(variants: TProductVariant[], productId: number):
       groups[material][scent][colorKey].sizes!.push(size)
     }
   }
+  console.log('>>> [ser] groups:', {groups,productId,uniqueMaterials,uniqueScents,uniqueColors,uniqueSizes})
 
   return {
     uniqueMaterials: Array.from(uniqueMaterials),

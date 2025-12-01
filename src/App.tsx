@@ -31,6 +31,7 @@ import { isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 import MaintainPage from './pages/maintain/Page'
+import { AppTempContainer } from './components/custom/TempContainer'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -74,6 +75,8 @@ function AppContent() {
 
   return (
     <>
+      <AppTempContainer />
+
       <ToastContainer
         position="top-center"
         autoClose={3000}

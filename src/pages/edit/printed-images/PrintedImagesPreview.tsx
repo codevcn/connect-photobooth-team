@@ -189,7 +189,7 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
               <img
                 className={`${
                   index === 0 ? 'aspect-video' : 'aspect-square'
-                } h-12 border border-main-cl object-contain mobile-touch`}
+                } h-12 border-2 border-main-cl object-contain mobile-touch`}
                 src={printedImage.url}
                 alt="Ảnh chụp photobooth"
               />

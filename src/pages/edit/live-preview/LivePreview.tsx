@@ -12,6 +12,7 @@ import { createCommonConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
 import { adjustSizeOfPlacedImageOnPlaced } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { MyPreviewComponent } from '@/dev/components/Preview'
 
 type TZoomButtonsProps = {
   scale: number
@@ -59,11 +60,11 @@ const ZoomButtons = ({
   }
 
   return (
-    <div className="absolute z-52 bottom-1 right-1 flex flex-col px-1 py-2 items-center gap-2 bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="smd:bottom-2 smd:right-2 absolute z-52 bottom-1 right-1 flex flex-col p-1 items-center gap-2 bg-white rounded-lg shadow-lg border border-gray-200">
       <button
         onClick={() => handleZoom('out')}
         disabled={scale <= minZoom}
-        className="flex items-center justify-center rounded hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="smd:p-1 flex items-center justify-center rounded hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         aria-label="Zoom out"
       >
         <svg
@@ -76,13 +77,13 @@ const ZoomButtons = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
         </svg>
       </button>
-      <span className="text-xs font-medium text-gray-700 text-center">
+      <span className="text-xs font-medium text-gray-700 text-center leading-none">
         {Math.round(scale * 100)}%
       </span>
       <button
         onClick={() => handleZoom('in')}
         disabled={scale >= maxZoom}
-        className="flex items-center justify-center rounded hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="smd:p-1 flex items-center justify-center rounded hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         aria-label="Zoom in"
       >
         <svg
@@ -125,7 +126,9 @@ export const LivePreview = ({
     )!
   }, [pickedProduct.id, pickedProduct.printAreaList, pickedSurfaceId, editedVariantId])
 
-  const { containerRef, scale, position, handlers, controls } = useZoomEditBackground(0.8, 5)
+  const minZoom = 0.8
+  const maxZoom = 5
+  const { containerRef, scale, handlers, controls } = useZoomEditBackground(minZoom, maxZoom)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
     usePrintArea(
@@ -188,7 +191,7 @@ export const LivePreview = ({
   }, [])
 
   useEffect(() => {
-    useEditAreaStore.getState().setEditBackgroundScaleValue(scale)
+    useEditAreaStore.getState().setEditAreaScaleValue(scale)
   }, [scale])
 
   return (
@@ -196,14 +199,9 @@ export const LivePreview = ({
       ref={containerRef}
       {...handlers}
       onDragStart={(e) => e.preventDefault()}
-      className="smd:w-full overflow-hidden w-full min-h-full h-full relative flex items-center justify-center"
+      className="NAME-print-area-container-wrapper smd:w-full overflow-hidden w-full min-h-full h-full relative flex items-center justify-center"
     >
-      {/* {createPortal(
-        <div className="bg-blue-600 h-12 w-12 fixed top-0 left-0 z-1000">
-          <div>oke</div>
-        </div>,
-        document.body
-      )} */}
+      <MyPreviewComponent />
       <AddToCartHandler
         checkIfAnyElementOutOfBounds={checkIfAnyElementOutOfBounds}
         printAreaContainerRef={printAreaContainerRef}
@@ -261,8 +259,8 @@ export const LivePreview = ({
         onZoomIn={controls.zoomIn}
         setZoom={controls.setZoom}
         onZoomOut={controls.zoomOut}
-        minZoom={0.8}
-        maxZoom={5}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
       />
     </div>
   )

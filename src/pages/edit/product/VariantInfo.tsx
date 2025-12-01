@@ -104,10 +104,11 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
 
   const initSelectedAttributesOnPickedVariantChange = () => {
     const attrs: Record<string, string> = {}
-    if (pickedVariant.attributes.material) attrs.material = pickedVariant.attributes.material
-    if (pickedVariant.attributes.scent) attrs.scent = pickedVariant.attributes.scent
-    if (pickedVariant.attributes.color) attrs.color = pickedVariant.attributes.color
-    if (pickedVariant.attributes.size) attrs.size = pickedVariant.attributes.size
+    const variantAttrs = pickedVariant.attributes || {}
+    if (variantAttrs.material) attrs.material = variantAttrs.material
+    if (variantAttrs.scent) attrs.scent = variantAttrs.scent
+    if (variantAttrs.color) attrs.color = variantAttrs.color
+    if (variantAttrs.size) attrs.size = variantAttrs.size
     setSelectedAttributes(attrs)
   }
 
@@ -180,7 +181,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
   const colorsCount = Object.keys(mergedAttributes.uniqueColors).length
 
   return (
-    <div className="smd:order-4 smd:mt-4 mt-2 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
+    <div className="smd:order-4 mt-2 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
       <div className="smd:block hidden mb-4">
         <h3 className="block text-sm font-bold text-slate-900">Danh mục hình ảnh sản phẩm</h3>
         <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">

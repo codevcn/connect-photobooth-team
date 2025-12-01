@@ -2,13 +2,13 @@ import { createInitialConstants } from '@/utils/contants'
 import { create } from 'zustand'
 
 type TUseEditAreaStore = {
-  editBackgroundScaleValue: number
+  editAreaScaleValue: number
 
-  setEditBackgroundScaleValue: (scaleValue: number) => void
+  setEditAreaScaleValue: (scaleValue: number) => void
 }
 
 export const useEditAreaStore = create<TUseEditAreaStore>((set) => ({
-  editBackgroundScaleValue: createInitialConstants<number>('ELEMENT_ZOOM'),
+  editAreaScaleValue: createInitialConstants<number>('ELEMENT_ZOOM'),
 
-  setEditBackgroundScaleValue: (scaleValue) => set({ editBackgroundScaleValue: scaleValue }),
+  setEditAreaScaleValue: (scaleValue) => set({ editAreaScaleValue: scaleValue }),
 }))

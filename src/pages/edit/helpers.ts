@@ -241,37 +241,41 @@ type TCleanPrintAreaResult = {
 export const cleanPrintAreaOnExtractMockupImage = (
   printAreaContainer: HTMLDivElement
 ): TCleanPrintAreaResult => {
+  const wrapper = printAreaContainer.closest<HTMLElement>('.NAME-print-area-container-wrapper')!
   const clonedPrintAreaContainer = printAreaContainer.cloneNode(true) as HTMLDivElement
+  clonedPrintAreaContainer?.classList.add('ng-ng-ng-vcn')
   clonedPrintAreaContainer.style.transform = 'none'
   clonedPrintAreaContainer.style.position = 'absolute'
-  clonedPrintAreaContainer.style.zIndex = '-10'
   clonedPrintAreaContainer.style.top = '0'
   clonedPrintAreaContainer.style.left = '0'
   clonedPrintAreaContainer.style.boxSizing = 'border-box'
-  clonedPrintAreaContainer.style.width = `${printAreaContainer.getBoundingClientRect().width}px`
-  clonedPrintAreaContainer.style.height = `${printAreaContainer.getBoundingClientRect().height}px`
-  document.body.prepend(clonedPrintAreaContainer)
+  clonedPrintAreaContainer.style.width = `${wrapper.getBoundingClientRect().width}px`
+  clonedPrintAreaContainer.style.height = `${wrapper.getBoundingClientRect().height}px`
+  document.body
+    .querySelector<HTMLElement>('.NAME-app-temp-container')
+    ?.appendChild(clonedPrintAreaContainer)
   clonedPrintAreaContainer
     .querySelector<HTMLElement>('.NAME-out-of-bounds-overlay-warning')
     ?.remove()
-  const allowedPrintArea = clonedPrintAreaContainer.querySelector<HTMLDivElement>(
+  const clonedAllowedPrintArea = clonedPrintAreaContainer.querySelector<HTMLDivElement>(
     '.NAME-print-area-allowed'
   )
-  allowedPrintArea?.style.setProperty('border', 'none')
-  allowedPrintArea?.style.setProperty('background-color', 'transparent')
-  const framesDisplayer = allowedPrintArea?.querySelector<HTMLElement>(
+  clonedAllowedPrintArea?.style.setProperty('border', 'none')
+  clonedAllowedPrintArea?.style.setProperty('background-color', 'transparent')
+  const clonedFramesDisplayer = clonedAllowedPrintArea?.querySelector<HTMLElement>(
     '.NAME-frames-add-image-displayer'
   )
-  framesDisplayer?.style.setProperty('background-color', 'transparent')
-  framesDisplayer?.style.setProperty('border', 'none')
-  for (const frame of allowedPrintArea?.querySelectorAll<HTMLElement>('.NAME-template-frame') ||
-    []) {
+  clonedFramesDisplayer?.style.setProperty('background-color', 'transparent')
+  clonedFramesDisplayer?.style.setProperty('border', 'none')
+  for (const frame of clonedAllowedPrintArea?.querySelectorAll<HTMLElement>(
+    '.NAME-template-frame'
+  ) || []) {
     frame.style.setProperty('border', 'none')
     frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
   }
   return {
     printAreaContainer: clonedPrintAreaContainer,
-    allowedPrintArea: allowedPrintArea,
+    allowedPrintArea: clonedAllowedPrintArea,
     removeMockPrintArea: () => {
       clonedPrintAreaContainer?.remove()
     },

@@ -22,6 +22,7 @@ const validateElementPositionValue = (
   posX: TPosition['x'],
   posY: TPosition['y']
 ): boolean => {
+  console.log('>>> [vvv] valid posx posy:', posX, posY)
   const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
   const rootElement = elementRootRef.current
   if (!containerForElementAbsoluteTo || !rootElement) return false
@@ -29,6 +30,12 @@ const validateElementPositionValue = (
   if (posY < 0) return false
   const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
   const rootElementRect = rootElement.getBoundingClientRect()
+  console.log('>>> [vvv] valid rects:', {
+    containerForElementAbsoluteTo,
+    containerForElementAbsoluteToRect,
+    rootElement,
+    rootElementRect,
+  })
   if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width) return false
   if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height) return false
   return true
@@ -99,16 +106,24 @@ export const useElementControl = (
   }
 
   const handleSetSinglePosition = (posX?: TPosition['x'], posY?: TPosition['y']) => {
+    console.log('>>> [vvv] single pos:', { posX, posY })
     const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
     const rootElement = elementRootRef.current
     if (!containerForElementAbsoluteTo || !rootElement) return
     const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
     const rootElementRect = rootElement.getBoundingClientRect()
+    console.log('>>> [vvv] rects:', {
+      containerForElementAbsoluteToRect,
+      rootElementRect,
+      containerForElementAbsoluteTo,
+      rootElement,
+    })
     if (posX && posX > 0) {
       let parsedValue = posX
       if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width) {
         parsedValue = containerForElementAbsoluteToRect.width - rootElementRect.width - 5
       }
+      console.log('>>> [vvv] parsed posX:', parsedValue)
       setPosition((prev) => ({
         ...prev,
         x: parsedValue,
@@ -118,6 +133,7 @@ export const useElementControl = (
       if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height) {
         parsedValue = containerForElementAbsoluteToRect.height - rootElementRect.height - 5
       }
+      console.log('>>> [vvv] parsed posY:', parsedValue)
       setPosition((prev) => ({
         ...prev,
         y: parsedValue,
@@ -129,7 +145,7 @@ export const useElementControl = (
   const [scale, setScale] = useState<TElementVisualBaseState['scale']>(initialZoom)
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
-  const scaleFactor = useEditAreaStore((s) => s.editBackgroundScaleValue)
+  const scaleFactor = useEditAreaStore((s) => s.editAreaScaleValue)
   // const { ref: refForPinch } = usePinchElement({
   //   maxScale: maxZoom,
   //   minScale: minZoom,
@@ -330,6 +346,7 @@ export const useElementControl = (
   }
 
   useEffect(() => {
+    console.log('>>> [vvv] changes visual states:', { position, angle, scale, zindex })
     captureElementRelativeProperties()
   }, [position.x, position.y, angle, scale, zindex])
 

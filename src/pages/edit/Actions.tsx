@@ -81,7 +81,10 @@ export const Actions = () => {
       </div>
 
       <button
-        onClick={() => setShowMockupPreview(true)}
+        onClick={() => {
+          console.log('>>> [clean] xem truoc mockup')
+          setShowMockupPreview(true)
+        }}
         className="mt-2 w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg touch-target flex items-center justify-center gap-2 text-lg"
       >
         Xem trước bản mockup

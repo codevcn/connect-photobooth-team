@@ -1,9 +1,9 @@
-import { TBaseProduct, TPrintedImage, TPrintTemplate } from '@/utils/types/global'
+import { TBaseProduct, TPrintAreaInfo, TPrintedImage, TPrintTemplate } from '@/utils/types/global'
 import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
 import { initTheBestTemplateForPrintedImages } from './helpers'
-import { useEffect } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { useSearchParams } from 'react-router-dom'
@@ -11,9 +11,19 @@ import { useSearchParams } from 'react-router-dom'
 type TProductProps = {
   product: TBaseProduct
   initialTemplate: TPrintTemplate
-  onPickProduct: (product: TBaseProduct, initialTemplate: TPrintTemplate) => void
+  firstPrintAreaInProduct: TPrintAreaInfo
+  onPickProduct: (
+    product: TBaseProduct,
+    initialTemplate: TPrintTemplate,
+    firstPrintAreaInProduct: TPrintAreaInfo
+  ) => void
   onInitTemplates: (initialTemplate: TPrintTemplate) => void
   isPicked: boolean
+  onInitFirstProduct: (
+    product: TBaseProduct,
+    initialTemplate: TPrintTemplate,
+    firstPrintAreaInProduct: TPrintAreaInfo
+  ) => void
 }
 
 const Product = ({
@@ -22,12 +32,15 @@ const Product = ({
   onPickProduct,
   onInitTemplates,
   isPicked,
+  onInitFirstProduct,
+  firstPrintAreaInProduct,
 }: TProductProps) => {
   const firstPrintArea = product.printAreaList[0]
   const { printAreaRef, printAreaContainerRef } = usePrintArea(firstPrintArea)
 
   useEffect(() => {
     onInitTemplates(initialTemplate)
+    onInitFirstProduct(product, initialTemplate, firstPrintAreaInProduct)
   }, [])
 
   return (
@@ -38,7 +51,7 @@ const Product = ({
       className={`${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
       } NAME-gallery-product spmd:w-full spmd:h-auto h-[100px] aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative rounded-xl transition-transform duration-200 border border-gray-200`}
-      onClick={() => onPickProduct(product, initialTemplate)}
+      onClick={() => onPickProduct(product, initialTemplate, firstPrintAreaInProduct)}
     >
       <img
         src={firstPrintArea.imageUrl || '/images/placeholder.svg'}
@@ -62,6 +75,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const initializeAddingTemplates = useTemplateStore((s) => s.initializeAddingTemplates)
   const allTemplates = useTemplateStore((s) => s.allTemplates)
   const mockupId = useSearchParams()[0].get('mockupId')
+  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintTemplate, TPrintAreaInfo]>()
+  const hasPickedProduct = useRef(false)
 
   const scrollToPickedProduct = () => {
     if (pickedProduct) {
@@ -81,16 +96,29 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const initFirstProduct = () => {
     console.log('>>> [ddd] mockupId at gallery:', mockupId)
     if (!mockupId) {
-      if (allTemplates.length > 0) {
+      if (allTemplates.length > 0 && firstProduct && firstProduct.length === 3) {
         console.log('>>> [ddd] run this init first product')
-        handlePickProduct(products[0], allTemplates[0])
+        useProductUIDataStore
+          .getState()
+          .handlePickFirstProduct(firstProduct[0], firstProduct[1], firstProduct[2])
       }
+    }
+  }
+
+  const handleSetFirstProduct = (
+    firstProductInList: TBaseProduct,
+    initialTemplate: TPrintTemplate,
+    initialSurface: TPrintAreaInfo
+  ) => {
+    if (!firstProduct && !hasPickedProduct.current) {
+      hasPickedProduct.current = true
+      setFirstProduct([firstProductInList, initialTemplate, initialSurface])
     }
   }
 
   useEffect(() => {
     initFirstProduct()
-  }, [allTemplates.length])
+  }, [allTemplates.length, firstProduct?.length])
 
   useEffect(() => {
     scrollToPickedProduct()
@@ -111,21 +139,23 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         {products &&
           products.length > 0 &&
           products.map((product) => {
-            const printArea = product.printAreaList[0].area
+            const firstPrintArea = product.printAreaList[0]
             return (
               <Product
                 key={product.id}
                 product={product}
+                firstPrintAreaInProduct={firstPrintArea}
                 initialTemplate={initTheBestTemplateForPrintedImages(
                   {
-                    height: printArea.printH,
-                    width: printArea.printW,
+                    height: firstPrintArea.area.printH,
+                    width: firstPrintArea.area.printW,
                   },
                   printedImages
                 )}
                 onPickProduct={handlePickProduct}
                 onInitTemplates={(initialTemplate) => handleInitTemplate(initialTemplate)}
                 isPicked={product.id === pickedProduct?.id}
+                onInitFirstProduct={handleSetFirstProduct}
               />
             )
           })}

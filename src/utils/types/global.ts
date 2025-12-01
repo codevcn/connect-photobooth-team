@@ -101,7 +101,7 @@ export type TBaseProduct = {
   variants: TClientProductVariant[]
   detailImages: string[]
   inNewLine: boolean
-  printAreaList: TPrintAreaInfo[] // surfaces
+  printAreaList: TPrintAreaInfo[] // field mockups từ api
   mergedAttributes: TMergedAttributes // NEW: Merged attributes from all variants
   slug: string
   printSurfaces: TPrintSurfaceInfo[]
