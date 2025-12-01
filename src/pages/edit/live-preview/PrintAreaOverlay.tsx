@@ -202,6 +202,7 @@ export const PrintAreaOverlay = ({
           scrollable={false}
           printedImages={printedImages}
           containerScale={containerScale}
+          displayZoomButton={true}
         />
       )}
     </div>

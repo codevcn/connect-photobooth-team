@@ -1,139 +1,77 @@
-import { TVoucher, VoucherValidationResult } from '@/utils/types/global'
-import { apiCache } from '@/dev/api-cache'
-
-// Cache keys
-const CACHE_KEYS = {
-  VOUCHER_VALIDITY: (code: string, subtotal: number) => `voucher_${code}_${subtotal}`,
-  SAMPLE_VOUCHERS: 'sample_vouchers',
-}
-
-// Cache TTL: 10 minutes for voucher data
-const VOUCHER_CACHE_TTL = 10 * 60 * 1000
+import { VoucherValidationResult } from '@/utils/types/global'
+import { postCheckVoucher } from './api/voucher.api'
+import { TCheckVoucherReq } from '@/utils/types/api'
 
 class VoucherService {
-  // Danh sách voucher mẫu
-  private getMockSampleVouchers(): TVoucher[] {
-    return [
-      {
-        code: 'SAVE10',
-        description: 'Giảm 10% cho đơn hàng',
-        discountType: 'percentage',
-        discountValue: 10,
-      },
-      {
-        code: 'SAVE20',
-        description: 'Giảm 20% cho đơn hàng từ 100,000 VND',
-        discountType: 'percentage',
-        discountValue: 20,
-        minOrderValue: 30000,
-        maxDiscount: 50000,
-      },
-      {
-        code: 'SAVE50K',
-        description: 'Giảm 50,000 VND cho đơn hàng từ 200,000 VND',
-        discountType: 'fixed',
-        discountValue: 50000,
-        minOrderValue: 30000,
-      },
-      {
-        code: 'FREESHIP',
-        description: 'Giảm 30,000 VND phí vận chuyển',
-        discountType: 'fixed',
-        discountValue: 30000,
-      },
-    ]
-  }
-
-  // Hàm kiểm tra tính hợp lệ của voucher
+  /**
+   * Kiểm tra tính hợp lệ của voucher
+   * @param code - Mã voucher
+   * @param items - Danh sách items trong đơn hàng
+   * @param storeCode - Mã cửa hàng
+   */
   async checkVoucherValidity(
     code: string,
-    orderSubtotal: number
+    items: TCheckVoucherReq['items'],
+    storeCode: string
   ): Promise<VoucherValidationResult> {
-    return apiCache.withCache(
-      CACHE_KEYS.VOUCHER_VALIDITY(code, orderSubtotal),
-      async () => {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 800))
+    try {
+      const requestData: TCheckVoucherReq = {
+        store_code: storeCode,
+        items,
+        voucher_code: code,
+      }
 
-        // Tìm voucher
-        const voucher = this.getMockSampleVouchers().find(
-          (v) => v.code.toLowerCase() === code.toLowerCase()
-        )
+      const response = await postCheckVoucher(requestData)
 
-        if (!voucher) {
-          return {
-            success: false,
-            message: 'Mã giảm giá không hợp lệ',
-          }
-        }
-
-        // Kiểm tra giá trị đơn hàng tối thiểu
-        if (voucher.minOrderValue && orderSubtotal < voucher.minOrderValue) {
-          return {
-            success: false,
-            message: `Đơn hàng tối thiểu ${this.formatNumber(
-              voucher.minOrderValue
-            )} VND để sử dụng mã này`,
-          }
-        }
-
-        // Tính số tiền giảm
-        const discount = this.calculateDiscount(orderSubtotal, voucher)
-
+      if (!response.success || !response.data?.data) {
         return {
-          success: true,
-          message: `Áp dụng thành công! Giảm ${this.formatNumber(discount)} VND - ${
-            voucher.description
-          }`,
-          voucher,
+          success: false,
+          message: response.error || 'Không thể kiểm tra mã giảm giá',
         }
-      },
-      VOUCHER_CACHE_TTL
-    )
-  }
-
-  // Hàm tính discount từ voucher
-  calculateDiscount(subtotal: number, voucher: TVoucher | null): number {
-    if (!voucher) return 0
-
-    // Kiểm tra giá trị đơn hàng tối thiểu
-    if (voucher.minOrderValue && subtotal < voucher.minOrderValue) {
-      return 0
-    }
-
-    let discount = 0
-
-    if (voucher.discountType === 'percentage') {
-      discount = (subtotal * voucher.discountValue) / 100
-      // Áp dụng giảm tối đa nếu có
-      if (voucher.maxDiscount && discount > voucher.maxDiscount) {
-        discount = voucher.maxDiscount
       }
-    } else if (voucher.discountType === 'fixed') {
-      discount = voucher.discountValue
-      // Không cho giảm quá tổng tiền
-      if (discount > subtotal) {
-        discount = subtotal
+
+      const voucherData = response.data.data
+
+      // Check if error response
+      if ('error' in voucherData) {
+        return {
+          success: false,
+          message: voucherData.error,
+        }
+      }
+
+      // Success response with voucher data
+      const { type, value, total } = voucherData
+
+      let message = ''
+      if (type === 'free_shipping') {
+        message = `Miễn phí vận chuyển ${this.formatNumber(total)} đ`
+      } else if (type === 'percent') {
+        message = `Giảm ${value}% - Tổng giảm ${this.formatNumber(total)} đ`
+      } else if (type === 'fixed') {
+        message = `Giảm ${this.formatNumber(total)} đ`
+      }
+
+      return {
+        success: true,
+        message: `Áp dụng thành công! ${message}`,
+        discount: total,
+        voucher: {
+          code,
+          description: message,
+          discountType: type === 'percent' ? 'percentage' : 'fixed',
+          discountValue: value,
+        },
+      }
+    } catch (error) {
+      console.error('>>> Error checking voucher:', error)
+      return {
+        success: false,
+        message: 'Có lỗi xảy ra khi kiểm tra mã giảm giá',
       }
     }
-
-    return discount
   }
 
-  // Lấy một số voucher mẫu
-  async getSomeVouchers(): Promise<TVoucher[]> {
-    return apiCache.withCache(
-      CACHE_KEYS.SAMPLE_VOUCHERS,
-      async () => {
-        // await new Promise((resolve) => setTimeout(resolve, 500))
-        // return [...this.SAMPLE_VOUCHERS]
-        return []
-      },
-      VOUCHER_CACHE_TTL
-    )
-  }
-
-  // Format number helper
   private formatNumber(num: number): string {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }

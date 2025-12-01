@@ -1,6 +1,6 @@
 import { useDebouncedCallback } from '@/hooks/use-debounce'
 import { useEditedElementStore } from '@/stores/element/element.store'
-import { detectColorFormat, rgbStringToHex, rgbToHex } from '@/utils/helpers'
+import { detectColorFormat, getContrastColor, rgbStringToHex, rgbToHex } from '@/utils/helpers'
 import { TTextVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
@@ -108,7 +108,12 @@ export const ColorPickerModal = ({
             Xem trước màu chữ:
           </label>
           <div className="flex items-center gap-3">
-            <div className="flex-1 bg-gray-50 rounded-lg border-2 border-gray-300 p-2 text-center">
+            <div
+              style={{
+                backgroundColor: getContrastColor(currentColor),
+              }}
+              className="flex-1 bg-gray-50 rounded-lg border-2 border-gray-300 p-2 text-center"
+            >
               <p className="text-3xl font-bold" style={{ color: currentColor }}>
                 {inputText}
               </p>

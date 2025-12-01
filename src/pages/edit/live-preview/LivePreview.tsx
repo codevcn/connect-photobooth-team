@@ -12,7 +12,7 @@ import { createCommonConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
 import { adjustSizeOfPlacedImageOnPlaced } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
-import { MyPreviewComponent } from '@/dev/components/Preview'
+import { MyDevComponent } from '@/dev/components/Preview'
 
 type TZoomButtonsProps = {
   scale: number
@@ -201,7 +201,7 @@ export const LivePreview = ({
       onDragStart={(e) => e.preventDefault()}
       className="NAME-print-area-container-wrapper smd:w-full overflow-hidden w-full min-h-full h-full relative flex items-center justify-center"
     >
-      <MyPreviewComponent />
+      <MyDevComponent />
       <AddToCartHandler
         checkIfAnyElementOutOfBounds={checkIfAnyElementOutOfBounds}
         printAreaContainerRef={printAreaContainerRef}

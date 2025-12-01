@@ -108,10 +108,11 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   handlePickSurface: (variantId, surfaceId) => {
     const pickedProduct = get().pickedProduct
     if (!pickedProduct) return
-    const variant = pickedProduct.variants.find((v) => v.id === variantId)
-    const surface = pickedProduct.printAreaList.find((s) => s.id === surfaceId)
-    if (variant && surface) {
-      set({ pickedSurface: surface, pickedVariant: variant })
+    const surface = pickedProduct.printAreaList.find(
+      (s) => s.id === surfaceId && s.variantId === variantId
+    )
+    if (surface) {
+      set({ pickedSurface: surface })
     }
   },
 

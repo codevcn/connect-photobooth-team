@@ -38,7 +38,8 @@ type TFramesDisplayerProps = {
   displaySelectingColor: boolean
   allowDragging: boolean
   scrollable: boolean
-  containerScale?: number
+  containerScale: number
+  displayZoomButton: boolean
 }>
 
 export const FramesDisplayer = ({
@@ -54,6 +55,7 @@ export const FramesDisplayer = ({
   scrollable = true,
   printedImages,
   containerScale = 1,
+  displayZoomButton = false,
 }: TFramesDisplayerProps) => {
   const { type } = template
   const mockupId = useSearchParams()[0].get('mockupId')
@@ -81,8 +83,14 @@ export const FramesDisplayer = ({
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef<TPosition>({ x: 0, y: 0 })
 
+  const stopDraggingByZoomPlacedImageButton = (
+    e: Event | React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    return e.target instanceof Element && e.target.closest('.NAME-zoom-placed-image-btn-wrapper')
+  }
+
   // Tính toán biên của container B dựa trên tất cả các thẻ con C
-  const calculateBoundingBox = () => {
+  const calculateBoundingBox = (e: Event) => {
     const containerB = elementsBoxRef.current
     if (!containerB) return null
 
@@ -121,6 +129,7 @@ export const FramesDisplayer = ({
   }
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (stopDraggingByZoomPlacedImageButton(e)) return
     e.preventDefault()
     setIsDragging(true)
     dragStart.current = {
@@ -130,6 +139,7 @@ export const FramesDisplayer = ({
   }
 
   const handleMouseMove = (e: MouseEvent) => {
+    if (stopDraggingByZoomPlacedImageButton(e)) return
     if (!isDragging) return
 
     const containerA = containerRef.current
@@ -146,7 +156,7 @@ export const FramesDisplayer = ({
     const aHeight = aRect.height
 
     // Lấy biên của container B dựa trên các thẻ con C
-    const bBounds = calculateBoundingBox()
+    const bBounds = calculateBoundingBox(e)
 
     if (bBounds) {
       // Giới hạn di chuyển dựa trên biên của các thẻ con C
@@ -195,7 +205,7 @@ export const FramesDisplayer = ({
   }, [isDragging, position])
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-full">
       <div
         ref={elementsBoxRef}
         onPointerDown={handleMouseDown}
@@ -226,6 +236,7 @@ export const FramesDisplayer = ({
             childIndex={idx}
             displaySelectingColor={displaySelectingColor}
             scrollable={scrollable}
+            displayZoomButton={displayZoomButton}
             onImageLoad={() => {
               // Chỉ restore lần đầu khi load từ mockupId
               if (mockupId && !hasRestoredRef.current && restoredOffsetYRef.current !== 0) {

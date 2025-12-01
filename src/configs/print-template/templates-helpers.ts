@@ -135,7 +135,7 @@ export const stylePlacedImageByTemplateType = (
   placedImage: TPlacedImage,
   frame: TTemplateFrame,
   defaultStyle: React.CSSProperties = {},
-  isLog?: boolean
+  transformScale: number = 1
 ): React.CSSProperties => {
   const { width, height, index: frameIndex } = frame
   const styleForSizeAdjustment: React.CSSProperties = {}
@@ -155,7 +155,7 @@ export const stylePlacedImageByTemplateType = (
         bottom: '0',
         top: 'auto',
         left: '50%',
-        transform: 'translateX(-50%)',
+        transform: `translateX(-50%) scale(${transformScale})`,
         right: 'auto',
         ...styleForSizeAdjustment,
       }
@@ -163,7 +163,7 @@ export const stylePlacedImageByTemplateType = (
       return {
         top: '0',
         left: '50%',
-        transform: 'translateX(-50%)',
+        transform: `translateX(-50%) scale(${transformScale})`,
         right: 'auto',
         bottom: 'auto',
         ...styleForSizeAdjustment,
@@ -176,7 +176,7 @@ export const stylePlacedImageByTemplateType = (
         top: '50%',
         bottom: 'auto',
         left: 'auto',
-        transform: 'translateY(-50%)',
+        transform: `translateY(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     } else {
@@ -185,7 +185,7 @@ export const stylePlacedImageByTemplateType = (
         top: '50%',
         right: 'auto',
         bottom: 'auto',
-        transform: 'translateY(-50%)',
+        transform: `translateY(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     }
@@ -204,7 +204,7 @@ export const stylePlacedImageByTemplateType = (
         top: '50%',
         right: 'auto',
         bottom: 'auto',
-        transform: 'translateY(-50%)',
+        transform: `translateY(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     } else {
@@ -217,7 +217,7 @@ export const stylePlacedImageByTemplateType = (
         top: '50%',
         left: 'auto',
         bottom: 'auto',
-        transform: 'translateY(-50%)',
+        transform: `translateY(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     } else if (frameIndex === 2) {
@@ -236,7 +236,7 @@ export const stylePlacedImageByTemplateType = (
         left: '50%',
         right: 'auto',
         bottom: 'auto',
-        transform: 'translateX(-50%)',
+        transform: `translateX(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     }
@@ -247,7 +247,7 @@ export const stylePlacedImageByTemplateType = (
         left: '50%',
         right: 'auto',
         top: 'auto',
-        transform: 'translateX(-50%)',
+        transform: `translateX(-50%) scale(${transformScale})`,
         ...styleForSizeAdjustment,
       }
     } else if (frameIndex === 2) {
@@ -261,7 +261,7 @@ export const stylePlacedImageByTemplateType = (
       left: 'auto',
       right: 'auto',
       bottom: 'auto',
-      transform: 'translateY(-50%)',
+      transform: `translateY(-50%) scale(${transformScale})`,
       ...styleForSizeAdjustment,
     }
   } else if (templateType === '4-vertical') {
@@ -270,7 +270,7 @@ export const stylePlacedImageByTemplateType = (
       right: 'auto',
       top: 'auto',
       bottom: 'auto',
-      transform: 'translateX(-50%)',
+      transform: `translateX(-50%) scale(${transformScale})`,
       ...styleForSizeAdjustment,
     }
   } else if (templateType === '4-square') {
@@ -289,7 +289,7 @@ export const stylePlacedImageByTemplateType = (
     ...styleForSizeAdjustment,
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
+    transform: `translate(-50%, -50%) scale(${transformScale})`,
   }
 }
 

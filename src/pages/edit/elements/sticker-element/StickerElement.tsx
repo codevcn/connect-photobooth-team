@@ -68,6 +68,7 @@ export const StickerElement = ({
     posY?: number,
     zindex?: number
   ) => {
+    console.log('>>> [lis] listen:', { elementId, id, scale, angle, posX, posY, zindex })
     if (elementId === id) {
       handleSetElementState(posX, posY, scale, angle, zindex)
     }

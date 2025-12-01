@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { voucherService } from '@/services/voucher.service'
-import { TVoucher } from '@/utils/types/global'
+import { TVoucher, TPaymentProductItem } from '@/utils/types/global'
+import { TCheckVoucherReq } from '@/utils/types/api'
 
 interface VoucherSectionProps {
-  orderSubtotal: number
+  cartItems: TPaymentProductItem[]
   onVoucherApplied: (voucher: TVoucher | null, discount: number) => void
 }
 
@@ -12,26 +13,27 @@ type TDiscountMessage = {
   status: 'success' | 'error'
 }
 
-export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSectionProps) => {
+export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionProps) => {
   const [discountCode, setDiscountCode] = useState('')
   const [appliedVoucher, setAppliedVoucher] = useState<TVoucher | null>(null)
   const [discountMessage, setDiscountMessage] = useState<TDiscountMessage>()
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false)
-  const [isFetchingVouchers, setIsFetchingVouchers] = useState(false)
-  const [availableVouchers, setAvailableVouchers] = useState<TVoucher[]>([])
 
-  // Fetch danh sách voucher có sẵn
-  const fetchSomeVouchers = async () => {
-    setIsFetchingVouchers(true)
-    try {
-      const vouchers = await voucherService.getSomeVouchers()
-      setAvailableVouchers(vouchers)
-    } catch (error) {
-      console.error('>>> Error fetching vouchers:', error)
-      setAvailableVouchers([])
-    } finally {
-      setIsFetchingVouchers(false)
-    }
+  // Convert cart items to API format
+  const buildVoucherCheckItems = (): TCheckVoucherReq['items'] => {
+    return cartItems.map((item) => ({
+      variant_id: item.productVariantId,
+      quantity: item.quantity,
+      surfaces: [
+        {
+          surface_id: item.surface.id,
+          editor_state_json: item.elementsVisualState,
+          file_url: item.mockupData.image,
+          width_px: item.mockupData.widthPx,
+          height_px: item.mockupData.heightPx,
+        },
+      ],
+    }))
   }
 
   // Hàm áp dụng voucher
@@ -45,14 +47,19 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
     setDiscountMessage(undefined)
 
     try {
-      const result = await voucherService.checkVoucherValidity(discountCode.trim(), orderSubtotal)
+      const items = buildVoucherCheckItems()
+      const result = await voucherService.checkVoucherValidity(
+        discountCode.trim(),
+        items,
+        import.meta.env.VITE_STORE_CODE
+      )
 
       if (result.success && result.voucher) {
         setAppliedVoucher(result.voucher)
         setDiscountMessage({ message: result.message, status: 'success' })
 
-        // Tính discount và notify parent component
-        const discount = voucherService.calculateDiscount(orderSubtotal, result.voucher)
+        // Get discount from API response (voucher already contains discount info)
+        const discount = result.discount || 0
         onVoucherApplied(result.voucher, discount)
       } else {
         setAppliedVoucher(null)
@@ -75,18 +82,6 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
     setDiscountMessage(undefined)
     onVoucherApplied(null, 0)
   }
-
-  useEffect(() => {
-    fetchSomeVouchers()
-  }, [])
-
-  // Update discount khi orderSubtotal thay đổi (nếu đã apply voucher)
-  useEffect(() => {
-    if (appliedVoucher) {
-      const discount = voucherService.calculateDiscount(orderSubtotal, appliedVoucher)
-      onVoucherApplied(appliedVoucher, discount)
-    }
-  }, [orderSubtotal, appliedVoucher])
 
   return (
     <section className="bg-white rounded-2xl shadow-sm p-4">
@@ -227,52 +222,6 @@ export const VoucherSection = ({ orderSubtotal, onVoucherApplied }: VoucherSecti
           )}
           <span>{discountMessage.message}</span>
         </p>
-      )}
-
-      {/* Voucher Suggestions */}
-      {!appliedVoucher && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-2">Mã khuyến mãi có sẵn:</p>
-
-          {isFetchingVouchers ? (
-            <div className="flex items-center justify-center gap-2 py-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-loader-circle-icon lucide-loader-circle animate-spin text-main-cl"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
-              <span className="text-sm text-gray-500">Đang tải mã giảm giá...</span>
-            </div>
-          ) : availableVouchers.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {availableVouchers.map((voucher) => (
-                <button
-                  key={voucher.code}
-                  onClick={() => {
-                    setDiscountCode(voucher.code)
-                  }}
-                  disabled={isApplyingVoucher}
-                  className="text-xs px-2 py-1 bg-pink-50 text-main-cl border border-pink-200 rounded-md hover:bg-pink-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {voucher.code}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-sm text-gray-400">Không có mã giảm giá nào</p>
-            </div>
-          )}
-        </div>
       )}
     </section>
   )

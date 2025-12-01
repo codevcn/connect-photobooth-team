@@ -114,14 +114,12 @@ const restoreMockupVisualStates = (mockupId: string) => {
     const restoredPrintedImageElements = foundMockup.elementsVisualState.printedImages || []
     console.log('>>> [ddd] printedImages:', restoredPrintedImageElements)
     if (restoredPrintedImageElements.length > 0) {
-      useEditedElementStore
-        .getState()
-        .setPrintedImageElements(
-          restoredPrintedImageElements.map((printedImage) => ({
-            ...printedImage,
-            isFromSaved: true,
-          }))
-        )
+      useEditedElementStore.getState().setPrintedImageElements(
+        restoredPrintedImageElements.map((printedImage) => ({
+          ...printedImage,
+          isFromSaved: true,
+        }))
+      )
     }
 
     // Restore sticker elements
@@ -152,6 +150,14 @@ const restoreMockupVisualStates = (mockupId: string) => {
       .getState()
       .handlePickProductOnRestore(product, storedTemplates[0], variant, surface)
   }, 0)
+}
+
+const cancelSelectingZoomingImages = () => {
+  for (const el of document.body.querySelectorAll<HTMLElement>(
+    '.NAME-zoom-placed-image-btn-wrapper'
+  )) {
+    el.classList.add('hidden')
+  }
 }
 
 type TEditPageProps = {
@@ -190,6 +196,14 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       }
     }
 
+    const listenPointerDownOnPage = (e: PointerEvent) => {
+      if (e.target instanceof Element) {
+        if (!e.target.closest('.NAME-zoom-placed-image-btn-wrapper')) {
+          cancelSelectingZoomingImages()
+        }
+      }
+    }
+
     if (mockupId && firstRenderRef.current) {
       restoreMockupVisualStates(mockupId)
       firstRenderRef.current = false
@@ -197,8 +211,10 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
 
     loadAllFonts()
     document.body.addEventListener('click', listenClickOnPage)
+    document.body.addEventListener('pointerdown', listenPointerDownOnPage)
     return () => {
       document.body.removeEventListener('click', listenClickOnPage)
+      document.body.removeEventListener('pointerdown', listenPointerDownOnPage)
       useEditedElementStore.getState().resetData()
       useElementLayerStore.getState().resetData()
       useProductUIDataStore.getState().resetData()

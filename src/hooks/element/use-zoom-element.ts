@@ -1,6 +1,6 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 
-interface UseElementZoomOptions {
+type UseElementZoomOptions = {
   minZoom?: number // Scale tối thiểu (mặc định 0.3)
   maxZoom?: number // Scale tối đa (mặc định 2)
   sensitivity?: number // Độ nhạy zoom (mặc định 0.01)
@@ -10,14 +10,16 @@ interface UseElementZoomOptions {
   setCurrentZoom: React.Dispatch<React.SetStateAction<number>>
 }
 
-interface UseElementZoomReturn {
-  zoomButtonRef: React.MutableRefObject<HTMLButtonElement | null>
-  containerRef: React.MutableRefObject<HTMLElement | null>
+type UseElementZoomReturn<T extends HTMLElement = HTMLElement> = {
+  zoomButtonRef: React.RefObject<HTMLButtonElement | null>
+  containerRef: React.RefObject<T | null>
   resetZoom: () => void
   isZooming: boolean
 }
 
-export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomReturn => {
+export const useZoomElement = <T extends HTMLElement = HTMLElement>(
+  options: UseElementZoomOptions
+): UseElementZoomReturn<T> => {
   const {
     minZoom,
     maxZoom,
@@ -30,7 +32,7 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
 
   // Refs
   const zoomButtonRef = useRef<HTMLButtonElement>(null)
-  const containerRef = useRef<HTMLElement>(null)
+  const containerRef = useRef<T>(null)
   const isZoomingRef = useRef(false)
   const startXRef = useRef(0)
   const startScaleRef = useRef(1)

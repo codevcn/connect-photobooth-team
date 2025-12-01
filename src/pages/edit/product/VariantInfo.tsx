@@ -101,15 +101,6 @@ const findVariantByAttributes = (
         foundVariant = variant
         break
       }
-      // if (
-      //   (!selectedAttrs.material || attrs.material === selectedAttrs.material) &&
-      //   (!selectedAttrs.scent || attrs.scent === selectedAttrs.scent) &&
-      //   (!selectedAttrs.color || attrs.color === selectedAttrs.color) &&
-      //   (!selectedAttrs.size || attrs.size?.toUpperCase() === selectedAttrs.size?.toUpperCase())
-      // ) {
-      //   foundVariant = variant
-      //   break
-      // }
     }
     onFound(foundVariant)
   }, 0)

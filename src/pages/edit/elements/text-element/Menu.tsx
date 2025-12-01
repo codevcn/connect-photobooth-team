@@ -101,7 +101,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
       posXYInputs && posXYInputs[0]?.value ? parseFloat(posXYInputs[0].value) : undefined,
       posXYInputs && posXYInputs[1]?.value ? parseFloat(posXYInputs[1].value) : undefined
     )
-    onClose()
+    // onClose()
   }
 
   const handleAdjustColorOnElement = (color: string) => {

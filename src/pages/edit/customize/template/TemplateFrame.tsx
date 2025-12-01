@@ -67,6 +67,7 @@ type TemplateFrameProps = {
   displaySelectingColor: boolean
   scrollable: boolean
   onImageLoad?: () => void
+  displayZoomButton?: boolean
 }>
 
 export const TemplateFrame = ({
@@ -83,6 +84,7 @@ export const TemplateFrame = ({
   displaySelectingColor = false,
   scrollable = true,
   onImageLoad,
+  displayZoomButton = false,
 }: TemplateFrameProps) => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const frameSelected = selectedElement?.elementId === templateFrame.id
@@ -120,6 +122,7 @@ export const TemplateFrame = ({
           registerChild={registerChild}
           childIndex={childIndex}
           onImageLoad={onImageLoad}
+          displayZoomButton={displayZoomButton}
         />
       ) : (
         displayPlusIcon &&

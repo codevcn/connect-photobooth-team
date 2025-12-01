@@ -315,3 +315,32 @@ export type TAddressWard = {
   district_id: number
   province_id: number
 }
+
+// Voucher API Types
+export type TCheckVoucherReq = {
+  store_code: string
+  items: {
+    variant_id: number
+    quantity: number
+    surfaces: {
+      surface_id: number
+      editor_state_json: Record<string, unknown>
+      file_url: string
+      width_px: number
+      height_px: number
+    }[]
+  }[]
+  voucher_code: string
+}
+
+export type TVoucherType = 'free_shipping' | 'percent' | 'fixed'
+
+export type TCheckVoucherRes = 
+  | {
+      error: string
+    }
+  | {
+      type: TVoucherType
+      value: number
+      total: number
+    }

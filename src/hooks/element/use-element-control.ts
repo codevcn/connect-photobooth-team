@@ -238,15 +238,18 @@ export const useElementControl = (
         handleSetSinglePosition(undefined, value as number)
         break
       case 'scale':
+        let parsedScale = value as number
         if (minZoom) {
           if ((value as number) < minZoom) {
-            setScale(minZoom)
+            parsedScale = minZoom
           }
+          setScale(parsedScale)
         }
         if (maxZoom) {
           if ((value as number) > maxZoom) {
-            setScale(maxZoom)
+            parsedScale = maxZoom
           }
+          setScale(parsedScale)
         }
         break
       case 'angle':

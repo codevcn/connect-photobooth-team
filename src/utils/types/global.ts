@@ -201,6 +201,7 @@ export type VoucherValidationResult = {
   success: boolean
   message: string
   voucher?: TVoucher
+  discount?: number // Total discount amount calculated by API
 }
 
 export type TElementVisualBaseState = {

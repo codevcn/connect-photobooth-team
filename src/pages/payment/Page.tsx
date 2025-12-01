@@ -309,10 +309,7 @@ const PaymentPage = () => {
 
                 {/* Discount Code Section - Mobile */}
                 <div className="md:hidden mt-2 shadow">
-                  <VoucherSection
-                    orderSubtotal={calculateSubtotal()}
-                    onVoucherApplied={handleVoucherApplied}
-                  />
+                  <VoucherSection cartItems={cartItems} onVoucherApplied={handleVoucherApplied} />
                 </div>
               </div>
 
@@ -320,10 +317,7 @@ const PaymentPage = () => {
               <div className="mb-16 md:mb-0 flex flex-col gap-2 h-full overflow-y-auto gallery-scroll">
                 {/* Discount Code Section - Desktop */}
                 <div className="hidden md:block">
-                  <VoucherSection
-                    orderSubtotal={calculateSubtotal()}
-                    onVoucherApplied={handleVoucherApplied}
-                  />
+                  <VoucherSection cartItems={cartItems} onVoucherApplied={handleVoucherApplied} />
                 </div>
 
                 {/* Order Summary */}
@@ -364,8 +358,8 @@ const PaymentPage = () => {
                   <div className="hidden md:block mt-3 md:mt-4">
                     <button
                       onClick={() => {
-                        toast.info('Đang tạm khóa')
-                        // setShowModal(true)
+                        // toast.info('Đang tạm khóa')
+                        setShowModal(true)
                       }}
                       className="flex items-center justify-center gap-2 w-full mt-4 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
                     >
@@ -398,8 +392,8 @@ const PaymentPage = () => {
             <div className="w-full mx-auto px-2 py-2">
               <button
                 onClick={() => {
-                  toast.info('Đang tạm khóa')
-                  // setShowModal(true)
+                  // toast.info('Đang tạm khóa')
+                  setShowModal(true)
                 }}
                 className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full bg-main-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
               >
@@ -458,7 +452,7 @@ const PaymentPage = () => {
 
             {/* Action Button */}
             <button
-              onClick={() => navigate('/edit')}
+              onClick={() => navigate(-1)}
               className="md:text-base text-sm group relative w-full md:max-w-md lg:max-w-lg mx-auto bg-main-cl hover:bg-dark-main-cl text-white font-bold p-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
