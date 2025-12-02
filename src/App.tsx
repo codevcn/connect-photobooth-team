@@ -32,6 +32,7 @@ import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
+import { ElementPositioningDemo } from './dev/pages/Dev'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -93,6 +94,7 @@ function AppContent() {
         <Route path="/qr" element={<ScanQRPage />} />
         <Route path="/edit" element={<EditPage />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/dev" element={<ElementPositioningDemo />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 

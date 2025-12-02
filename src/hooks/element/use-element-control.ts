@@ -1,7 +1,7 @@
 import { useRotateElement } from '@/hooks/element/use-rotate-element'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createInitialConstants } from '@/utils/contants'
 import {
   TElementMountType,
@@ -14,6 +14,11 @@ import { captureCurrentElementPosition } from '@/pages/edit/helpers'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { typeToObject } from '@/utils/helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+
+type TElementPreviousRelativeProps = {
+  relativeOffsetLeft: number
+  relativeOffsetTop: number
+}
 
 type TInitialParams = Partial<
   TElementVisualBaseState & {
@@ -77,6 +82,10 @@ export const useElementControl = (
     const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
     const rootElement = elementRootRef.current
     if (!containerForElementAbsoluteTo || !rootElement) return
+
+    // Capture offset BEFORE position changes
+    captureElementOffsetBeforeChange()
+
     if (posX < 0) return
     if (posY < 0) return
     const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
@@ -151,6 +160,8 @@ export const useElementControl = (
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
   const scaleFactor = useEditAreaStore((s) => s.editAreaScaleValue)
+  // Ref to store previous offset values before visual state changes
+  const elementPreviousRelativeProps = useRef<TElementPreviousRelativeProps | null>(null)
   // const { ref: refForPinch } = usePinchElement({
   //   maxScale: maxZoom,
   //   minScale: minZoom,
@@ -201,6 +212,9 @@ export const useElementControl = (
     value: string | number | [TPosition['x'], TPosition['y']],
     type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex' | 'posXY'
   ) => {
+    // Capture offset before any visual state change
+    captureElementOffsetBeforeChange()
+
     switch (type) {
       case 'posXY':
         handleSetElementPosition((value as Array<number>)[0], (value as Array<number>)[1])
@@ -284,90 +298,53 @@ export const useElementControl = (
     )
   }
 
-  const dragAndScaleElementOnAllowedPrintAreaChange = () => {
-    console.log('>>> [uuu] drag and scale')
-    const elementRootRect = elementRootRef.current?.getBoundingClientRect()
-    if (!elementRootRect) return
-    const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
-    if (!allowedPrintAreaRect) return
-    const printAreaContainerRect = containerForElementAbsoluteToRef.current?.getBoundingClientRect()
-    if (!printAreaContainerRect) return
-
-    const relativeData = elementRootRef.current?.getAttribute('data-element-relative-props')
-    if (!relativeData) return
-    const parsedData = JSON.parse(relativeData) as TElementRelativeProps
-    console.log('>>> [uuu] parsed data:', {
-      parsedData,
-      allowedPrintAreaRect,
-      printAreaContainerRect,
-      printAreaContainer: containerForElementAbsoluteToRef.current,
-      printAreaAllowed: printAreaAllowedRef.current,
+  const stayElementVisualOnAllowedPrintArea = () => {
+    const elementPreOffset = elementPreviousRelativeProps.current
+    if (!elementPreOffset) return
+    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
+    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
+    if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
+    console.log('>>> [all] stay visual:', {
+      allowedPrintAreaLeft,
+      allowedPrintAreaTop,
+      previousOffset: elementPreOffset,
     })
-
-    const { element } = parsedData
-
-    const newX = element.left + allowedPrintAreaRect.left - printAreaContainerRect.left
-    const newY = element.top + allowedPrintAreaRect.top - printAreaContainerRect.top
-
-    //>>> còn thiếu phát hiện va chạm với biên của vùng in allowedPrintAreaRect
-    console.log('>>> [uuu] drag & scale:', { newX, newY })
-    handleSetElementState(newX, newY)
+    handleSetElementPosition(
+      allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
+      allowedPrintAreaTop + elementPreOffset.relativeOffsetTop
+    )
   }
 
-  const captureElementRelativeProperties = () => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
-        if (!allowedPrintAreaRect) return
-        const root = elementRootRef.current
-        if (!root) return
-        const rootRect = root.getBoundingClientRect()
-        console.log('>>> [uuu] capture rects:', { rootRect, allowedPrintAreaRect })
-        root.setAttribute(
-          'data-element-relative-props',
-          JSON.stringify(
-            typeToObject<TElementRelativeProps>({
-              element: {
-                left: rootRect.left - allowedPrintAreaRect.left,
-                top: rootRect.top - allowedPrintAreaRect.top,
-              },
-            })
-          )
-        )
-      })
-    })
-  }
+  const captureElementOffsetBeforeChange = () => {
+    const root = elementRootRef.current
+    if (!root) return
+    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
+    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
+    if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
 
-  const dragElementAlongWithPrintContainer = () => {
-    const elementRoot = elementRootRef.current
-    if (!elementRoot) return
-    const container = containerForElementAbsoluteToRef.current
-    if (!container) return
-    const leftPercent = parseFloat(elementRoot.dataset.leftPercent || '')
-    const topPercent = parseFloat(elementRoot.dataset.topPercent || '')
-    if (!isNaN(leftPercent) && !isNaN(topPercent)) {
-      const containerRect = container.getBoundingClientRect()
-      const newX = (leftPercent / 100) * containerRect.width
-      const newY = (topPercent / 100) * containerRect.height
-      console.log('>>> [uuu] drag:', { newX, newY })
-      handleSetElementState(newX, newY)
+    const offsetLeft = root.offsetLeft
+    const offsetTop = root.offsetTop
+
+    // Save to ref for immediate access
+    elementPreviousRelativeProps.current = {
+      relativeOffsetLeft: offsetLeft - allowedPrintAreaLeft,
+      relativeOffsetTop: offsetTop - allowedPrintAreaTop,
     }
   }
 
   useEffect(() => {
-    console.log('>>> [vvv] changes visual states:', { position, angle, scale, zindex })
-    captureElementRelativeProperties()
+    captureElementOffsetBeforeChange()
   }, [position.x, position.y, angle, scale, zindex])
 
   useEffect(() => {
     eventEmitter.on(
       EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED,
-      dragAndScaleElementOnAllowedPrintAreaChange
+      stayElementVisualOnAllowedPrintArea
     )
     return () => {
       eventEmitter.off(
         EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED,
-        dragAndScaleElementOnAllowedPrintAreaChange
+        stayElementVisualOnAllowedPrintArea
       )
     }
   }, [])
@@ -377,7 +354,7 @@ export const useElementControl = (
     const container = containerForElementAbsoluteToRef.current
     if (!container) return
     const containerObserver = new ResizeObserver((entries) => {
-      dragElementAlongWithPrintContainer()
+      stayElementVisualOnAllowedPrintArea()
     })
     containerObserver.observe(container)
     eventEmitter.on
