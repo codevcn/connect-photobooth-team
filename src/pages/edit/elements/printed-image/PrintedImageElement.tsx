@@ -255,6 +255,7 @@ export const PrintedImageElement = ({
           >
             <button
               ref={rotateButtonRef}
+              // onPointerDownCapture={(e) => e.stopPropagation()}
               className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
             >
               <svg
@@ -275,6 +276,7 @@ export const PrintedImageElement = ({
           <div className={`NAME-remove-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8`}>
             <button
               ref={zoomButtonRef}
+              onPointerDownCapture={(e) => e.stopPropagation()}
               style={{ transform: `rotateY(180deg)` }}
               className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
             >
@@ -300,6 +302,7 @@ export const PrintedImageElement = ({
           <div className={`NAME-remove-box absolute -top-7 -right-7 md:-top-8 md:-right-8`}>
             <button
               onClick={removeElement}
+              onPointerDownCapture={(e) => e.stopPropagation()}
               className="bg-red-600 text-white rounded-full p-1 active:scale-90 transition"
             >
               <svg

@@ -68,8 +68,8 @@ export const TextElement = ({
     if (!root) return
     const rootRect = root.getBoundingClientRect()
     const { left, top } = rootRect
-    const widthAfterScale = fontSize * content.length * 0.59 // 0.59 là giá trị chiều dài trung bình cho 1 ký tự trong font chữ Arial (font chữ mặc định của ứng dụng)
-    const heightAfterScale = fontSize
+    const widthAfterScale = fontSize * content.length * 0.59 * scaleFactor // 0.59 là giá trị chiều dài trung bình cho 1 ký tự trong font chữ Arial (font chữ mặc định của ứng dụng)
+    const heightAfterScale = fontSize * scaleFactor // 1.2 là line-height mặc định
     setInteractiveBtns({
       buttonsContainerStyle: {
         top: top + rootRect.height / 2 - heightAfterScale / 2,
@@ -254,7 +254,7 @@ export const TextElement = ({
 
         {createPortal(
           <div
-            className="NAME-element-interactive-buttons fixed z-80 bg-transparent shadow-[0_0_0_2px_#f54900]"
+            className="NAME-element-interactive-buttons fixed z-80 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
             style={{
               display: isSelected && interactiveBtns.isShown ? 'block' : 'none',
               top: interactiveBtns.buttonsContainerStyle.top,
@@ -270,6 +270,7 @@ export const TextElement = ({
             >
               <button
                 ref={rotateButtonRef}
+                // onPointerDownCapture={(e) => e.stopPropagation()}
                 className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
               >
                 <svg
@@ -287,9 +288,10 @@ export const TextElement = ({
                 </svg>
               </button>
             </div>
-            <div className={`NAME-remove-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8`}>
+            <div className={`NAME-zoom-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8`}>
               <button
                 ref={zoomButtonRef}
+                onPointerDownCapture={(e) => e.stopPropagation()}
                 style={{ transform: `rotateY(180deg)` }}
                 className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
               >
@@ -315,6 +317,7 @@ export const TextElement = ({
             <div className={`NAME-remove-box absolute -top-7 -right-7 md:-top-8 md:-right-8`}>
               <button
                 onClick={removeElement}
+                onPointerDownCapture={(e) => e.stopPropagation()}
                 className="bg-red-600 text-white rounded-full p-1 active:scale-90 transition"
               >
                 <svg

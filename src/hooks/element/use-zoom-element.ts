@@ -64,7 +64,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       document.body.style.cursor = 'ew-resize'
       document.body.style.userSelect = 'none'
     },
-    [currentZoom, onZoomStart]
+    [currentZoom]
   )
 
   // Xử lý khi di chuyển
@@ -150,7 +150,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'
     }
-  }, [handleStart, handleMove, handleEnd])
+  }, [])
 
   return {
     zoomButtonRef,
