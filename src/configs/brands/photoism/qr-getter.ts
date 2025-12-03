@@ -201,12 +201,17 @@ class QRGetter {
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
     }
     // Để fetch tự động follow redirect
-    const res1 = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow', // Thay đổi từ 'manual' thành 'follow'
-      headers: browserHeaders,
-    })
-
+    let res1
+    try {
+      res1 = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow', // Thay đổi từ 'manual' thành 'follow'
+        headers: browserHeaders,
+      })
+    } catch (error) {
+      console.error('>>> [qr] fetch img error:', error)
+      throw error
+    }
     onProgress(30, null, null)
 
     // Lấy final URL sau khi đã follow redirect
@@ -218,27 +223,42 @@ class QRGetter {
     // return 'test-uuid'
   }
 
+  removeProtocol(url: string): string {
+    try {
+      const u = new URL(url)
+      return u.href.replace(u.protocol + '//', '')
+    } catch {
+      // Trường hợp url không hợp lệ hoặc không parse được bởi URL()
+      return url.replace(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//, '')
+    }
+  }
+
   private async getFileInfo(
     uuid: string,
-    onProgress: TGetImageDataProgressCallback
+    onProgress: TGetImageDataProgressCallback,
+    imgURL: string
   ): Promise<TGetCustomerMediaResponse> {
-    let a = await fetch('https://cmsapi-apse.seobuk.kr/v1/etc/seq/resource', {
-      headers: {
-        accept: 'application/json, text/plain, */*',
-        'accept-language': 'en-US,en;q=0.9,vi;q=0.8,fr-FR;q=0.7,fr;q=0.6,zh-TW;q=0.5,zh;q=0.4',
-        'content-type': 'application/json',
-        priority: 'u=1, i',
-        'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-site',
-        Referer: 'https://qr.seobuk.kr/',
-      },
-      body: `{\"uid\":\"${uuid}\",\"appUserId\":null}`,
-      method: 'POST',
-    })
+    // let a = await fetch('https://cmsapi-apse.seobuk.kr/v1/etc/seq/resource', {
+    //   headers: {
+    //     accept: 'application/json, text/plain, */*',
+    //     'accept-language': 'en-US,en;q=0.9,vi;q=0.8,fr-FR;q=0.7,fr;q=0.6,zh-TW;q=0.5,zh;q=0.4',
+    //     'content-type': 'application/json',
+    //     priority: 'u=1, i',
+    //     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+    //     'sec-ch-ua-mobile': '?0',
+    //     'sec-ch-ua-platform': '"Windows"',
+    //     'sec-fetch-dest': 'empty',
+    //     'sec-fetch-mode': 'cors',
+    //     'sec-fetch-site': 'same-site',
+    //     Referer: 'https://qr.seobuk.kr/',
+    //   },
+    //   body: `{\"uid\":\"${uuid}\",\"appUserId\":null}`,
+    //   method: 'POST',
+    // })
+    console.log('>>> [qr] result from QR scanning:', imgURL)
+    const strippedURL = this.removeProtocol(imgURL)
+    console.log('>>> [qr] stripped URL:', strippedURL)
+    let a = await fetch(`https://api.encycom.com/api/getimg/?u=${strippedURL}`)
     onProgress(50, null, null)
     return (await a.json()) as TGetCustomerMediaResponse
     // onProgress(50, null, null)
@@ -299,11 +319,12 @@ class QRGetter {
   ): Promise<void> {
     onProgress(10, null, null)
     try {
-      const fileId = await this.getFileId(url, onProgress)
-      const data = await this.getFileInfo(fileId, onProgress)
+      // const fileId = await this.getFileId(url, onProgress)
+      const data = await this.getFileInfo('', onProgress, url)
       console.log('>>> [qr] get file info:', data)
       try {
-        await this.fetchImageData(data.content.fileInfo.picFile.path, onProgress)
+        // await this.fetchImageData(data.content.fileInfo.picFile.path, onProgress)
+        await this.fetchImageData(data.data.picFile.path, onProgress)
       } catch (err) {
         console.error('>>> Lỗi lấy dữ liệu hình ảnh tại local:', err)
         onProgress(0, null, err as Error)

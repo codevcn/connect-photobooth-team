@@ -144,7 +144,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   //   setTimeout(() => {
   //     qrGetter.setDetectFromFileHandler(detectFromFile as any)
   //     qrGetter
-  //       .handleImageData('https://qr.seobuk.kr/s/8ijZsg_', (percentage, images, error) => {
+  //       .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
   //         setProgress(percentage)
   //         if (error) {
   //           console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
