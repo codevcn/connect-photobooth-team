@@ -118,7 +118,7 @@ export const Actions = () => {
       </button>
       <button
         onClick={beforeNavigateToPaymentHandler}
-        className="3xl:text-[1em] 3xl:h-13 w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
+        className="3xl:text-[1em] 3xl:h-13 w-full relative cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
       >
         <span className="inline-block">Xem giỏ hàng</span>
         <svg
