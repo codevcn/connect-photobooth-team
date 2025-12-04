@@ -74,27 +74,25 @@ export const ColorPickerModal = ({
   }, [])
 
   return (
-    <div className="NAME-color-picker-modal fixed inset-0 flex items-center justify-center z-99 animate-pop-in">
+    <div className="NAME-color-picker-modal 3xl:text-3xl fixed inset-0 flex items-center justify-center z-99 animate-pop-in">
       <div onClick={() => onHideShow(false)} className="bg-black/50 absolute inset-0 z-10"></div>
       <div className="bg-white rounded-lg p-4 w-full mx-4 shadow-2xl max-h-[95vh] overflow-y-auto relative z-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-800">Chọn màu chữ</h3>
+          <h3 className="3xl:text-[1.2em] text-lg font-bold text-gray-800">Chọn màu chữ</h3>
           <button
             onClick={() => onHideShow(false)}
-            className="text-gray-800 active:scale-90 w-8 h-8 flex items-center justify-center rounded-full transition"
+            className="text-gray-800 active:scale-90 w-8 h-8 3xl:w-12 3xl:h-12 flex items-center justify-center rounded-full transition"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x"
+              className="lucide lucide-x-icon lucide-x 3xl:w-12 3xl:h-12"
             >
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />
@@ -113,7 +111,7 @@ export const ColorPickerModal = ({
 
         {/* Current Color Display */}
         <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="text-[0.8em] block text-sm font-semibold text-gray-700 mb-1">
             Xem trước màu chữ:
           </label>
           <div className="flex items-center gap-3">
@@ -123,7 +121,7 @@ export const ColorPickerModal = ({
               }}
               className="flex-1 bg-gray-50 rounded-lg border-2 border-gray-300 p-2 text-center"
             >
-              <p className="text-3xl font-bold" style={{ color: currentColor }}>
+              <p className="3xl:text-4xl text-3xl font-bold" style={{ color: currentColor }}>
                 {inputText}
               </p>
             </div>
@@ -132,14 +130,16 @@ export const ColorPickerModal = ({
 
         {/* Input Color */}
         <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-800 mb-2">Nhập mã màu:</label>
+          <label className="text-[0.8em] block text-sm font-semibold text-gray-800 mb-2">
+            Nhập mã màu:
+          </label>
           <input
             type="text"
             ref={inputRef}
             value={currentColor}
             onChange={handleInputChange}
             placeholder="Nhập tên màu (red / pink / ...) hoặc mã màu hex (#fe6e87)"
-            className="w-full px-3 text-gray-800 py-2 border-gray-300 border-2 rounded-lg outline-none transition-all"
+            className="3xl:text-[0.9em] w-full px-3 text-gray-800 py-2 border-gray-300 border-2 rounded-lg outline-none transition-all"
           />
         </div>
 

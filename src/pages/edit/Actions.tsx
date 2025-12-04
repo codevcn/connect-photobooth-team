@@ -25,6 +25,7 @@ export const Actions = () => {
     const pickedProduct = useProductUIDataStore.getState().pickedProduct
     if (pickedProduct) {
       const productNote = productNoteRef.current?.value
+      console.log('>>> [note] product note:', productNote)
       if (productNote) {
         useProductUIDataStore.getState().addProductNote(pickedProduct.id, productNote)
       } else {

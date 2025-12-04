@@ -100,7 +100,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   if (!showPrintedImagesModal) return null
 
   return (
-    <div className="NAME-printed-images-modal fixed inset-0 z-999 flex items-center justify-center">
+    <div className="NAME-printed-images-modal 3xl:text-3xl fixed inset-0 z-999 flex items-center justify-center">
       <div
         onClick={() => setShowPrintedImagesModal(false)}
         className="bg-black/70 absolute inset-0 z-10"
@@ -108,23 +108,21 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
       <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[90vh] flex flex-col transition duration-300 ease-in-out">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-b-gray-200 shadow">
-          <h2 className="text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
+          <h2 className="3xl:text-[1em] text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
           <button
             onClick={() => setShowPrintedImagesModal(false)}
-            className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
+            className="3xl:h-12 3xl:w-12 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
             aria-label="Close"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x"
+              className="lucide lucide-x-icon lucide-x 3xl:w-12 3xl:h-12"
             >
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />

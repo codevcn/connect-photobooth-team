@@ -65,7 +65,6 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
       pickedSurface: null,
       isAddingToCart: false,
       cartCount: 0,
-      productsAttachedData: [],
     })
   },
 
@@ -78,7 +77,12 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   updateProductAttachedData: (productId, data) => {
+    console.log('>>> [note] pr:', {
+      productId,
+      data,
+    })
     const existingData = [...(get().productsAttachedData || [])]
+    console.log('>>> [note] existingData:', existingData)
     if (existingData.length === 0) {
       set({ productsAttachedData: [{ productId, ...data }] })
     } else {
