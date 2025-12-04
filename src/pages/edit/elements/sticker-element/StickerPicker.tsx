@@ -113,25 +113,23 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-99 animate-pop-in p-4">
       <div onClick={onClose} className="bg-black/50 absolute inset-0 z-10"></div>
-      <div className="flex flex-col bg-white w-full max-w-2xl rounded-xl shadow-2xl max-h-[90vh] relative z-20 overflow-hidden">
+      <div className="flex flex-col bg-white w-full rounded-xl shadow-2xl max-w-[90vw] max-h-[90vh] relative z-20 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-1 border-b border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800">Thêm nhãn dán</h3>
+          <h3 className="3xl:text-4xl text-xl font-bold text-gray-800">Thêm nhãn dán</h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/80 rounded-full active:scale-95 transition cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-gray-700"
+              className="text-gray-700 h-6 w-6 3xl:w-10 3xl:h-10"
             >
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />
@@ -154,7 +152,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
                       : 'bg-white border-2 border-gray-200 hover:border-orange-300'
                   }`}
                 >
-                  <div className="w-12 h-12 flex items-center justify-center">
+                  <div className="3xl:w-24 3xl:h-24 w-12 h-12 flex items-center justify-center">
                     <img
                       src={`/images/stickers/${group.name}/st-1.png`}
                       alt={group.displayName}
@@ -162,7 +160,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
                     />
                   </div>
                   <span
-                    className={`text-xs font-medium ${
+                    className={`3xl:font-bold text-xs font-medium ${
                       isSelected ? 'text-orange-700' : 'text-gray-600'
                     }`}
                   >
@@ -202,7 +200,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
               <p className="text-gray-600 font-medium">Đang tải nhãn dán...</p>
             </div>
           ) : selectedGroup && selectedGroup.loaded ? (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            <div className="3xl:grid-cols-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
               {selectedGroup.stickers.map((path, index) => (
                 <button
                   key={index}

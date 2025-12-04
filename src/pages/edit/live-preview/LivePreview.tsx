@@ -64,7 +64,7 @@ const ZoomButtons = ({
   }
 
   return (
-    <div className="smd:bottom-2 smd:right-2 absolute z-52 bottom-1 right-1 flex flex-col p-1 w-10 items-center gap-2 bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="3xl:text-xl 3xl:w-16 smd:bottom-4 smd:right-4 absolute z-52 bottom-1 right-1 flex flex-col p-1 w-10 items-center gap-2 bg-white rounded-lg shadow-lg border border-gray-200">
       <button
         onClick={() => handleZoom('out')}
         disabled={scale <= minZoom}
@@ -72,7 +72,7 @@ const ZoomButtons = ({
         aria-label="Zoom out"
       >
         <svg
-          className="w-4 h-4 text-gray-700"
+          className="w-4 h-4 text-gray-700 3xl:w-8 3xl:h-8"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -81,7 +81,7 @@ const ZoomButtons = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
         </svg>
       </button>
-      <span className="text-xs font-medium text-gray-700 text-center leading-none">
+      <span className="3xl:text-[1em] text-xs font-medium text-gray-700 text-center leading-none">
         {Math.round(scale * 100)}%
       </span>
       <button
@@ -91,7 +91,7 @@ const ZoomButtons = ({
         aria-label="Zoom in"
       >
         <svg
-          className="w-4 h-4 text-gray-700"
+          className="w-4 h-4 text-gray-700 3xl:w-8 3xl:h-8"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -242,7 +242,7 @@ export const LivePreview = ({
       <div
         ref={(node) => {
           printAreaContainerRef.current = node
-          refForDrag.current = node
+          // refForDrag.current = node
         }}
         className="NAME-print-area-container touch-none w-full h-full min-h-[150px] overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
         style={{
