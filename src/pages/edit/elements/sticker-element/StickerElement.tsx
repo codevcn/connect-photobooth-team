@@ -57,6 +57,7 @@ export const StickerElement = ({
     buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
     isShown: false,
   })
+  const [grayscale, setGrayscale] = useState<number>(element.grayscale || 0)
 
   const updateInteractiveButtonsVisual = () => {
     if (!isSelected) return
@@ -95,10 +96,14 @@ export const StickerElement = ({
     angle?: number,
     posX?: number,
     posY?: number,
-    zindex?: number
+    zindex?: number,
+    grayscale?: number
   ) => {
     if (elementId === id) {
       handleSetElementState(posX, posY, scale, angle, zindex)
+    }
+    if (grayscale || grayscale === 0) {
+      setGrayscale(grayscale)
     }
   }
 
@@ -223,6 +228,7 @@ export const StickerElement = ({
           zindex,
           height,
           width,
+          grayscale,
         })
       )}
       onDragStart={(e) => e.preventDefault()}
@@ -230,7 +236,12 @@ export const StickerElement = ({
       onDragOver={(e) => e.preventDefault()}
     >
       <div className={`NAME-element-main-box select-none relative origin-center h-full w-full`}>
-        <div className="h-full w-full">
+        <div
+          className="h-full w-full"
+          style={{
+            filter: `grayscale(${grayscale}%)`,
+          }}
+        >
           <img
             src={path}
             alt={`Sticker`}

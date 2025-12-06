@@ -24,7 +24,8 @@ interface IInternalEvents {
     angle?: number,
     posX?: number,
     posY?: number,
-    zindex?: number
+    zindex?: number,
+    grayscale?: number
   ) => void
   [EInternalEvents.SUBMIT_STICKER_ELE_PROPS]: (
     elementId: string,
@@ -32,7 +33,8 @@ interface IInternalEvents {
     angle?: number,
     posX?: number,
     posY?: number,
-    zindex?: number
+    zindex?: number,
+    grayscale?: number
   ) => void
   [EInternalEvents.SUBMIT_TEXT_ELE_PROPS]: (
     elementId: string,

@@ -227,11 +227,13 @@ export type TTextVisualState = TElementVisualBaseState & {
 export type TStickerVisualState = TElementVisualBaseState & {
   id: string
   path: string
-  mountType?: TElementMountType
-  height?: number
-  width?: number
-  matchOrientation?: 'width' | 'height'
-}
+} & Partial<{
+    mountType: TElementMountType
+    height: number
+    width: number
+    matchOrientation: 'width' | 'height'
+    grayscale: number // 0-100 percentage
+  }>
 
 export type TPrintedImageVisualState = TStickerVisualState
 

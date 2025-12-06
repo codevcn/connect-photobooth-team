@@ -1,8 +1,137 @@
 import { createInitialConstants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TPrintedImageVisualState } from '@/utils/types/global'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useTemplateStore } from '@/stores/ui/template.store'
+import { detectCollisionByFixedElement } from '@/utils/layout'
 import { toast } from 'react-toastify'
+
+type TGrayscaleControlProps = {
+  grayscale: number
+  setGrayscale: (value: number) => void
+  onChange: (value: number) => void
+}
+
+const GrayscaleControl = ({ grayscale, setGrayscale, onChange }: TGrayscaleControlProps) => {
+  const [showPopover, setShowPopover] = useState(false)
+
+  const popoverRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  const detectCollision = () => {
+    const popover = popoverRef.current
+    if (!popover) return
+    const rect = popover.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    const margin = 10
+
+    // Phát hiện va chạm với cạnh trên
+    if (rect.top < margin) {
+      popover.style.top = `calc(100% + ${Math.abs(rect.top) + margin}px)`
+    }
+
+    // Phát hiện va chạm với cạnh dưới
+    if (rect.bottom > viewportHeight - margin) {
+      popover.style.top = `calc(-100% + ${Math.abs(rect.bottom) + margin}px)`
+    }
+
+    // Phát hiện va chạm với cạnh trái
+    if (rect.left < margin) {
+      popover.style.right = `-${Math.abs(rect.left) + margin}px`
+    }
+
+    // Phát hiện va chạm với cạnh phải
+    if (rect.right > viewportWidth - margin) {
+      popover.style.right = `${Math.abs(rect.right) + margin}px`
+    }
+  }
+
+  // Close popover on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        popoverRef.current &&
+        buttonRef.current &&
+        !popoverRef.current.contains(e.target as Node) &&
+        !buttonRef.current.contains(e.target as Node)
+      ) {
+        setShowPopover(false)
+      }
+    }
+
+    if (showPopover) {
+      detectCollision()
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showPopover])
+
+  const handleGrayscaleChange = (value: number) => {
+    setGrayscale(value)
+    onChange(value)
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <button
+        ref={buttonRef}
+        onClick={() => setShowPopover(!showPopover)}
+        className="group flex items-center justify-center font-bold gap-1 text-inherit rounded p-1 w-full h-full"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-4 h-4 smd:w-5 smd:h-5 5xl:w-7 5xl:h-7"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2v20" />
+        </svg>
+        <span className="5xl:text-[1em] text-xs smd:text-sm">Trắng đen</span>
+      </button>
+
+      {showPopover && (
+        <div
+          ref={popoverRef}
+          className="5xl:text-2xl min-w-[280px] translate-x-5 max-w-[480px] absolute -right-1 top-[calc(100%+4px)] bg-white border-2 border-main-cl rounded-lg shadow-xl p-3 z-999"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-row items-center gap-3">
+            <span className="text-[1em] font-semibold text-main-cl whitespace-nowrap">0%</span>
+
+            <div className="relative flex-1 flex items-center">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={grayscale}
+                onChange={(e) => handleGrayscaleChange(Number(e.target.value))}
+                className="w-full cursor-pointer accent-main-cl"
+                style={{
+                  height: '8px',
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${grayscale}%, #e5e7eb ${grayscale}%, #e5e7eb 100%)`,
+                  borderRadius: '4px',
+                  WebkitAppearance: 'none',
+                  appearance: 'none',
+                }}
+              />
+            </div>
+
+            <span className="text-[1em] font-semibold text-main-cl whitespace-nowrap">100%</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 type TPropertyType = 'scale' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
@@ -13,6 +142,7 @@ type TPrintedImageElementMenu = {
 
 export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageElementMenu) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const [grayscale, setGrayscale] = useState<number>(0)
 
   const getPickedElementRoot = () => {
     return document.body.querySelector<HTMLElement>(
@@ -43,7 +173,8 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
     angle?: number,
     posX?: number,
     posY?: number,
-    zIndex?: number
+    zIndex?: number,
+    grayscale?: number
   ) => {
     eventEmitter.emit(
       EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS,
@@ -52,7 +183,8 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
       angle,
       posX,
       posY,
-      zIndex
+      zIndex,
+      grayscale
     )
   }
 
@@ -107,7 +239,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
     if (type !== 'printed-image' || elementId !== idOfElement) return
     const pickedElementRoot = pickedElementRootRef.current
     const dataset = JSON.parse(pickedElementRoot?.getAttribute('data-visual-state') || '{}')
-    const { scale, angle, position } = dataset as TPrintedImageVisualState
+    const { scale, angle, position, grayscale } = dataset as TPrintedImageVisualState
     const { x: posX, y: posY } = position || {}
     const menuSection = menuRef.current
     if (scale) {
@@ -129,6 +261,9 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
         '.NAME-form-position input'
       )
       if (posXYInputs && posXYInputs.length > 0) posXYInputs[1].value = posY.toFixed(0)
+    }
+    if (grayscale || grayscale === 0) {
+      setGrayscale(grayscale)
     }
   }
 
@@ -170,36 +305,8 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
       </h3>
       <div
         ref={menuRef}
-        className="smd:grid-cols-2 smd:grid-flow-row 2xl:grid-cols-3 smd:gap-2 grid-rows-1 grid-flow-col gap-1 grid rounded-md text-white"
+        className="smd:grid-cols-2 smd:grid-flow-row 2xl:grid-cols-3 smd:gap-2 grid-cols-3 gap-1 grid rounded-md text-white"
       >
-        {/* <div className="NAME-form-group NAME-form-scale h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-maximize-icon lucide-maximize text-white w-4 h-4 smd:w-5 smd:h-5"
-            >
-              <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-              <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-              <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-              <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-            </svg>
-          </div>
-          <div className="flex gap-1 items-center mx-1 grow">
-            <input
-              type="text"
-              placeholder="Độ co giãn, VD: 55"
-              onKeyDown={(e) => catchEnter(e, 'scale')}
-              className="text-black bg-white rounded px-1 py-0.5 text-[1em] outline-none w-full"
-            />
-            <span className="text-white text-[1em] font-bold">%</span>
-          </div>
-        </div> */}
         <div className="NAME-form-group NAME-form-angle 5xl:h-14 h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
@@ -229,6 +336,22 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
             />
             <span className="text-white text-[1em] font-bold">độ</span>
           </div>
+        </div>
+        <div className="NAME-form-group NAME-form-grayscale 5xl:h-12 h-8 smd:h-9 cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
+          <GrayscaleControl
+            grayscale={grayscale}
+            setGrayscale={setGrayscale}
+            onChange={(grayscale) => {
+              handleChangeProperties(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                grayscale
+              )
+            }}
+          />
         </div>
         <div className="NAME-form-group NAME-form-zindex 5xl:h-14 h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">
           <div className="mr-0.5">
@@ -287,47 +410,10 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
             </button>
           </div>
         </div>
-        {/* <div className="NAME-form-group NAME-form-position 2xl:col-span-2 flex items-center bg-main-cl rounded px-1 py-1 shadow">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-move-icon lucide-move w-4 h-4 smd:w-5 smd:h-5"
-            >
-              <path d="M12 2v20" />
-              <path d="m15 19-3 3-3-3" />
-              <path d="m19 9 3 3-3 3" />
-              <path d="M2 12h20" />
-              <path d="m5 9-3 3 3 3" />
-              <path d="m9 5 3-3 3 3" />
-            </svg>
-          </div>
-          <div className="flex gap-1 mx-1">
-            <input
-              type="text"
-              placeholder="Tọa độ X, VD: 100"
-              onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="smd:h-6.5 h-6 text-black bg-white rounded px-1 text-[1em] outline-none w-full"
-            />
-            <input
-              type="text"
-              placeholder="Tọa độ Y, VD: 100"
-              onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="smd:h-6.5 h-6 text-black bg-white rounded px-1 text-[1em] outline-none w-full"
-            />
-          </div>
-        </div> */}
-        <div className="5xl:h-14 smd:col-span-2 2xl:col-span-1 flex items-center">
+        <div className="5xl:h-14 smd:col-span-1 smd:h-full 2xl:h-8 2xl:col-span-3 col-span-3 h-8 flex items-center">
           <button
             onClick={handleClickCheck}
-            className="smd:h-8 smd:px-1 2xl:h-full group h-full px-3 w-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
+            className="smd:h-full smd:px-1 2xl:h-full group h-full px-3 w-full cursor-pointer flex flex-nowrap items-center justify-center font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
