@@ -12,7 +12,8 @@ type TGetImageDataProgressCallback = (
 let count = 0
 const getLinkByCount = (): string => {
   // return 'https://api.encycom.com/files/1764043107649-213696048.jpg'
-  return 'http://192.168.2.6:3000/images/img-moi.jpg'
+  // return 'http://192.168.2.6:3000/images/img-moi.jpg'
+  return 'https://photobooth-public.s3.ap-southeast-1.amazonaws.com/img-moi.jpg'
   // if (count === 1) {
   //   count++
   //   return 'https://photobooth-public.s3.ap-southeast-1.amazonaws.com/d63a64aa48c6c4989dd7.jpg'
