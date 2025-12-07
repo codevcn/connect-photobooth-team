@@ -119,7 +119,7 @@ export const Actions = () => {
       </button>
       <button
         onClick={beforeNavigateToPaymentHandler}
-        className="5xl:text-[1em] 5xl:h-13 w-full relative cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
+        className="5xl:text-[1em] 5xl:h-13 w-full relative cursor-pointer bg-white mobile-touch text-main-cl border-2 border-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
       >
         <span className="inline-block">Xem giỏ hàng</span>
         <svg
@@ -137,7 +137,7 @@ export const Actions = () => {
           <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
         </svg>
         {cartCount > 0 && (
-          <span className="5xl:text-3xl 5xl:h-8 5xl:w-8 outline-2 outline-white absolute -top-2 -right-2 bg-main-cl text-white text-xs font-medium rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="5xl:text-3xl 5xl:h-8 5xl:w-8 outline-2 outline-white absolute -top-2 -right-2 bg-main-cl text-white text-base font-bold rounded-full w-6 h-6 flex items-center justify-center">
             {cartCount}
           </span>
         )}

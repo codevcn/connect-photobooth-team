@@ -9,6 +9,8 @@ type TCustomScrollbarProps = {
     content?: string
   }
   thumbMinWidth?: number
+  showScrollbar?: boolean
+  dataToRerender?: any
 }
 
 export function CustomScrollbar({
@@ -16,6 +18,8 @@ export function CustomScrollbar({
   children,
   classNames,
   thumbMinWidth = 20,
+  showScrollbar = true,
+  dataToRerender,
 }: TCustomScrollbarProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -63,6 +67,10 @@ export function CustomScrollbar({
     }
   }, [])
 
+  useEffect(() => {
+    update()
+  }, [dataToRerender])
+
   return (
     <div className={cn('relative', classNames?.container)}>
       {/* Scrollable Content */}
@@ -74,7 +82,7 @@ export function CustomScrollbar({
       </div>
 
       {/* Scrollbar Track (ẩn nếu không có scroll) */}
-      {hasScroll && (
+      {showScrollbar && hasScroll && (
         <div className="absolute bottom-0 left-0 w-full h-1.5 bg-black/10 rounded-md">
           <div
             style={{

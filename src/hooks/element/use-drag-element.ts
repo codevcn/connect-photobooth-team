@@ -2,29 +2,19 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 
 type TPosition = { x: number; y: number }
 
-interface UseDraggableOptions {
-  currentPosition: TPosition
-  setCurrentPosition: (pos: TPosition) => void
-  disabled?: boolean
-  postFunctionDrag?: (element: HTMLDivElement, position: TPosition) => void
-  scaleFactor?: number
-}
-
-interface UseDraggableReturn {
+export interface UseDraggableReturn {
   containerRef: React.RefObject<HTMLDivElement | null>
   dragButtonRef: React.RefObject<HTMLDivElement | null>
   isDragging: boolean
 }
 
-export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn => {
-  const {
-    currentPosition,
-    setCurrentPosition,
-    disabled = false,
-    postFunctionDrag,
-    scaleFactor = 1,
-  } = options
-
+export const useDragElement = (
+  currentPosition: TPosition,
+  setCurrentPosition: (pos: TPosition) => void,
+  disabled?: boolean,
+  postFunctionDrag?: (element: HTMLDivElement, position: TPosition) => void,
+  scaleFactor: number = 1
+): UseDraggableReturn => {
   // Refs
   const containerRef = useRef<HTMLDivElement | null>(null)
   const dragButtonRef = useRef<HTMLDivElement | null>(null)

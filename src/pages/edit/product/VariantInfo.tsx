@@ -215,11 +215,11 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
 
   return (
     <div className="smd:order-4 mt-2 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
-      <div className="smd:block hidden mb-4">
+      {/* <div className="smd:block hidden mb-4">
         <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
           Danh mục hình ảnh sản phẩm
         </h3>
-        {/* <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
+        <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
           {pickedProduct.detailImages.length > 0 ? (
             pickedProduct.detailImages.slice(1).map((imgURL) => (
               <div
@@ -238,11 +238,11 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
               <img src={pickedProduct.url} alt="Ảnh đại diện sản phẩm" />
             </div>
           )}
-        </div> */}
+        </div>
         <p className="5xl:text-[0.4em] flex justify-center items-center w-full text-gray-600 font-bold text-[0.9em] mt-3 italic">
           Hiển thị hình ảnh người mặc áo
         </p>
-      </div>
+      </div> */}
 
       {/* Material Section */}
       {mergedAttributes.uniqueMaterials.length > 0 &&
@@ -313,6 +313,8 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
             {mergedAttributes.uniqueColorTitles[0]}
           </h3>
           <CustomScrollbar
+            showScrollbar={colorsCount > 0}
+            dataToRerender={colorsCount}
             classNames={{
               container: '5xl:text-[0.4em] font-bold py-2 text-sm w-full overflow-x-hidden',
               content: 'flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',

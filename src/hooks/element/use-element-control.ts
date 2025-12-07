@@ -83,9 +83,6 @@ export const useElementControl = (
     const rootElement = elementRootRef.current
     if (!containerForElementAbsoluteTo || !rootElement) return
 
-    // Capture offset BEFORE position changes
-    captureElementOffsetBeforeChange()
-
     if (posX < 0) return
     if (posY < 0) return
     const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
@@ -189,10 +186,11 @@ export const useElementControl = (
   })
   const elementLayers = useElementLayerStore((s) => s.elementLayers)
 
-  const handleSetElementPositionCallback = useCallback((pos: TPosition) => {
+  const handleSetElementPositionCallback = (pos: TPosition) => {
     handleSetElementPosition(pos.x, pos.y)
-  }, [])
-  const { containerRef: refForDrag, dragButtonRef } = useDragElement({
+  }
+  /**
+   * const { containerRef: refForDrag, dragButtonRef } = useDragElement(
     disabled: isRotating || isZooming,
     currentPosition: position,
     scaleFactor,
@@ -203,15 +201,20 @@ export const useElementControl = (
       const container = containerForElementAbsoluteToRef.current
       if (!container) return
     },
-  })
+  )
+   */
+  const { containerRef: refForDrag, dragButtonRef } = useDragElement(
+    position,
+    handleSetElementPositionCallback,
+    isRotating || isZooming,
+    undefined,
+    scaleFactor
+  )
 
   const validateInputValueAndSet = (
     value: string | number | [TPosition['x'], TPosition['y']],
     type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex' | 'posXY'
   ) => {
-    // Capture offset before any visual state change
-    captureElementOffsetBeforeChange()
-
     switch (type) {
       case 'posXY':
         handleSetElementPosition((value as Array<number>)[0], (value as Array<number>)[1])
@@ -250,13 +253,6 @@ export const useElementControl = (
     angle?: number,
     zindex?: number
   ) => {
-    console.log('>>> [con] set ele state:', {
-      posX,
-      posY,
-      scale,
-      angle,
-      zindex,
-    })
     if (posX || posX === 0) {
       validateInputValueAndSet(posX, 'posX')
     }
@@ -300,39 +296,52 @@ export const useElementControl = (
   const stayElementVisualOnAllowedPrintArea = () => {
     const elementPreOffset = elementPreviousRelativeProps.current
     if (!elementPreOffset) return
+
     const allowedPrintArea = printAreaAllowedRef.current
     const element = elementRootRef.current
     if (!allowedPrintArea || !element) return
+
     const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
     const allowedPrintAreaTop = allowedPrintArea.offsetTop
     const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
     const elementRect = element.getBoundingClientRect()
-    handleSetElementPosition(
-      Math.min(
-        allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
-        allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
-      ),
-      Math.min(
-        allowedPrintAreaTop + elementPreOffset.relativeOffsetTop,
-        allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
-      )
-    )
+
+    // Calculate new position maintaining relative offset from print area
+    const newX = allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft
+    const newY = allowedPrintAreaTop + elementPreOffset.relativeOffsetTop
+    if (
+      newX + elementRect.width - (element.offsetWidth / elementRect.width) * element.offsetWidth >
+      allowedPrintAreaLeft + allowedPrintAreaRect.width
+    ) {
+    }
+
+    // Clamp to boundaries (with small margin)
+    const maxX = allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
+    const maxY = allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
+
+    const clampedX = Math.max(allowedPrintAreaLeft, Math.min(newX, maxX))
+    const clampedY = Math.max(allowedPrintAreaTop, Math.min(newY, maxY))
+
+    handleSetElementPosition(clampedX, clampedY)
   }
 
   const captureElementOffsetBeforeChange = () => {
     const root = elementRootRef.current
     if (!root) return
-    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
-    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
+    const printAreaAllowed = printAreaAllowedRef.current
+    if (!printAreaAllowed) return
+    const allowedPrintAreaLeft = printAreaAllowed.offsetLeft
+    const allowedPrintAreaTop = printAreaAllowed.offsetTop
     if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
+    const allowedPrintAreaRect = printAreaAllowed.getBoundingClientRect()
 
     const offsetLeft = root.offsetLeft
     const offsetTop = root.offsetTop
 
     // Save to ref for immediate access
     elementPreviousRelativeProps.current = {
-      relativeOffsetLeft: offsetLeft - allowedPrintAreaLeft,
-      relativeOffsetTop: offsetTop - allowedPrintAreaTop,
+      relativeOffsetLeft: ((offsetLeft - allowedPrintAreaLeft) / allowedPrintAreaRect.width) * 100,
+      relativeOffsetTop: ((offsetTop - allowedPrintAreaTop) / allowedPrintAreaRect.height) * 100,
     }
   }
 
