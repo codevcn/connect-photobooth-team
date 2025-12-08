@@ -13,6 +13,7 @@ import { PreviewImage } from './customize/print-layout/PreviewImage'
 import { createInitialConstants } from '@/utils/contants'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
+import { snapshotPersistElementPosition } from './elements/helpers'
 
 type TProductProps = {
   product: TBaseProduct
@@ -129,6 +130,19 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     useProductUIDataStore
       .getState()
       .handlePickProduct(product, initialLayout, firstPrintAreaInProduct)
+
+    const printAreaContainer = document.body.querySelector<HTMLElement>(
+      '.NAME-print-area-container'
+    )
+    const allowedPrintArea = document.body.querySelector<HTMLElement>('.NAME-print-area-allowed')
+    console.log('>>> debug-vung-in cũ:', {
+      offsetLeft: allowedPrintArea?.offsetLeft,
+      offsetTop: allowedPrintArea?.offsetTop,
+      offsetWidth: allowedPrintArea?.offsetWidth,
+      offsetHeight: allowedPrintArea?.offsetHeight,
+    })
+    if (!printAreaContainer || !allowedPrintArea) return
+    snapshotPersistElementPosition(printAreaContainer!, allowedPrintArea!)
     // useEditedElementStore.getState().resetData()
     // useElementLayerStore.getState().resetData()
   }

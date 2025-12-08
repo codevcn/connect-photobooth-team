@@ -377,6 +377,8 @@ export const useElementControl = (
       const persistPositionData = param[elementId]
       if (!persistPositionData) return
       const { posXPixel, posYPixel, scale: newScale } = persistPositionData
+      console.log('>>> debug kkk chua:', persistPositionData)
+      console.log('>>> debug kkk chua root:', elementRootRef.current)
       setPosition({
         x: posXPixel,
         y: posYPixel,

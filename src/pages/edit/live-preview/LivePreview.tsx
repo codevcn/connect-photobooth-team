@@ -156,8 +156,12 @@ export const LivePreview = ({
     const isProductChanged = prevProductIdRef.current !== currentProductId
     prevProductIdRef.current = currentProductId
     // Lưu layout id tại thời điểm gọi để kiểm tra sau
-
-    snapshotPersistElementPosition(printAreaContainerRef.current!)
+    console.log('>>> debug-vung-in moi:', {
+      offsetLeft: allowedPrintAreaRef.current?.offsetLeft,
+      offsetTop: allowedPrintAreaRef.current?.offsetTop,
+      offsetWidth: allowedPrintAreaRef.current?.offsetWidth,
+      offsetHeight: allowedPrintAreaRef.current?.offsetHeight,
+    })
 
     setTimeout(() => {
       if (isProductChanged) {

@@ -191,6 +191,17 @@ export const PrintedImageElement = ({
   }, [scale, angle, position.x, position.y, isSelected, id])
 
   useEffect(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        console.log('>>> debug kkk sau khi:', {
+          x: position.x,
+          y: position.y,
+        })
+      })
+    })
+  }, [position.x, position.y])
+
+  useEffect(() => {
     initElement()
     eventEmitter.on(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
     return () => {
