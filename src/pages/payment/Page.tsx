@@ -242,7 +242,7 @@ const PaymentPage = () => {
     if (queryFilter.isPhotoism) {
       navigate(`/edit${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
     } else {
-      navigate('/' + fillQueryStringToURL())
+      navigate(`/${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
     }
   }
 
