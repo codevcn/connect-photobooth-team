@@ -47,15 +47,23 @@ export const StickerElement = ({
     forDrag: { ref: refForDrag, dragButtonRef },
     state: { position, angle, scale, zindex },
     handleSetElementState,
-  } = useElementControl(id, rootRef, allowedPrintAreaRef, printAreaContainerRef, 'sticker', {
-    maxZoom: MAX_ZOOM,
-    minZoom: MIN_ZOOM,
-    angle: element.angle,
-    scale: element.scale,
-    position: element.position,
-    zindex: element.zindex,
-    mountType,
-  })
+  } = useElementControl(
+    id,
+    rootRef,
+    allowedPrintAreaRef,
+    printAreaContainerRef,
+    elementControlRef,
+    'sticker',
+    {
+      maxZoom: MAX_ZOOM,
+      minZoom: MIN_ZOOM,
+      angle: element.angle,
+      scale: element.scale,
+      position: element.position,
+      zindex: element.zindex,
+      mountType,
+    }
+  )
   const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
     buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
     isShown: false,

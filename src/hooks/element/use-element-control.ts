@@ -15,8 +15,8 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useSnapThresholdRotateElement } from './use-snap-threshold-rotate-element'
 
 type TElementPreviousRelativeProps = {
-  relativeOffsetLeft: number
-  relativeOffsetTop: number
+  relativeLeftPercent: number
+  relativeTopPercent: number
 }
 
 type TInitialParams = Partial<
@@ -60,6 +60,7 @@ export const useElementControl = (
   elementRootRef: React.RefObject<HTMLElement | null>,
   printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
   containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
+  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null,
   elementType: TElementType,
   initialParams?: TInitialParams
 ): TElementControlReturn => {
@@ -292,52 +293,97 @@ export const useElementControl = (
     const allowedPrintArea = printAreaAllowedRef.current
     const element = elementRootRef.current
     if (!allowedPrintArea || !element) return
-    const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
-    const allowedPrintAreaTop = allowedPrintArea.offsetTop
-    const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
-    const elementRect = element.getBoundingClientRect()
-    handleSetElementPosition(
-      Math.min(
-        allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
-        allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
-      ),
-      Math.min(
-        allowedPrintAreaTop + elementPreOffset.relativeOffsetTop,
-        allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
-      )
+    // const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
+    // const allowedPrintAreaTop = allowedPrintArea.offsetTop
+    // const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
+    // const elementRect = element.getBoundingClientRect()
+    console.log('>>> [sta] start ref:', {
+      elementPreOffset,
+      elementId,
+    })
+
+    function setRelativePositionWithScale(
+      elementA: HTMLElement,
+      elementB: HTMLElement,
+      offsetXPercent: number,
+      offsetYPercent: number
+    ): void {
+      // Lấy bounding rect của B
+      const rectB = elementB.getBoundingClientRect()
+
+      // Lấy scale factor của A
+      // const styleA = window.getComputedStyle(elementA)
+      // const matrix = new DOMMatrix(styleA.transform)
+      // const scale = matrix.a // scale đồng đều nên chỉ cần matrix.a
+
+      // Lấy kích thước của A sau khi scale
+      const rectA = elementA.getBoundingClientRect()
+
+      // Tính kích thước gốc và scale offset
+      const originalWidth = rectA.width / scale
+      const originalHeight = rectA.height / scale
+      const scaleOffsetX = (rectA.width - originalWidth) / 2
+      const scaleOffsetY = (rectA.height - originalHeight) / 2
+
+      // Lấy vị trí CSS của B
+      const styleB = window.getComputedStyle(elementB)
+      const bCssLeft = parseFloat(styleB.left) || 0
+      const bCssTop = parseFloat(styleB.top) || 0
+
+      // Tính offset mong muốn theo pixel
+      const offsetX = (offsetXPercent / 100) * rectB.width
+      const offsetY = (offsetYPercent / 100) * rectB.height
+
+      // Vị trí thực tế mong muốn (vị trí hiển thị của góc top-left A)
+      const targetActualLeft = bCssLeft + offsetX
+      const targetActualTop = bCssTop + offsetY
+
+      // Compensate cho scale offset để tính CSS left/top
+      // Vì transform-origin: center, element "lùi lại" khi scale
+      const targetCssLeft = targetActualLeft + scaleOffsetX
+      const targetCssTop = targetActualTop + scaleOffsetY
+
+      // Set vị trí CSS
+      // elementA.style.left = `${targetCssLeft}px`
+      // elementA.style.top = `${targetCssTop}px`
+      console.log('>>> [sta] targets:', {
+        targetCssLeft,
+        targetCssTop,
+      })
+      handleSetElementPosition(targetCssLeft, targetCssTop)
+    }
+    setRelativePositionWithScale(
+      element,
+      allowedPrintArea,
+      elementPreOffset.relativeLeftPercent,
+      elementPreOffset.relativeTopPercent
     )
+
+    // handleSetElementPosition(
+    //   Math.min(
+    //     allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
+    //     allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
+    //   ),
+    //   Math.min(
+    //     allowedPrintAreaTop + elementPreOffset.relativeOffsetTop,
+    //     allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
+    //   )
+    // )
   }
 
-  const captureElementOffsetBeforeChange = () => {
-    const root = elementRootRef.current
-    if (!root) return
-    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
-    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
-    if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
-
-    const offsetLeft = root.offsetLeft
-    const offsetTop = root.offsetTop
-
-    // Save to ref for immediate access
-    elementPreviousRelativeProps.current = {
-      relativeOffsetLeft: offsetLeft - allowedPrintAreaLeft,
-      relativeOffsetTop: offsetTop - allowedPrintAreaTop,
-    }
-  }
-
-  useEffect(() => {
-    captureElementOffsetBeforeChange()
-  }, [position.x, position.y, angle, scale, zindex])
-
-  useEffect(() => {
-    eventEmitter.on(EInternalEvents.EDITED_PRINT_AREA_CHANGED, stayElementVisualOnAllowedPrintArea)
-    return () => {
-      eventEmitter.off(
-        EInternalEvents.EDITED_PRINT_AREA_CHANGED,
-        stayElementVisualOnAllowedPrintArea
-      )
-    }
-  }, [])
+  useImperativeHandle(elementControlRef, () => ({
+    todo(param: any) {
+      console.log('>>> [elementControlRef] todo called with param:', param)
+      const persistPositionData = param[elementId]
+      if (!persistPositionData) return
+      const { posXPixel, posYPixel, scale: newScale } = persistPositionData
+      setPosition({
+        x: posXPixel,
+        y: posYPixel,
+      })
+      handleSetElementState(undefined, undefined, newScale)
+    },
+  }))
 
   useEffect(() => {
     // Setup ResizeObserver to watch for print container size changes

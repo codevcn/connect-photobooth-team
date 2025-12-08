@@ -85,6 +85,7 @@ export const useTextElementControl = (
     elementRootRef,
     printAreaAllowedRef,
     containerForElementAbsoluteToRef,
+    elementControlRef,
     'text',
     {
       position: { x: initialPosX, y: initialPosY },

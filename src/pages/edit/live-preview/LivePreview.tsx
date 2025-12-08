@@ -12,9 +12,10 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { MyDevComponent } from '@/dev/components/Preview'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
-import { reAssignElementsByLayoutData } from '../customize/print-layout/builder'
-import { TPrintLayout } from '@/utils/types/print-layout'
-import { EInternalEvents, eventEmitter } from '@/utils/events'
+import {
+  snapshotPersistElementPosition,
+  stayElementsRelativeToPrintArea,
+} from '../elements/helpers'
 
 type TZoomButtonsProps = {
   scale: number
@@ -150,29 +151,54 @@ export const LivePreview = ({
   }
 
   const handlePrintAreaUpdated = () => {
+    console.log('>>> [prt] handlePrintAreaUpdated called')
     const currentProductId = pickedProduct.id
     const isProductChanged = prevProductIdRef.current !== currentProductId
     prevProductIdRef.current = currentProductId
     // Lưu layout id tại thời điểm gọi để kiểm tra sau
-    const layoutIdAtCallTime = pickedLayout?.id
+
+    snapshotPersistElementPosition(printAreaContainerRef.current!)
+
     setTimeout(() => {
-      if (isProductChanged && layoutIdAtCallTime) {
+      if (isProductChanged) {
+        console.log('>>> [prt] Product changed detected in handlePrintAreaUpdated:', {
+          isProductChanged,
+        })
         // nếu print area thay đổi do đổi sản phẩm
         resetZoomWhenProductChange()
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             // Lấy giá trị mới nhất từ store
             const currentLayout = useLayoutStore.getState().pickedLayout
-            if (currentLayout && currentLayout.id === layoutIdAtCallTime) {
+            if (currentLayout) {
+              console.log('>>> [prt] Current layout matches layoutIdAtCallTime:', {
+                currentLayout,
+              })
               handlePutPrintedImagesInLayout(currentLayout, allowedPrintAreaRef.current!)
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  stayElementsRelativeToPrintArea(
+                    printAreaContainerRef.current!,
+                    allowedPrintAreaRef.current!,
+                    (payload) => {
+                      elementControlRef.current.todo(payload)
+                    }
+                  )
+                })
+              })
             }
-            eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
           })
         })
       } else {
-        eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
+        stayElementsRelativeToPrintArea(
+          printAreaContainerRef.current!,
+          allowedPrintAreaRef.current!,
+          (payload) => {
+            elementControlRef.current.todo(payload)
+          }
+        )
       }
-    }, 100)
+    }, 0)
   }
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =

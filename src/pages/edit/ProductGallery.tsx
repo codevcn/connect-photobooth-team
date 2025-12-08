@@ -128,8 +128,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     useProductUIDataStore
       .getState()
       .handlePickProduct(product, initialLayout, firstPrintAreaInProduct)
-    useEditedElementStore.getState().resetData()
-    useElementLayerStore.getState().resetData()
+    // useEditedElementStore.getState().resetData()
+    // useElementLayerStore.getState().resetData()
   }
 
   const scrollToPickedProduct = () => {

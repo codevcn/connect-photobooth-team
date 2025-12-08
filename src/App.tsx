@@ -19,8 +19,8 @@ window.cancelIdleCallback =
   }
 
 import { Routes, Route, BrowserRouter, useSearchParams } from 'react-router-dom'
-// import EditPage from '@/pages/edit/Layout'
-import EditPage from '@/pages/edit/Layout-Fun'
+import EditPage from '@/pages/edit/Layout'
+// import EditPage from '@/pages/edit/Layout-Fun'
 import NotFound from '@/pages/NotFound'
 import { LocalStorageHelper } from './utils/localstorage'
 import { ToastContainer } from 'react-toastify'
@@ -93,10 +93,10 @@ function AppContent() {
         toastStyle={{ color: '#fff', fontWeight: 'bold' }}
       />
       <Routes>
-        {/* <Route path="/" element={<IntroPage />} />
-        <Route path="/qr" element={<ScanQRPage />} /> */}
-        {/* <Route path="/edit" element={<EditPage />} /> */}
-        <Route path="/" element={<EditPage />} />
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/qr" element={<ScanQRPage />} />
+        <Route path="/edit" element={<EditPage />} />
+        {/* <Route path="/" element={<EditPage />} /> */}
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/dev" element={<Dev />} />
         <Route path="*" element={<NotFound />} />
