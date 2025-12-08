@@ -4,43 +4,11 @@ export const snapshotPersistElementPosition = (
   printAreaContainer: HTMLElement,
   printArea: HTMLElement
 ) => {
-  console.log('>>> [fx] start func snapshotPersistElementPosition:', printAreaContainer)
   for (const ele of printAreaContainer.querySelectorAll<HTMLElement>('.NAME-root-element')) {
     const persistData = ele.getAttribute('data-persist-position')
-    const elementId = ele.getAttribute('data-root-element-id')
-
     if (persistData) {
-      const parsed = JSON.parse(persistData)
-      console.log('>>> [fx] BEFORE snapshot - persistData:', {
-        elementId,
-        persistData,
-        parsed,
-        elementXPercent: parsed.elementXPercent,
-      })
-
       // Copy ngay lập tức
       ele.setAttribute('data-persist-position-snapshot', persistData)
-
-      // Verify sau khi set
-      const snapshotData = ele.getAttribute('data-persist-position-snapshot')
-      const parsedSnapshot = snapshotData ? JSON.parse(snapshotData) : null
-      console.log('>>> [fx] AFTER snapshot - snapshotData:', {
-        elementId,
-        snapshotData,
-        parsedSnapshot,
-        elementXPercent: parsedSnapshot?.elementXPercent,
-        isEqual: persistData === snapshotData,
-      })
-
-      // Kiểm tra xem data-persist-position có bị thay đổi không
-      const persistDataAfter = ele.getAttribute('data-persist-position')
-      if (persistData !== persistDataAfter) {
-        console.warn('>>> [fx] ⚠️ WARNING: data-persist-position CHANGED during snapshot!', {
-          elementId,
-          before: persistData,
-          after: persistDataAfter,
-        })
-      }
     }
   }
 }
@@ -54,58 +22,24 @@ const calculateElementPositionRelativeToPrintArea = (
   allowedPrintAreaWidth: number,
   allowedPrintAreaHeight: number
 ): TPosition => {
-  console.log('>>> [fx][2] start func calculateElementPositionRelativeToPrintArea:', {
-    element,
-    allowedPrintArea,
-  })
   const vungin_moi = allowedPrintArea.getBoundingClientRect()
-  console.log('>>> debug kkk cũ:', {
-    allowedPrintAreaX,
-    allowedPrintAreaY,
-  })
-  console.log('>>> debug kkk mới:', {
-    x: vungin_moi.left,
-    y: vungin_moi.top,
-  })
-
   // Lấy bounding rect của B
 
   const rong_moi = vungin_moi.width
   const cao_moi = vungin_moi.height
-  console.log('>>> [fx][2] rect B:', { vungin_moi, rong_moi, cao_moi })
   const x_moi = vungin_moi.left
   const y_moi = vungin_moi.top
 
   const phantu = element.getBoundingClientRect()
   const rong_cu = phantu.width
   const cao_cu = phantu.height
-  console.log('>>> [fx][2] rect A:', { phantu, rong_cu, cao_cu })
   const x_cu = phantu.left
   const y_cu = phantu.top
 
   const phan_tram_so_voi_rong_cu = ((x_cu - allowedPrintAreaX) * 100) / allowedPrintAreaWidth
   const phan_tram_so_voi_cao_cu = ((y_cu - allowedPrintAreaY) * 100) / allowedPrintAreaHeight
-  console.log('>>> debug kkk:', {
-    phan_tram_so_voi_rong_cu,
-    phan_tram_so_voi_cao_cu,
-  })
   const toa_do_x_moi = x_moi + (phan_tram_so_voi_rong_cu * rong_moi) / 100
   const toa_do_y_moi = y_moi + (phan_tram_so_voi_cao_cu * cao_moi) / 100
-  console.log('>>> debug kkk:', {
-    toa_do_x_moi,
-    toa_do_y_moi,
-  })
-  console.log('>>> my tick', {
-    vung_in_cu: {
-      x: allowedPrintAreaX,
-      y: allowedPrintAreaY,
-      width: allowedPrintAreaWidth,
-      height: allowedPrintAreaHeight,
-    },
-    vung_in_moi: { x: x_moi, y: y_moi, width: rong_moi, height: cao_moi },
-    element: { x: x_cu, y: y_cu, width: rong_cu, height: cao_cu },
-    element_moi: { x: toa_do_x_moi, y: toa_do_y_moi },
-  })
   const containerRect = printAreaContainer.getBoundingClientRect()
   const containerStyle = window.getComputedStyle(printAreaContainer)
   const padL = parseFloat(containerStyle.paddingLeft) || 0
@@ -122,11 +56,6 @@ const calculateElementPositionRelativeToPrintArea = (
 
   const xContent = (xInContainerViewport - borderL - padL - transX) / containerScale
   const yContent = (yInContainerViewport - borderT - padT - transY) / containerScale
-
-  console.log('>>> TIKCCCC', {
-    x: xContent,
-    y: yContent,
-  })
 
   return {
     x: xContent,
@@ -195,12 +124,7 @@ const calculateElementScaleRelativeToPrintArea = (
   printArea: HTMLElement,
   prePrintAreaSize: TSizeInfo
 ) => {
-  console.log('>>> [fx] start func calculateElementScaleRelativeToPrintArea:', {
-    printArea,
-    prePrintAreaSize,
-  })
   const rectPrintArea = printArea.getBoundingClientRect() // vùng in mới
-  console.log('>>> [fx] current rect PrintArea:', { rectPrintArea })
   const rectPrintAreaWidth = rectPrintArea.width
   const rectPrintAreaHeight = rectPrintArea.height
   const prePrintAreaWidth = prePrintAreaSize.width // vùng in cũ
@@ -209,20 +133,10 @@ const calculateElementScaleRelativeToPrintArea = (
   if (prePrintAreaRatio > rectPrintAreaWidth / rectPrintAreaHeight) {
     const newPrePrintAreaHeight = rectPrintAreaWidth / prePrintAreaRatio
     const scaleFactor = newPrePrintAreaHeight / prePrintAreaHeight
-    console.log('>>> [fx] scale Factor return:', {
-      scaleFactor,
-      newPrePrintAreaHeight,
-      prePrintAreaHeight,
-    })
     return scaleFactor
   }
   const newPrePrintAreaWidth = rectPrintAreaHeight * prePrintAreaRatio
   const scaleFactor = newPrePrintAreaWidth / prePrintAreaWidth
-  console.log('>>> [fx] scale Factor return:', {
-    scaleFactor,
-    newPrePrintAreaWidth,
-    prePrintAreaWidth,
-  })
   return scaleFactor
 }
 
@@ -239,10 +153,6 @@ export const stayElementsRelativeToPrintArea = (
   allowedPrintArea: HTMLElement,
   callback: (persistElementPositionPayloads: TPersistElementPositionPayload) => void
 ) => {
-  console.log('>>> [fx] start func stayElementsRelativeToPrintArea:', {
-    printAreaContainer,
-    allowedPrintArea,
-  })
   const elements = printAreaContainer.querySelectorAll<HTMLElement>('.NAME-root-element')
   // console.log('>>> [fx] elements:', elements)
   const persistElementPositionPayloads: TPersistElementPositionPayload = {}
@@ -275,7 +185,10 @@ export const stayElementsRelativeToPrintArea = (
     persistElementPositionPayloads[elementId] = {
       posXPixel: newPos.x,
       posYPixel: newPos.y,
-      scale: 1,
+      scale: calculateElementScaleRelativeToPrintArea(allowedPrintArea, {
+        width: allowedPrintAreaWidth,
+        height: allowedPrintAreaHeight,
+      }),
     }
   }
   callback(persistElementPositionPayloads)
@@ -296,11 +209,6 @@ export const persistElementPositionToPrintArea = (
   allowedPrintArea: HTMLElement | null,
   elementScale: number
 ): TPersistElementPositionReturn => {
-  console.log('>>> [fx] start func persistElementPositionToPrintArea:', {
-    rootElement,
-    allowedPrintArea,
-    elementScale,
-  })
   if (!rootElement || !allowedPrintArea) {
     return {
       elementXPercent: 0,

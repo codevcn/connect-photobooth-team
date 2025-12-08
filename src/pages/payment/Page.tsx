@@ -17,6 +17,7 @@ import { ProductList } from '@/pages/payment/ProductList'
 import { useProductStore } from '@/stores/product/product.store'
 import { toast } from 'react-toastify'
 import { createInitialConstants } from '@/utils/contants'
+import { useQueryFilter } from '@/hooks/extensions'
 
 interface IPaymentModalProps {
   imgSrc?: string
@@ -68,6 +69,7 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState<string>()
   const products = useProductStore((s) => s.products)
+  const queryFilter = useQueryFilter()
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
@@ -228,7 +230,11 @@ const PaymentPage = () => {
   }
 
   const backToEditPage = () => {
-    navigate('/edit')
+    if (queryFilter.isPhotoism || queryFilter.dev) {
+      navigate('/edit')
+    } else {
+      navigate('/')
+    }
   }
 
   const handleEditMockup = (mockupDataId: string) => {
