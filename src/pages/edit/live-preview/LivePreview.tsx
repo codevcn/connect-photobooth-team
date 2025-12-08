@@ -153,17 +153,15 @@ export const LivePreview = ({
     const currentProductId = pickedProduct.id
     const isProductChanged = prevProductIdRef.current !== currentProductId
     prevProductIdRef.current = currentProductId
-    // Lưu layout id tại thời điểm gọi để kiểm tra sau
-    const layoutIdAtCallTime = pickedLayout?.id
     setTimeout(() => {
-      if (isProductChanged && layoutIdAtCallTime) {
+      if (isProductChanged) {
         // nếu print area thay đổi do đổi sản phẩm
         resetZoomWhenProductChange()
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             // Lấy giá trị mới nhất từ store
             const currentLayout = useLayoutStore.getState().pickedLayout
-            if (currentLayout && currentLayout.id === layoutIdAtCallTime) {
+            if (currentLayout) {
               handlePutPrintedImagesInLayout(currentLayout, allowedPrintAreaRef.current!)
             }
             eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
