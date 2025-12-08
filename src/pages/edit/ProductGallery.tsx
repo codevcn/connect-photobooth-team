@@ -125,6 +125,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     initialLayout: TPrintLayout,
     firstPrintAreaInProduct: TPrintAreaInfo
   ) => {
+    if (pickedProduct && pickedProduct.id === product.id) return
     useProductUIDataStore
       .getState()
       .handlePickProduct(product, initialLayout, firstPrintAreaInProduct)
