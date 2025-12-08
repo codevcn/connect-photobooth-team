@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { formatNumberWithCommas } from '@/utils/helpers'
+import { fillQueryStringToURL, formatNumberWithCommas } from '@/utils/helpers'
 import {
   TPaymentProductItem,
   TClientProductVariant,
@@ -17,6 +17,7 @@ import { ProductList } from '@/pages/payment/ProductList'
 import { useProductStore } from '@/stores/product/product.store'
 import { toast } from 'react-toastify'
 import { createInitialConstants } from '@/utils/contants'
+import { useQueryFilter } from '@/hooks/extensions'
 
 interface IPaymentModalProps {
   imgSrc?: string
@@ -68,6 +69,7 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState<string>()
   const products = useProductStore((s) => s.products)
+  const queryFilter = useQueryFilter()
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
@@ -228,11 +230,17 @@ const PaymentPage = () => {
   }
 
   const backToEditPage = () => {
-    navigate('/edit')
+    if (queryFilter.isPhotoism) {
+      navigate('/edit' + fillQueryStringToURL())
+    } else if (queryFilter.dev) {
+      navigate('/' + fillQueryStringToURL())
+    } else {
+      navigate('/' + fillQueryStringToURL())
+    }
   }
 
   const handleEditMockup = (mockupDataId: string) => {
-    navigate(`/edit?mockupId=${mockupDataId}`)
+    navigate(`/edit${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
   }
 
   const [subtotal, discount, total] = useMemo(() => {

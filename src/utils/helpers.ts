@@ -545,3 +545,22 @@ export const getFinalColorValue = () => {
 export const checkIfMobileScreen = (): boolean => {
   return window.innerWidth < 662
 }
+
+export const checkQueryString = () => {
+  const params = new URLSearchParams(window.location.search)
+  return {
+    isPhotoism: params.get('q') === 'ptm',
+    dev: params.get('dev') === '123',
+    funstudio: params.get('funstudio'),
+  }
+}
+
+export const fillQueryStringToURL = (): string => {
+  const params = checkQueryString()
+  if (params.isPhotoism) {
+    return '?q=ptm'
+  } else if (params.funstudio) {
+    return `?funstudio=${params.funstudio || 'unknown'}`
+  }
+  return '?dev=123'
+}

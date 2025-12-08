@@ -10,7 +10,7 @@ import { TBaseProduct, TPrintedImage, TUserInputImage } from '@/utils/types/glob
 import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 
-const Layout = () => {
+const LayoutFUN = () => {
   const [error, setError] = useState<string | null>(null)
   const products = useProductStore((s) => s.products)
   const setProducts = useProductStore((s) => s.setProducts) //>>> checked: OK
@@ -121,4 +121,4 @@ const Layout = () => {
   )
 }
 
-export default Layout
+export default LayoutFUN

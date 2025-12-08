@@ -18,9 +18,10 @@ window.cancelIdleCallback =
     clearTimeout(id)
   }
 
-import { Routes, Route, BrowserRouter, useSearchParams } from 'react-router-dom'
-// import EditPage from '@/pages/edit/Layout'
-import EditPage from '@/pages/edit/Layout-Fun'
+import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import EditPagePTM from '@/pages/edit/Layout-Ptm'
+import EditPageFUN from '@/pages/edit/Layout-Fun'
+import EditPageDev from '@/pages/edit/Layout-Dev'
 import NotFound from '@/pages/NotFound'
 import { LocalStorageHelper } from './utils/localstorage'
 import { ToastContainer } from 'react-toastify'
@@ -31,11 +32,11 @@ import IntroPage from './pages/intro/Page'
 import { isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
-import MaintainPage from './pages/maintain/Page'
+// import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
 import { Dev } from './dev/pages/Dev'
 import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
-import { useQueryString } from './hooks/extensions'
+import { useQueryFilter } from './hooks/extensions'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -57,9 +58,10 @@ import { useQueryString } from './hooks/extensions'
 //   )
 // }
 
-function AppContent() {
+// Component để quản lý routes dựa trên query string
+function AppRoutes() {
+  const queryFilter = useQueryFilter()
   const { clearAllPrintedImages } = usePrintedImageStore()
-  const queryString = useQueryString()
 
   const handleReturnHome = () => {
     if (isHomePage()) {
@@ -78,8 +80,49 @@ function AppContent() {
     }
   }, [])
 
+  // Routes cho Photoism
+  if (queryFilter.isPhotoism) {
+    return (
+      <Routes>
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/qr" element={<ScanQRPage />} />
+        <Route path="/edit" element={<EditPagePTM />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    )
+  }
+
+  // Routes cho Fun Studio
+  if (queryFilter.funId) {
+    return (
+      <Routes>
+        <Route path="/" element={<EditPageFUN />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    )
+  }
+
+  // Routes cho Dev mode
+  if (queryFilter.dev) {
+    return (
+      <Routes>
+        <Route path="/" element={<EditPageDev />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/dev" element={<Dev />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    )
+  }
+
+  // Không có query string hợp lệ
+  return <NotFound />
+}
+
+function App() {
   return (
-    <>
+    <AppRootProvider>
       <AppTempContainer />
       <ToastContainer
         position="top-center"
@@ -92,28 +135,9 @@ function AppContent() {
         theme="colored" // "light" | "dark" | "colored"
         toastStyle={{ color: '#fff', fontWeight: 'bold' }}
       />
-      <Routes>
-        {/* <Route path="/" element={<IntroPage />} />
-        <Route path="/qr" element={<ScanQRPage />} /> */}
-        {/* <Route path="/edit" element={<EditPage />} /> */}
-        <Route path="/" element={<EditPage />} />
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/dev" element={<Dev />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-
-      {queryString && <GlobalKeyboardProvider />}
-
-      {/* <IdleCountdown /> */}
-    </>
-  )
-}
-
-function App() {
-  return (
-    <AppRootProvider>
       <BrowserRouter>
-        <AppContent />
+        <AppRoutes />
+        <GlobalKeyboardProvider />
       </BrowserRouter>
     </AppRootProvider>
   )

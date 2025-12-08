@@ -2,7 +2,7 @@ import QRScanner from './QRScanner'
 import { TPrintedImage, TUserInputImage } from '@/utils/types/global'
 import { useNavigate } from 'react-router-dom'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
-import { generateUniqueId } from '@/utils/helpers'
+import { fillQueryStringToURL, generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 
 const ScanQRPage = () => {
@@ -25,7 +25,7 @@ const ScanQRPage = () => {
         if (imagesToAdd.length === imageDataList.length) {
           imagesToAdd.sort((a, b) => b.width * b.height - a.width * a.height) // ảnh có kích thước lớn nhất phải ở đầu tiên trong danh sách
           setPrintedImages(imagesToAdd)
-          navigate('/edit')
+          navigate('/edit' + fillQueryStringToURL())
         }
       }
       img.onerror = () => {

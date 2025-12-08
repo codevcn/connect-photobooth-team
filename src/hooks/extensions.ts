@@ -1,5 +1,8 @@
-import { useSearchParams } from 'react-router-dom'
-
-export const useQueryString = () => {
-  return useSearchParams()[0].get('q') === 'ptm'
+export const useQueryFilter = () => {
+  const params = new URLSearchParams(window.location.search)
+  return {
+    isPhotoism: params.get('q') === 'ptm',
+    funId: params.get('funstudio'),
+    dev: params.get('dev') === '123',
+  }
 }

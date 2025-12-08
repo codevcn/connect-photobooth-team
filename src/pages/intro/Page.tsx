@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { fillQueryStringToURL } from '@/utils/helpers'
 
 const IntroPage = () => {
   const navigate = useNavigate()
@@ -33,7 +34,7 @@ const IntroPage = () => {
       {/* Call to Action Button */}
       <div className="fixed top-1/2 -translate-y-1/2 md:top-6 md:translate-y-0 left-1/2 -translate-x-1/2 z-20">
         <button
-          onClick={() => navigate('/qr')}
+          onClick={() => navigate('/qr' + fillQueryStringToURL())}
           className="group relative px-4 w-max py-4 bg-linear-to-r from-main-cl to-main-hover-cl text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-main-cl/50 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
         >
           {/* Animated background shimmer */}

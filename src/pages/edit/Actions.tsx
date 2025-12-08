@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { toast } from 'react-toastify'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
+import { fillQueryStringToURL } from '@/utils/helpers'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -43,7 +44,7 @@ export const Actions = () => {
 
   const beforeNavigateToPaymentHandler = () => {
     recordProductNote()
-    navigate('/payment')
+    navigate('/payment' + fillQueryStringToURL())
   }
 
   const initProductAttachedData = () => {
