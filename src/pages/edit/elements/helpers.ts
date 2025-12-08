@@ -4,8 +4,40 @@ export const snapshotPersistElementPosition = (printAreaContainer: HTMLElement) 
   console.log('>>> [fx] start func snapshotPersistElementPosition:', printAreaContainer)
   for (const ele of printAreaContainer.querySelectorAll<HTMLElement>('.NAME-root-element')) {
     const persistData = ele.getAttribute('data-persist-position')
+    const elementId = ele.getAttribute('data-root-element-id')
+    
     if (persistData) {
+      const parsed = JSON.parse(persistData)
+      console.log('>>> [fx] BEFORE snapshot - persistData:', { 
+        elementId,
+        persistData, 
+        parsed,
+        elementXPercent: parsed.elementXPercent 
+      })
+      
+      // Copy ngay lập tức
       ele.setAttribute('data-persist-position-snapshot', persistData)
+      
+      // Verify sau khi set
+      const snapshotData = ele.getAttribute('data-persist-position-snapshot')
+      const parsedSnapshot = snapshotData ? JSON.parse(snapshotData) : null
+      console.log('>>> [fx] AFTER snapshot - snapshotData:', { 
+        elementId,
+        snapshotData,
+        parsedSnapshot,
+        elementXPercent: parsedSnapshot?.elementXPercent,
+        isEqual: persistData === snapshotData
+      })
+      
+      // Kiểm tra xem data-persist-position có bị thay đổi không
+      const persistDataAfter = ele.getAttribute('data-persist-position')
+      if (persistData !== persistDataAfter) {
+        console.warn('>>> [fx] ⚠️ WARNING: data-persist-position CHANGED during snapshot!', {
+          elementId,
+          before: persistData,
+          after: persistDataAfter
+        })
+      }
     }
   }
 }
@@ -142,7 +174,7 @@ export const stayElementsRelativeToPrintArea = (
     // console.log('>>> [fx] ele:', { ele, persistData })
     if (!persistData) continue
     const parsedPersistData = JSON.parse(persistData) as TPersistElementPositionReturn
-    console.log('>>> [fx] parsed Persist Data:', { ele, parsedPersistData })
+    console.log('>>> [fx] parsed Persist snapshot:', { ele, parsedPersistData })
     const {
       elementXPercent,
       elementYPercent,
