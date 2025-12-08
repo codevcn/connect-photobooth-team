@@ -1,4 +1,4 @@
-import { useElementControl } from '@/hooks/element/use-element-control'
+import { TElementControlRegistryRef, useElementControl } from '@/hooks/element/use-element-control'
 import { useEffect, useState } from 'react'
 import { roundZooming } from '@/utils/helpers'
 import { createInitialConstants } from '@/utils/contants'
@@ -51,7 +51,7 @@ export const useTextElementControl = (
   elementRootRef: React.RefObject<HTMLElement | null>,
   printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
   containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
-  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null,
+  elementControlRef: TElementControlRegistryRef,
   initialParams?: TInitialTextParams
 ): TTextElementControlReturn => {
   const {

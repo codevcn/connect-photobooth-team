@@ -1,7 +1,7 @@
 import { TElementMountType, TStickerVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { useElementControl } from '@/hooks/element/use-element-control'
+import { TElementControlRegistryRef, useElementControl } from '@/hooks/element/use-element-control'
 import { typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
@@ -25,7 +25,7 @@ type TStickerElementProps = {
   selectElement: (elementId: string, elementType: 'sticker', path: string) => void
   removeStickerElement: (stickerElementId: string) => void
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
-  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null
+  elementControlRegistryRef: TElementControlRegistryRef
 }
 
 export const StickerElement = ({
@@ -35,7 +35,7 @@ export const StickerElement = ({
   selectElement,
   removeStickerElement,
   printAreaContainerRef,
-  elementControlRef,
+  elementControlRegistryRef,
 }: TStickerElementProps) => {
   const { path, id, mountType, height, width, grayscale } = element
   const rootRef = useRef<HTMLElement | null>(null)
@@ -52,7 +52,7 @@ export const StickerElement = ({
     rootRef,
     allowedPrintAreaRef,
     printAreaContainerRef,
-    elementControlRef,
+    elementControlRegistryRef,
     'sticker',
     {
       maxZoom: MAX_ZOOM,

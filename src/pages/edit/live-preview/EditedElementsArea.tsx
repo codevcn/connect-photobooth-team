@@ -4,17 +4,18 @@ import { TextElement } from '../elements/text-element/TextElement'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useSearchParams } from 'react-router-dom'
 import { PrintedImageElement } from '../elements/printed-image/PrintedImageElement'
+import { TElementControlRegistryRef } from '@/hooks/element/use-element-control'
 
 type TEditedElementsAreaProps = {
   allowedPrintAreaRef: React.RefObject<HTMLDivElement | null>
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
-  elementControlRef: React.RefObject<{ todo: (param: any) => void }>
+  elementControlRegistryRef: TElementControlRegistryRef
 }
 
 export const EditedElementsArea = ({
   allowedPrintAreaRef,
   printAreaContainerRef,
-  elementControlRef,
+  elementControlRegistryRef,
 }: TEditedElementsAreaProps) => {
   const stickerElements = useEditedElementStore((s) => s.stickerElements)
   const textElements = useEditedElementStore((s) => s.textElements)
@@ -41,7 +42,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removeStickerElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
-            elementControlRef={elementControlRef}
+            elementControlRegistryRef={elementControlRegistryRef}
           />
         ))}
 
@@ -59,7 +60,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removeTextElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
-            elementControlRef={elementControlRef}
+            elementControlRegistryRef={elementControlRegistryRef}
           />
         ))}
 
@@ -77,7 +78,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removePrintedImageElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
-            elementControlRef={elementControlRef}
+            elementControlRegistryRef={elementControlRegistryRef}
           />
         ))}
     </>

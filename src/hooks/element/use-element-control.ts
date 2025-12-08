@@ -1,7 +1,7 @@
 import { useRotateElement } from '@/hooks/element/use-rotate-element'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
-import { useEffect, useState, useRef, useCallback, useImperativeHandle } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createInitialConstants } from '@/utils/contants'
 import {
   TElementMountType,
@@ -55,12 +55,16 @@ type TElementControlReturn = {
   ) => void
 }
 
+export type TElementControlRegistryRef =
+  | React.RefObject<Record<string, { todo: (payload: any) => void }>>
+  | null
+
 export const useElementControl = (
   elementId: string,
   elementRootRef: React.RefObject<HTMLElement | null>,
   printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
   containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
-  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null,
+  elementControlRef: TElementControlRegistryRef,
   elementType: TElementType,
   initialParams?: TInitialParams
 ): TElementControlReturn => {
@@ -371,21 +375,31 @@ export const useElementControl = (
     // )
   }
 
-  useImperativeHandle(elementControlRef, () => ({
-    todo(param: any) {
-      console.log('>>> [elementControlRef] todo called with param:', param)
-      const persistPositionData = param[elementId]
-      if (!persistPositionData) return
-      const { posXPixel, posYPixel, scale: newScale } = persistPositionData
-      console.log('>>> debug kkk chua:', persistPositionData)
-      console.log('>>> debug kkk chua root:', elementRootRef.current)
-      setPosition({
-        x: posXPixel,
-        y: posYPixel,
-      })
-      handleSetElementState(undefined, undefined, newScale)
-    },
-  }))
+  useEffect(() => {
+    if (!elementControlRef) return
+    const registry = elementControlRef.current
+    if (!registry) return
+
+    registry[elementId] = {
+      todo: (param: any) => {
+        console.log('>>> [elementControlRef] todo called with param:', param)
+        const persistPositionData = param[elementId]
+        if (!persistPositionData) return
+        const { posXPixel, posYPixel, scale: newScale } = persistPositionData
+        console.log('>>> debug kkk chua:', persistPositionData)
+        console.log('>>> debug kkk chua root:', elementRootRef.current)
+        setPosition({
+          x: posXPixel,
+          y: posYPixel,
+        })
+        handleSetElementState(undefined, undefined, newScale)
+      },
+    }
+
+    return () => {
+      delete registry[elementId]
+    }
+  }, [elementControlRef, elementId])
 
   useEffect(() => {
     // Setup ResizeObserver to watch for print container size changes

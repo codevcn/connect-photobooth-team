@@ -125,7 +125,7 @@ export const LivePreview = ({
 }: TLivePreviewProps) => {
   const prevProductIdRef = useRef<TBaseProduct['id'] | null>(null)
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
-  const elementControlRef = useRef<{ todo: (param: any) => void }>({ todo: (param: any) => {} })
+  const elementControlRegistryRef = useRef<Record<string, { todo: (payload: any) => void }>>({})
 
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find(
@@ -185,7 +185,9 @@ export const LivePreview = ({
                     printAreaContainerRef.current!,
                     allowedPrintAreaRef.current!,
                     (payload) => {
-                      elementControlRef.current.todo(payload)
+                      Object.entries(payload).forEach(([eleId, data]) => {
+                        elementControlRegistryRef.current[eleId]?.todo({ [eleId]: data })
+                      })
                     }
                   )
                 })
@@ -198,7 +200,9 @@ export const LivePreview = ({
           printAreaContainerRef.current!,
           allowedPrintAreaRef.current!,
           (payload) => {
-            elementControlRef.current.todo(payload)
+            Object.entries(payload).forEach(([eleId, data]) => {
+              elementControlRegistryRef.current[eleId]?.todo({ [eleId]: data })
+            })
           }
         )
       }
@@ -348,7 +352,7 @@ export const LivePreview = ({
         <EditedElementsArea
           allowedPrintAreaRef={printAreaRef}
           printAreaContainerRef={printAreaContainerRef}
-          elementControlRef={elementControlRef}
+          elementControlRegistryRef={elementControlRegistryRef}
         />
       </div>
 

@@ -106,13 +106,31 @@ const calculateElementPositionRelativeToPrintArea = (
     element: { x: x_cu, y: y_cu, width: rong_cu, height: cao_cu },
     element_moi: { x: toa_do_x_moi, y: toa_do_y_moi },
   })
+  const containerRect = printAreaContainer.getBoundingClientRect()
+  const containerStyle = window.getComputedStyle(printAreaContainer)
+  const padL = parseFloat(containerStyle.paddingLeft) || 0
+  const padT = parseFloat(containerStyle.paddingTop) || 0
+  const borderL = printAreaContainer.clientLeft || 0
+  const borderT = printAreaContainer.clientTop || 0
+  const matrix = new DOMMatrix(containerStyle.transform)
+  const containerScale = matrix.a || 1
+  const transX = matrix.e || 0
+  const transY = matrix.f || 0
+
+  const xInContainerViewport = toa_do_x_moi - containerRect.left
+  const yInContainerViewport = toa_do_y_moi - containerRect.top
+
+  const xContent = (xInContainerViewport - borderL - padL - transX) / containerScale
+  const yContent = (yInContainerViewport - borderT - padT - transY) / containerScale
+
   console.log('>>> TIKCCCC', {
-    x: toa_do_x_moi - printAreaContainer.getBoundingClientRect().left,
-    y: toa_do_y_moi - printAreaContainer.getBoundingClientRect().top,
+    x: xContent,
+    y: yContent,
   })
+
   return {
-    x: toa_do_x_moi - printAreaContainer.getBoundingClientRect().left,
-    y: toa_do_y_moi - printAreaContainer.getBoundingClientRect().top,
+    x: xContent,
+    y: yContent,
   }
 
   // Lấy scale factor của A

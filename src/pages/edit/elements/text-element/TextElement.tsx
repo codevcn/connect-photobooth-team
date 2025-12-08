@@ -2,6 +2,7 @@ import { TElementMountType, TTextVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useTextElementControl } from '@/hooks/element/use-text-element-control'
+import { TElementControlRegistryRef } from '@/hooks/element/use-element-control'
 import { typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
@@ -23,7 +24,7 @@ type TTextElementProps = {
   selectElement: (elementId: string, elementType: 'text') => void
   removeTextElement: (textElementId: string) => void
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
-  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null
+  elementControlRegistryRef: TElementControlRegistryRef
 }
 
 export const TextElement = ({
@@ -33,7 +34,7 @@ export const TextElement = ({
   selectElement,
   removeTextElement,
   printAreaContainerRef,
-  elementControlRef,
+  elementControlRegistryRef,
 }: TTextElementProps) => {
   const { id, mountType } = element
   const rootRef = useRef<HTMLElement | null>(null)
@@ -50,7 +51,7 @@ export const TextElement = ({
     rootRef,
     allowedPrintAreaRef,
     printAreaContainerRef,
-    elementControlRef,
+    elementControlRegistryRef,
     {
       maxFontSize: MAX_TEXT_FONT_SIZE,
       minFontSize: MIN_TEXT_FONT_SIZE,
