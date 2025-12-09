@@ -11,7 +11,7 @@ import { persistElementPositionToPrintArea } from '../helpers'
 const MAX_ZOOM: number = 20
 const MIN_ZOOM: number = 0.5
 const DEFAULT_ELEMENT_DIMENSION_SIZE = () => {
-  if (checkIfMobileScreen()) {
+  if (window.innerWidth < 1500) {
     return 80
   }
   return 120
