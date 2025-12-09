@@ -16,6 +16,8 @@ import { useSnapThresholdRotateElement } from './use-snap-threshold-rotate-eleme
 type TElementPreviousRelativeProps = {
   relativeOffsetLeft: number
   relativeOffsetTop: number
+  allowedPrintAreaHeight: number
+  allowedPrintAreaWidth: number
 }
 
 type TInitialParams = Partial<
@@ -208,7 +210,6 @@ export const useElementControl = (
     position,
     handleSetElementPositionCallback,
     isRotating || isZooming,
-    undefined,
     scaleFactor
   )
 
@@ -289,11 +290,17 @@ export const useElementControl = (
     const elementPreOffset = elementPreviousRelativeProps.current
     if (!elementPreOffset) return
     const allowedPrintArea = printAreaAllowedRef.current
+    if (!allowedPrintArea) return
+    const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
+    if (
+      Math.abs(elementPreOffset.allowedPrintAreaHeight - allowedPrintAreaRect.height) < 4 ||
+      Math.abs(elementPreOffset.allowedPrintAreaWidth - allowedPrintAreaRect.width) < 4
+    )
+      return
     const element = elementRootRef.current
-    if (!allowedPrintArea || !element) return
+    if (!element) return
     const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
     const allowedPrintAreaTop = allowedPrintArea.offsetTop
-    const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
     const elementRect = element.getBoundingClientRect()
     handleSetElementPosition(
       Math.min(
@@ -313,6 +320,8 @@ export const useElementControl = (
     const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
     const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
     if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
+    const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
+    if (!allowedPrintAreaRect) return
 
     const offsetLeft = root.offsetLeft
     const offsetTop = root.offsetTop
@@ -321,6 +330,8 @@ export const useElementControl = (
     elementPreviousRelativeProps.current = {
       relativeOffsetLeft: offsetLeft - allowedPrintAreaLeft,
       relativeOffsetTop: offsetTop - allowedPrintAreaTop,
+      allowedPrintAreaHeight: allowedPrintAreaRect.height,
+      allowedPrintAreaWidth: allowedPrintAreaRect.width,
     }
   }
 

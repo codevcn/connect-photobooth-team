@@ -1,5 +1,5 @@
 import { TBaseProduct, TPrintAreaInfo, TPrintedImage } from '@/utils/types/global'
-import { PrintAreaOverlay, PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
+import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
 import { useEffect, useState } from 'react'
