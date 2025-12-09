@@ -185,8 +185,10 @@ export const PrintedImageElement = ({
   useEffect(() => {
     initElement()
     eventEmitter.on(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
+    window.addEventListener('resize', updateInteractiveButtonsVisual)
     return () => {
       eventEmitter.off(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
+      window.removeEventListener('resize', updateInteractiveButtonsVisual)
     }
   }, [id])
 

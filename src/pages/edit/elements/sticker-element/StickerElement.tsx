@@ -184,8 +184,10 @@ export const StickerElement = ({
   useEffect(() => {
     initElement()
     eventEmitter.on(EInternalEvents.SUBMIT_STICKER_ELE_PROPS, listenSubmitEleProps)
+    window.addEventListener('resize', updateInteractiveButtonsVisual)
     return () => {
       eventEmitter.off(EInternalEvents.SUBMIT_STICKER_ELE_PROPS, listenSubmitEleProps)
+      window.removeEventListener('resize', updateInteractiveButtonsVisual)
     }
   }, [id])
 

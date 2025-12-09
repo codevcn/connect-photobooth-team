@@ -226,8 +226,10 @@ export const TextElement = ({
   useEffect(() => {
     initElement()
     eventEmitter.on(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
+    window.addEventListener('resize', updateInteractiveButtonsVisual)
     return () => {
       eventEmitter.off(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
+      window.removeEventListener('resize', updateInteractiveButtonsVisual)
     }
   }, [id])
 
