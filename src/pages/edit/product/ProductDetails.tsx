@@ -31,7 +31,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         <div className="5xl:text-[0.5em] text-sm flex items-center justify-between gap-2">
           <span className="text-gray-800 font-bold">Chăm sóc khách hàng</span>
           <span className="font-semibold text-orange-600 text-end whitespace-nowrap">
-            0987 654 321
+            090 136 6095
           </span>
         </div>
       </div>

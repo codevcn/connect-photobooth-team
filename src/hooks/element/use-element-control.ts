@@ -9,7 +9,6 @@ import {
   TPosition,
 } from '@/utils/types/global'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
-import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useSnapThresholdRotateElement } from './use-snap-threshold-rotate-element'
 
@@ -35,16 +34,17 @@ type TElementControlReturn = {
   forRotate: {
     ref: React.RefObject<HTMLElement | null>
     isRotating: boolean
-    rotateButtonRef: React.RefObject<HTMLButtonElement | null>
+    rotateButtonRef: React.RefObject<HTMLElement | null>
   }
   forZoom: {
     ref: React.RefObject<HTMLElement | null>
     isZooming: boolean
-    zoomButtonRef: React.RefObject<HTMLButtonElement | null>
+    zoomButtonRef: React.RefObject<HTMLElement | null>
   }
   forDrag: {
     ref: React.RefObject<HTMLElement | null>
-    dragButtonRef: React.RefObject<HTMLDivElement | null>
+    dragButtonRef: React.RefObject<HTMLElement | null>
+    dragButtonSelfElementRef: React.RefObject<HTMLElement | null>
   }
   state: TElementVisualBaseState
   handleSetElementState: (
@@ -206,7 +206,11 @@ export const useElementControl = (
     },
   )
    */
-  const { containerRef: refForDrag, dragButtonRef } = useDragElement(
+  const {
+    containerRef: refForDrag,
+    dragButtonRef,
+    dragButtonSelfElementRef,
+  } = useDragElement(
     position,
     handleSetElementPositionCallback,
     isRotating || isZooming,
@@ -390,6 +394,7 @@ export const useElementControl = (
     forDrag: {
       ref: refForDrag,
       dragButtonRef,
+      dragButtonSelfElementRef,
     },
     handleSetElementState,
     state: {

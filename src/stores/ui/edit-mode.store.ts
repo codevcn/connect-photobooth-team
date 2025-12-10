@@ -5,11 +5,15 @@ type TProductUIDataStore = {
   editMode: TEditMode
 
   setEditMode: (mode: TEditMode) => void
+  resetData: () => void
 }
 
 export const useEditModeStore = create<TProductUIDataStore>((set, get) => ({
   editMode: 'with-template',
 
+  resetData: () => {
+    set({ editMode: 'with-template' })
+  },
   setEditMode: (mode: TEditMode) => {
     set({ editMode: mode })
   },

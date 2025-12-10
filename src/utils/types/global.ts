@@ -184,12 +184,6 @@ export type TUserInputImage = {
 
 export type TEditedImage = TPrintedImage
 
-export type TEditedImageContextValue = {
-  printedImages: TEditedImage[]
-  setPrintedImages: (printedImages: TEditedImage[]) => void
-  clearAllPrintedImages: () => void
-}
-
 export type TVoucher = {
   code: string
   description: string

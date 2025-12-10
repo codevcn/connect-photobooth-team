@@ -90,7 +90,7 @@ const GrayscaleControl = ({
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full mt-1">
       <div className="relative flex-1 text-black">
         <div className="flex justify-between">
           <p>Độ xám</p>
@@ -102,11 +102,9 @@ const GrayscaleControl = ({
           max="100"
           value={grayscale}
           onChange={(e) => handleGrayscaleChange(1 * (e.target.value as unknown as number))}
-          className="min-w-[150px] cursor-pointer accent-main-cl"
+          className="5xl:min-w-[200px] 5xl:h-4 h-2 rounded min-w-[150px] cursor-pointer accent-main-cl grayscale-range-thumb"
           style={{
-            height: '8px',
             background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${grayscale}%, #e5e7eb ${grayscale}%, #e5e7eb 100%)`,
-            borderRadius: '4px',
             WebkitAppearance: 'none',
             appearance: 'none',
           }}
@@ -351,18 +349,18 @@ export const PrintedImageElementMenuForDesktop = ({
     >
       {/* Drag Handle */}
       <div
-        className="flex items-center justify-center py-1.5 cursor-move bg-gray-100 rounded-t-lg border-b border-gray-200 hover:bg-gray-200 transition"
+        className="5xl:py-2.5 flex items-center justify-center py-1.5 cursor-move bg-gray-100 rounded-t-lg border-b border-gray-200 hover:bg-gray-200 transition"
         onMouseDown={handleDragStart}
         style={{ userSelect: 'none' }}
       >
         <div className="flex flex-col gap-0.5">
-          <div className="w-8 h-0.5 bg-gray-400 rounded"></div>
-          <div className="w-8 h-0.5 bg-gray-400 rounded"></div>
+          <div className="5xl:h-1.5 w-8 h-0.5 bg-gray-400 rounded"></div>
+          <div className="5xl:h-1.5 w-8 h-0.5 bg-gray-400 rounded"></div>
         </div>
       </div>
 
-      <div className="p-2">
-        <h3 className="text-sm font-bold text-main-cl mb-2 text-center">Tùy chỉnh</h3>
+      <div className="5xl:text-2xl p-2">
+        <h3 className="text-[1em] font-bold text-main-cl mb-2 text-center">Tùy chỉnh</h3>
         <div ref={menuRef} className="flex flex-col gap-2 text-white">
           <GrayscaleControl
             grayscale={grayscale}
@@ -375,15 +373,13 @@ export const PrintedImageElementMenuForDesktop = ({
           <div className="NAME-form-group NAME-form-zindex flex flex-col gap-1 items-start">
             <button
               onClick={() => onClickButton('zindex-up')}
-              className="grow text-black rounded flex gap-1 items-center py-0.5 justify-start hover:bg-gray-100 w-full"
+              className="grow text-black rounded flex gap-1 items-center mobile-touch py-0.5 justify-start hover:bg-gray-100 w-full"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 version="1.2"
                 viewBox="0 0 159 155"
-                width="30"
-                height="30"
-                className="rotate-180"
+                className="rotate-180 w-7 h-7 5xl:w-12 5xl:h-12"
               >
                 <defs>
                   <image
@@ -400,14 +396,13 @@ export const PrintedImageElementMenuForDesktop = ({
             </button>
             <button
               onClick={() => onClickButton('zindex-down')}
-              className="grow text-black rounded flex gap-1 items-center pl-0.5 py-0.5 justify-start hover:bg-gray-100 w-full"
+              className="grow text-black rounded flex gap-1 items-center mobile-touch pl-0.5 py-0.5 justify-start hover:bg-gray-100 w-full"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 version="1.2"
                 viewBox="0 0 159 155"
-                width="30"
-                height="30"
+                className="w-7 h-7 5xl:w-12 5xl:h-12"
               >
                 <defs>
                   <image

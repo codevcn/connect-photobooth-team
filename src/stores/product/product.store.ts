@@ -6,13 +6,16 @@ type TUseProductStore = {
 
   setProducts: (products: TBaseProduct[]) => void
   getProductById: (id: TBaseProduct['id']) => TBaseProduct | null
+  resetData: () => void
 }
 
 export const useProductStore = create<TUseProductStore>((set, get) => ({
   products: [],
 
+  resetData: () => {
+    set({ products: [] })
+  },
   setProducts: (products) => set({ products }),
-
   getProductById: (id: TBaseProduct['id']) => {
     return get().products.find((product) => product.id === id) || null
   },

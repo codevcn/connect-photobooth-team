@@ -387,21 +387,21 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
     >
       {/* Drag Handle */}
       <div
-        className="flex items-center justify-center py-1.5 cursor-move bg-gray-100 rounded-t-lg border-b border-gray-200 hover:bg-gray-200 transition"
+        className="5xl:py-2.5 flex items-center justify-center py-1.5 cursor-move bg-gray-100 rounded-t-lg border-b border-gray-200 hover:bg-gray-200 transition"
         onMouseDown={handleDragStart}
         style={{ userSelect: 'none' }}
       >
         <div className="flex flex-col gap-0.5">
-          <div className="w-8 h-0.5 bg-gray-400 rounded"></div>
-          <div className="w-8 h-0.5 bg-gray-400 rounded"></div>
+          <div className="5xl:h-1.5 w-8 h-0.5 bg-gray-400 rounded"></div>
+          <div className="5xl:h-1.5 w-8 h-0.5 bg-gray-400 rounded"></div>
         </div>
       </div>
 
-      <div className="p-2">
-        <h3 className="text-sm font-bold text-main-cl mb-2 text-center">Tùy chỉnh văn bản</h3>
+      <div className="5xl:text-2xl p-2">
+        <h3 className="text-[1em] font-bold text-main-cl mb-4 text-center">Tùy chỉnh</h3>
         <div ref={menuRef} className="flex flex-col gap-2 text-white">
-          <div className="NAME-form-group NAME-form-content h-9 flex items-center bg-main-cl rounded px-1 shadow">
-            <div>
+          <div className="NAME-form-group NAME-form-content py-1 flex items-center bg-main-cl rounded px-1 shadow">
+            <div className="p-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -410,14 +410,14 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-pen-icon lucide-pen w-5 h-5"
+                className="lucide lucide-pen-icon lucide-pen w-5 h-5 5xl:w-7 5xl:h-7"
               >
                 <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
               </svg>
             </div>
             <div className="flex gap-1 ml-1 grow">
               <input
-                className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} text-black bg-white rounded px-1 py-0.5 text-sm outline-none w-full`}
+                className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[1em] text-black bg-white rounded px-1 py-0.5 text-sm outline-none w-full`}
                 placeholder="Nhập nội dung..."
                 onKeyDown={(e) => catchEnter(e, 'font-size')}
                 onChange={onContentFieldChange}
@@ -427,15 +427,13 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
           <div className="NAME-form-group NAME-form-zindex flex flex-col gap-1 items-start">
             <button
               onClick={() => onClickButton('zindex-up')}
-              className="grow text-black rounded flex gap-1 items-center py-0.5 justify-start hover:bg-gray-100 w-full"
+              className="grow text-black rounded flex gap-1 items-center mobile-touch py-0.5 justify-start hover:bg-gray-100 w-full"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 version="1.2"
                 viewBox="0 0 159 155"
-                width="30"
-                height="30"
-                className="rotate-180"
+                className="rotate-180 w-7 h-7 5xl:w-12 5xl:h-12"
               >
                 <defs>
                   <image
@@ -452,14 +450,13 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
             </button>
             <button
               onClick={() => onClickButton('zindex-down')}
-              className="grow text-black rounded flex gap-1 items-center pl-0.5 py-0.5 justify-start hover:bg-gray-100 w-full"
+              className="grow text-black rounded flex gap-1 items-center mobile-touch pl-0.5 py-0.5 justify-start hover:bg-gray-100 w-full"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 version="1.2"
                 viewBox="0 0 159 155"
-                width="30"
-                height="30"
+                className="w-7 h-7 5xl:w-12 5xl:h-12"
               >
                 <defs>
                   <image
@@ -475,79 +472,74 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
               <span>Xuống 1 lớp</span>
             </button>
           </div>
-          <div className="flex gap-2">
-            <div className="NAME-form-group NAME-form-color flex items-stretch flex-1 justify-center gap-1 rounded">
-              <div
-                onClick={() => setShowColorPicker((pre) => !pre)}
-                className="flex items-center justify-center border-2 border-gray-300 cursor-pointer h-9 w-full gap-1 mobile-touch rounded shadow px-1"
-                style={{
-                  backgroundImage: `linear-gradient(to right, #fff, ${currentColor})`,
-                }}
-              >
-                <div className="flex gap-1 mx-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#fff"
-                    stroke="#f54900"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-palette-icon lucide-palette text-white w-5 h-5"
-                  >
-                    <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
-                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-                  </svg>
-                </div>
+          <div className="NAME-form-group NAME-form-color flex flex-1 justify-center gap-1 rounded">
+            <button
+              onClick={() => setShowColorPicker((pre) => !pre)}
+              className="grow text-black rounded flex gap-1 items-center mobile-touch pl-0.5 py-2 justify-start hover:bg-gray-100 w-full"
+            >
+              <div className="flex gap-1 mx-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="#fff"
+                  stroke="#000"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-palette-icon lucide-palette text-white mx-1 w-5 h-5 5xl:w-7 5xl:h-7"
+                >
+                  <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
+                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                </svg>
               </div>
-              {showColorPicker &&
-                createPortal(
-                  <ColorPickerModal
-                    onHideShow={setShowColorPicker}
-                    onColorChange={handleAdjustColorOnElement}
-                    inputText={inputText || ''}
-                    currentColor={currentColor}
-                    setCurrentColor={setCurrentColor}
-                  />,
-                  document.body
-                )}
-            </div>
-            <div className="NAME-form-group NAME-form-font flex items-stretch flex-1 justify-center gap-1 relative rounded">
-              <div
-                onClick={() => setShowTextFontPicker((pre) => !pre)}
-                className="flex items-center justify-center cursor-pointer gap-1 h-9 w-full mobile-touch bg-main-cl rounded shadow px-1"
-              >
-                <div className="flex gap-1 mx-1">
-                  <div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-type-outline-icon lucide-type-outline w-5 h-5"
-                    >
-                      <path d="M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z" />
-                    </svg>
-                  </div>
-                </div>
+              <p>Màu chữ</p>
+            </button>
+            {showColorPicker &&
+              createPortal(
+                <ColorPickerModal
+                  onHideShow={setShowColorPicker}
+                  onColorChange={handleAdjustColorOnElement}
+                  inputText={inputText || ''}
+                  currentColor={currentColor}
+                  setCurrentColor={setCurrentColor}
+                />,
+                document.body
+              )}
+          </div>
+          <div className="NAME-form-group NAME-form-font flex flex-1 justify-center gap-1 relative rounded">
+            <div
+              onClick={() => setShowTextFontPicker((pre) => !pre)}
+              className="grow text-black rounded flex gap-1 items-center mobile-touch pl-0.5 py-2 justify-start hover:bg-gray-100 w-full"
+            >
+              <div className="flex gap-1 mx-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-type-outline-icon lucide-type-outline mx-1 w-5 h-5 5xl:w-7 5xl:h-7"
+                >
+                  <path d="M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z" />
+                </svg>
               </div>
-              {showTextFontPicker &&
-                createPortal(
-                  <TextFontPicker
-                    onHideShow={setShowTextFontPicker}
-                    onSelectFont={handleSelectFont}
-                  />,
-                  document.body
-                )}
+              <p>Font chữ</p>
             </div>
+            {showTextFontPicker &&
+              createPortal(
+                <TextFontPicker
+                  onHideShow={setShowTextFontPicker}
+                  onSelectFont={handleSelectFont}
+                />,
+                document.body
+              )}
           </div>
         </div>
       </div>

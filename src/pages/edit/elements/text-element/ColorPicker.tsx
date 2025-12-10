@@ -172,7 +172,7 @@ export const ColorPickerModal = ({
           <label className="5xl:text-[0.8em] block text-sm font-semibold text-gray-700 mb-2">
             Chọn màu nhanh:
           </label>
-          <div className="grid grid-cols-6 gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="grid grid-cols-6 gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
             {BASIC_COLORS.map((color) => {
               const isSelected = currentColor.toUpperCase() === color.hex.toUpperCase()
               return (

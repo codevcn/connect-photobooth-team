@@ -43,7 +43,7 @@ export const TextElement = ({
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
     forZoom: { ref: refForZoom, zoomButtonRef },
-    forDrag: { ref: refForDrag, dragButtonRef },
+    forDrag: { ref: refForDrag, dragButtonRef, dragButtonSelfElementRef },
     state: { position, angle, zindex, fontSize, textColor, content, fontFamily, fontWeight, scale },
     handleSetElementState,
   } = useTextElementControl(
@@ -67,29 +67,21 @@ export const TextElement = ({
       mountType,
     }
   )
-  console.log('>>> text color:', { textColor })
-  const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
-    buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
-    isShown: false,
-  })
 
-  const updateInteractiveButtonsVisual = () => {
-    if (!isSelected) return
+  const updateInteractiveButtonsVisual = (): React.CSSProperties => {
     const root = rootRef.current
-    if (!root) return
+    if (!root) return {}
     const rootRect = root.getBoundingClientRect()
     const { left, top } = rootRect
     const widthAfterScale = fontSize * content.length * 0.59 * scaleFactor // 0.59 là giá trị chiều dài trung bình cho 1 ký tự trong font chữ Arial (font chữ mặc định của ứng dụng)
     const heightAfterScale = fontSize * scaleFactor // 1.2 là line-height mặc định
-    setInteractiveBtns({
-      buttonsContainerStyle: {
-        top: top + rootRect.height / 2 - heightAfterScale / 2,
-        left: left + rootRect.width / 2 - widthAfterScale / 2,
-        width: widthAfterScale,
-        height: heightAfterScale,
-      },
-      isShown: true,
-    })
+    return {
+      display: isSelected ? 'block' : 'none',
+      top: top + rootRect.height / 2 - heightAfterScale / 2,
+      left: left + rootRect.width / 2 - widthAfterScale / 2,
+      width: widthAfterScale,
+      height: heightAfterScale,
+    }
     // requestAnimationFrame(updateInteractiveButtonsVisual)
   }
 
@@ -98,8 +90,7 @@ export const TextElement = ({
       removeTextElement(id)
       return
     }
-    updateInteractiveButtonsVisual()
-  }, [isSelected, position.x, position.y, fontSize, angle, content, zindex, fontFamily, fontWeight])
+  }, [content, id])
 
   const pickElement = () => {
     const root = rootRef.current
@@ -147,11 +138,16 @@ export const TextElement = ({
   }, [fontSize, angle, position, isSelected, id])
 
   useEffect(() => {
-    eventEmitter.on(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
     window.addEventListener('resize', updateInteractiveButtonsVisual)
     return () => {
-      eventEmitter.off(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
       window.removeEventListener('resize', updateInteractiveButtonsVisual)
+    }
+  }, [isSelected])
+
+  useEffect(() => {
+    eventEmitter.on(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
+    return () => {
+      eventEmitter.off(EInternalEvents.SUBMIT_TEXT_ELE_PROPS, listenSubmitEleProps)
     }
   }, [id])
 
@@ -159,10 +155,11 @@ export const TextElement = ({
     <div
       data-root-element-id={id}
       ref={(node) => {
-        refForDrag.current = node
         rootRef.current = node
+        refForDrag.current = node
         refForRotate.current = node
         refForZoom.current = node
+        dragButtonSelfElementRef.current = node
         // refForPinch.current = node
       }}
       style={{
@@ -172,7 +169,7 @@ export const TextElement = ({
         zIndex: zindex,
       }}
       className={`NAME-root-element NAME-element-type-text absolute h-fit w-fit touch-none z-6`}
-      onClick={pickElement}
+      onPointerDown={pickElement}
       data-visual-state={JSON.stringify(
         typeToObject<TTextVisualState>({
           id,
@@ -212,21 +209,18 @@ export const TextElement = ({
         {createPortal(
           <div
             className="NAME-element-interactive-buttons fixed z-80 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
-            style={{
-              display: isSelected && interactiveBtns.isShown ? 'block' : 'none',
-              top: interactiveBtns.buttonsContainerStyle.top,
-              left: interactiveBtns.buttonsContainerStyle.left,
-              width: interactiveBtns.buttonsContainerStyle.width,
-              height: interactiveBtns.buttonsContainerStyle.height,
-              transform: `rotate(${angle}deg)`,
+            style={{ ...updateInteractiveButtonsVisual(), transform: `rotate(${angle}deg)` }}
+            ref={(node) => {
+              dragButtonRef.current = node
             }}
-            ref={dragButtonRef}
           >
             <div
               className={`NAME-rotate-box origin-center absolute -top-7 -left-7 md:-top-8 md:-left-8`}
             >
               <button
-                ref={rotateButtonRef}
+                ref={(node) => {
+                  rotateButtonRef.current = node
+                }}
                 // onPointerDownCapture={(e) => e.stopPropagation()}
                 className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
               >
@@ -247,7 +241,9 @@ export const TextElement = ({
             </div>
             <div className={`NAME-zoom-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8`}>
               <button
-                ref={zoomButtonRef}
+                ref={(node) => {
+                  zoomButtonRef.current = node
+                }}
                 onPointerDownCapture={(e) => e.stopPropagation()}
                 style={{ transform: `rotateY(180deg)` }}
                 className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"

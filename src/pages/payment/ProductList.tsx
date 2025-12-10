@@ -8,6 +8,7 @@ import {
   TProductAttatchedData,
 } from '@/utils/types/global'
 import { toast } from 'react-toastify'
+import { useState } from 'react'
 
 type ProductNoteProps = {
   productNote: TProductAttatchedData['productNote']
@@ -41,6 +42,71 @@ interface ProductListProps {
   onEditMockup: (mockupDataId: string) => void
 }
 
+type TConfirmDeleteModalProps = {
+  show: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+const ConfirmDeleteModal = ({ show, onConfirm, onCancel }: TConfirmDeleteModalProps) => {
+  if (!show) return null
+
+  return (
+    <div className="5xl:text-2xl fixed inset-0 z-999 flex items-center justify-center bg-black/50 animate-pop-in p-4">
+      <div onClick={onCancel} className="absolute inset-0"></div>
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative z-10 p-4">
+        {/* Icon */}
+        <div className="flex justify-center mb-4">
+          <div className="bg-red-600 p-3 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-8 h-8 text-white 5xl:w-12 5xl:h-12"
+            >
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              <line x1="10" x2="10" y1="11" y2="17" />
+              <line x1="14" x2="14" y1="11" y2="17" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="5xl:text-[1em] text-xl font-bold text-gray-800 text-center mb-3">
+          Bạn xác nhận sẽ xóa sản phẩm này?
+        </h3>
+
+        {/* Description */}
+        <p className="5xl:text-[0.8em] font-medium text-gray-600 text-center mb-6 text-sm">
+          Sản phẩm sẽ bị xóa khỏi giỏ hàng và không thể hoàn tác.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg active:scale-95 transition"
+          >
+            Hủy
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-600 mobile-touch text-white font-bold py-3 px-4 rounded-lg active:scale-95 transition"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export const ProductList: React.FC<ProductListProps> = ({
   cartItems,
   onUpdateQuantity,
@@ -49,9 +115,46 @@ export const ProductList: React.FC<ProductListProps> = ({
   onEditMockup,
 }) => {
   const getProductAttachedData = useProductUIDataStore((s) => s.getProductAttachedData)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<{
+    productId: TBaseProduct['id']
+    productVariantId: TClientProductVariant['id']
+    mockupId: TMockupData['id']
+  } | null>(null)
+
+  const handleDeleteClick = (
+    productId: TBaseProduct['id'],
+    productVariantId: TClientProductVariant['id'],
+    mockupId: TMockupData['id']
+  ) => {
+    setPendingDelete({ productId, productVariantId, mockupId })
+    setShowDeleteModal(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (pendingDelete) {
+      onRemoveProduct(
+        pendingDelete.productId,
+        pendingDelete.productVariantId,
+        pendingDelete.mockupId
+      )
+    }
+    setShowDeleteModal(false)
+    setPendingDelete(null)
+  }
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false)
+    setPendingDelete(null)
+  }
 
   return (
     <section className="5xl:text-[0.8em] text-xs sm:text-sm flex flex-col gap-2 mb-2">
+      <ConfirmDeleteModal
+        show={showDeleteModal}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
       {cartItems.map(
         ({
           productId,
@@ -206,9 +309,11 @@ export const ProductList: React.FC<ProductListProps> = ({
                         </svg>
                       </button>
                     </div>
-                    <div className="flex h-fit">
+                    <div className="flex h-fit ml-2">
                       <button
-                        onClick={() => onRemoveProduct(productId, productVariantId, mockupData.id)}
+                        onClick={() =>
+                          handleDeleteClick(productId, productVariantId, mockupData.id)
+                        }
                         className="p-1 rounded-full bg-red-600 active:scale-90 transition"
                       >
                         <svg

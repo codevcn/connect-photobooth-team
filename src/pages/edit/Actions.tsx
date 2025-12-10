@@ -94,7 +94,7 @@ export const Actions = () => {
           id="product-note-textfield"
           placeholder="Yêu cầu của bạn..."
           rows={2}
-          className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[1.2em] text-sm w-full rounded-md border border-gray-300 p-1.5 outline-main-cl outline-0 focus:outline-2 focus:border-main-cl resize-none transition`}
+          className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[1.3em] text-sm w-full rounded-md border border-gray-300 p-1.5 outline-main-cl outline-0 focus:outline-2 focus:border-main-cl resize-none transition`}
         ></textarea>
       </div>
 
@@ -107,7 +107,7 @@ export const Actions = () => {
             <div className="flex flex-col gap-1.5 w-[80%]">
               <button
                 onClick={handleShowMockupPreview}
-                className="5xl:text-[1.1em] flex-1 cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold py-1 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
+                className="5xl:text-[1.3em] flex-1 cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold py-2 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
                 title="Xem trước bản mockup"
               >
                 <svg
@@ -129,7 +129,7 @@ export const Actions = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={beforeAddToCartHandler}
-                className="5xl:text-[1.1em] flex-1 cursor-pointer bg-main-cl hover:bg-dark-main-cl active:scale-95 text-white font-bold py-1 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
+                className="5xl:text-[1.3em] flex-1 cursor-pointer bg-main-cl hover:bg-dark-main-cl active:scale-95 text-white font-bold py-2 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
                 title="Thêm vào giỏ hàng"
               >
                 <svg
@@ -155,7 +155,7 @@ export const Actions = () => {
               title="Xem giỏ hàng"
             >
               {cartCount > 0 && (
-                <span className="5xl:text-[25px] h-5 w-5 5xl:h-6 5xl:w-6 text-main-cl bg-white rounded-full text-[20px] leading-none font-bold flex items-center justify-center">
+                <span className="5xl:text-[25px] 5xl:h-7 5xl:w-7 h-5 w-5 text-main-cl bg-white rounded-full text-[20px] leading-none font-bold flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -167,7 +167,7 @@ export const Actions = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-8 h-8 5xl:w-10 5xl:h-10"
+                className="w-8 h-8 5xl:w-12 5xl:h-12"
               >
                 <circle cx="8" cy="21" r="1" />
                 <circle cx="19" cy="21" r="1" />

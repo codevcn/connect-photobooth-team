@@ -36,7 +36,7 @@ type TUseElementStore = {
   removeStickerElement: (stickerId: string) => void
   addTextElement: (textElements: TTextVisualState[]) => void
   removeTextElement: (textElementId: string) => void
-  resetData: () => void
+  resetData: (resetAll?: boolean) => void
   setStickerElements: (stickers: TStickerVisualState[]) => void
   setTextElements: (textElements: TTextVisualState[]) => void
   setPrintedImageElements: (printedImages: TPrintedImageVisualState[]) => void
@@ -156,14 +156,25 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
     if (!selectedElement) return
     set({ selectedElement: { ...selectedElement, ...updatedElement } })
   },
-  resetData: () => {
-    set({
-      selectedElement: null,
-      stickerElements: [],
-      textElements: [],
-      printedImages: [],
-      printedImagesBuildId: null,
-    })
+  resetData: (resetAll = false) => {
+    if (resetAll) {
+      set({
+        selectedElement: null,
+        stickerElements: [],
+        textElements: [],
+        printedImages: [],
+        printedImagesBuildId: null,
+        savedElementsVisualStates: [],
+      })
+    } else {
+      set({
+        selectedElement: null,
+        stickerElements: [],
+        textElements: [],
+        printedImages: [],
+        printedImagesBuildId: null,
+      })
+    }
   },
   addTextElement: (addedTextElements) => {
     const { textElements } = get()

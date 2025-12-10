@@ -9,12 +9,16 @@ type TUseElementStylingStore = {
   addFont: (font: TTextFont) => void
   checkIfFontLoaded: (fontFamily: TTextFont['fontFamily']) => boolean
   setStatus: (status: TLoadFontStatus) => void
+  resetData: () => void
 }
 
 export const useElementStylingStore = create<TUseElementStylingStore>((set, get) => ({
   allLoadedFonts: [],
   status: 'idle',
 
+  resetData: () => {
+    set({ allLoadedFonts: [], status: 'idle' })
+  },
   setStatus: (status: TLoadFontStatus) => {
     set({ status })
   },

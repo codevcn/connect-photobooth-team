@@ -88,3 +88,23 @@
     display: none;
   }
 }
+
+@utility grayscale-range-thumb {
+  @apply appearance-none;
+
+  &::-webkit-slider-thumb {
+    @apply appearance-none bg-main-cl rounded-full cursor-pointer;
+    height: 20px;
+    width: 20px;
+  }
+
+  &::-moz-range-thumb {
+    @apply bg-main-cl rounded-full cursor-pointer;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.Toastify__toast {
+  width: max-content;
+}

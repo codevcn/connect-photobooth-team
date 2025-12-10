@@ -2,9 +2,10 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 
 type TPosition = { x: number; y: number }
 
-export interface UseDraggableReturn {
+export type UseDraggableReturn = {
   containerRef: React.RefObject<HTMLDivElement | null>
   dragButtonRef: React.RefObject<HTMLDivElement | null>
+  dragButtonSelfElementRef: React.RefObject<HTMLDivElement | null>
   isDragging: boolean
 }
 
@@ -17,6 +18,7 @@ export const useDragElement = (
   // ===== REFS =====
   const containerRef = useRef<HTMLDivElement | null>(null)
   const dragButtonRef = useRef<HTMLDivElement | null>(null)
+  const dragButtonSelfElementRef = useRef<HTMLDivElement | null>(null)
   const isDraggingRef = useRef(false)
   const offsetRef = useRef<TPosition>({ x: 0, y: 0 })
 
@@ -65,8 +67,8 @@ export const useDragElement = (
     (e: PointerEvent) => {
       if (disabled) return
 
-      e.preventDefault()
-      e.stopPropagation()
+      // e.preventDefault()
+      // e.stopPropagation()
 
       isDraggingRef.current = true
       setIsDragging(true)
@@ -132,16 +134,22 @@ export const useDragElement = (
   // ===== EFFECT: REGISTER/CLEANUP EVENT LISTENERS =====
   useEffect(() => {
     const button = dragButtonRef.current
-    if (!button) return
+    const selfElementButton = dragButtonSelfElementRef.current
 
     // Register event listeners
-    button.addEventListener('pointerdown', handleStart)
+    if (button) {
+      button.addEventListener('pointerdown', handleStart)
+    }
+    if (selfElementButton) {
+      selfElementButton.addEventListener('pointerdown', handleStart)
+    }
     window.addEventListener('pointermove', handleMove)
     window.addEventListener('pointerup', handleEnd)
 
     // Cleanup function
     return () => {
-      button.removeEventListener('pointerdown', handleStart)
+      if (button) button.removeEventListener('pointerdown', handleStart)
+      if (selfElementButton) selfElementButton.removeEventListener('pointerdown', handleStart)
       window.removeEventListener('pointermove', handleMove)
       window.removeEventListener('pointerup', handleEnd)
 
@@ -162,5 +170,6 @@ export const useDragElement = (
     containerRef,
     dragButtonRef,
     isDragging,
+    dragButtonSelfElementRef,
   }
 }

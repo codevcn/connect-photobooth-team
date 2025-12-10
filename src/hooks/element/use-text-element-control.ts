@@ -20,16 +20,17 @@ type TTextElementControlReturn = {
   forRotate: {
     ref: React.RefObject<HTMLElement | null>
     isRotating: boolean
-    rotateButtonRef: React.RefObject<HTMLButtonElement | null>
+    rotateButtonRef: React.RefObject<HTMLElement | null>
   }
   forZoom: {
     ref: React.RefObject<HTMLElement | null>
     isZooming: boolean
-    zoomButtonRef: React.RefObject<HTMLButtonElement | null>
+    zoomButtonRef: React.RefObject<HTMLElement | null>
   }
   forDrag: {
     ref: React.RefObject<HTMLElement | null>
-    dragButtonRef: React.RefObject<HTMLDivElement | null>
+    dragButtonRef: React.RefObject<HTMLElement | null>
+    dragButtonSelfElementRef: React.RefObject<HTMLElement | null>
   }
   state: Omit<TTextVisualState, 'id'>
   handleSetElementState: (

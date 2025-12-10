@@ -43,7 +43,7 @@ export const PrintedImageElement = ({
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
     forZoom: { ref: refForZoom, zoomButtonRef },
-    forDrag: { ref: refForDrag, dragButtonRef },
+    forDrag: { ref: refForDrag, dragButtonRef, dragButtonSelfElementRef },
     state: { position, angle, scale, zindex },
     handleSetElementState,
   } = useElementControl(id, rootRef, allowedPrintAreaRef, printAreaContainerRef, 'printed-image', {
@@ -55,34 +55,23 @@ export const PrintedImageElement = ({
     zindex: element.zindex,
     mountType,
   })
-  const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
-    buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
-    isShown: false,
-  })
 
-  const updateInteractiveButtonsVisual = () => {
-    if (!isSelected) return
+  const updateInteractiveButtonsVisual = (): React.CSSProperties => {
     const root = rootRef.current
-    if (!root) return
+    if (!root) return {}
     const rootRect = root.getBoundingClientRect()
     const { left, top, height, width } = rootRect
     const widthAfterScale = root.offsetWidth * scale * scaleFactor
     const heightAfterScale = root.offsetHeight * scale * scaleFactor
-    setInteractiveBtns({
-      buttonsContainerStyle: {
-        top: top + height / 2 - heightAfterScale / 2,
-        left: left + width / 2 - widthAfterScale / 2,
-        width: widthAfterScale,
-        height: heightAfterScale,
-      },
-      isShown: true,
-    })
+    return {
+      display: isSelected ? 'block' : 'none',
+      top: top + height / 2 - heightAfterScale / 2,
+      left: left + width / 2 - widthAfterScale / 2,
+      width: widthAfterScale,
+      height: heightAfterScale,
+    }
     // requestAnimationFrame(updateInteractiveButtonsVisual)
   }
-
-  useEffect(() => {
-    updateInteractiveButtonsVisual()
-  }, [isSelected, position.x, position.y, scale, angle, zindex])
 
   const pickElement = () => {
     const root = rootRef.current
@@ -117,11 +106,16 @@ export const PrintedImageElement = ({
   }, [scale, angle, position.x, position.y, isSelected, id])
 
   useEffect(() => {
-    eventEmitter.on(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
     window.addEventListener('resize', updateInteractiveButtonsVisual)
     return () => {
-      eventEmitter.off(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
       window.removeEventListener('resize', updateInteractiveButtonsVisual)
+    }
+  }, [isSelected])
+
+  useEffect(() => {
+    eventEmitter.on(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
+    return () => {
+      eventEmitter.off(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
     }
   }, [id])
 
@@ -129,8 +123,9 @@ export const PrintedImageElement = ({
     <div
       data-root-element-id={id}
       ref={(node) => {
-        refForDrag.current = node
         rootRef.current = node
+        refForDrag.current = node
+        dragButtonSelfElementRef.current = node
         refForRotate.current = node
         refForZoom.current = node
       }}
@@ -147,7 +142,7 @@ export const PrintedImageElement = ({
             }),
       }}
       className={`NAME-root-element NAME-element-type-printed-image absolute h-fit w-fit touch-none z-6`}
-      onClick={pickElement}
+      onPointerDown={pickElement}
       data-visual-state={JSON.stringify(
         typeToObject<TPrintedImageVisualState>({
           id,
@@ -186,22 +181,22 @@ export const PrintedImageElement = ({
 
       {createPortal(
         <div
-          className="NAME-element-interactive-buttons fixed z-90 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
+          className="NAME-element-interactive-buttons hidden fixed z-99 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
           style={{
-            display: isSelected && interactiveBtns.isShown ? 'block' : 'none',
-            top: interactiveBtns.buttonsContainerStyle.top,
-            left: interactiveBtns.buttonsContainerStyle.left,
-            width: interactiveBtns.buttonsContainerStyle.width,
-            height: interactiveBtns.buttonsContainerStyle.height,
+            ...updateInteractiveButtonsVisual(),
             transform: `rotate(${angle}deg)`,
           }}
-          ref={dragButtonRef}
+          ref={(node) => {
+            dragButtonRef.current = node
+          }}
         >
           <div
             className={`NAME-rotate-box origin-center absolute -top-7 -left-7 md:-top-8 md:-left-8 5xl:-top-10 5xl:-left-10`}
           >
             <button
-              ref={rotateButtonRef}
+              ref={(node) => {
+                rotateButtonRef.current = node
+              }}
               // onPointerDownCapture={(e) => e.stopPropagation()}
               className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
             >
@@ -224,7 +219,9 @@ export const PrintedImageElement = ({
             className={`NAME-remove-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8 5xl:-bottom-10 5xl:-right-10`}
           >
             <button
-              ref={zoomButtonRef}
+              ref={(node) => {
+                zoomButtonRef.current = node
+              }}
               onPointerDownCapture={(e) => e.stopPropagation()}
               style={{ transform: `rotateY(180deg)` }}
               className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"

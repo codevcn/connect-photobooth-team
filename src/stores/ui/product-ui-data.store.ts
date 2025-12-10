@@ -54,7 +54,7 @@ type TProductUIDataStore = {
     initialVariant: TClientProductVariant,
     initialSurface: TPrintAreaInfo
   ) => void
-  resetData: () => void
+  resetData: (resetAll?: boolean) => void
 }
 
 export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => ({
@@ -65,14 +65,25 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   cartCount: 0,
   productsAttachedData: [],
 
-  resetData: () => {
-    set({
-      pickedProduct: null,
-      pickedVariant: null,
-      pickedSurface: null,
-      isAddingToCart: false,
-      cartCount: 0,
-    })
+  resetData: (resetAll = false) => {
+    if (resetAll) {
+      set({
+        pickedProduct: null,
+        pickedVariant: null,
+        pickedSurface: null,
+        isAddingToCart: false,
+        cartCount: 0,
+        productsAttachedData: [],
+      })
+    } else {
+      set({
+        pickedProduct: null,
+        pickedVariant: null,
+        pickedSurface: null,
+        isAddingToCart: false,
+        cartCount: 0,
+      })
+    }
   },
 
   getProductAttachedData: (productId) => {
