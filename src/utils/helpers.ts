@@ -564,3 +564,9 @@ export const fillQueryStringToURL = (): string => {
   }
   return '?dev=123'
 }
+
+export const getEditedElementByElementId = (elementId: string): HTMLElement | null => {
+  return document.body.querySelector<HTMLElement>(
+    `.NAME-print-area-container .NAME-root-element[data-root-element-id="${elementId}"]`
+  )
+}

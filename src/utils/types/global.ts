@@ -220,6 +220,8 @@ export type TTextVisualState = TElementVisualBaseState & {
   mountType?: TElementMountType
 }
 
+export type TMatchOrientation = 'width' | 'height'
+
 export type TStickerVisualState = TElementVisualBaseState & {
   id: string
   path: string
@@ -227,13 +229,15 @@ export type TStickerVisualState = TElementVisualBaseState & {
     mountType: TElementMountType
     height: number
     width: number
-    matchOrientation: 'width' | 'height'
+    matchOrientation: TMatchOrientation
     grayscale: number // 0-100 percentage
   }>
 
 export type TPrintedImageVisualState = TStickerVisualState &
   Partial<{
     isInitWithLayout: boolean
+    matchOrientation: 'width' | 'height'
+    grayscale: number // 0-100 percentage
   }>
 
 export type TStoredTemplate = TPrintTemplate
@@ -489,3 +493,9 @@ export type TElementRelativeProps = {
 }
 
 export type TEditMode = 'with-template' | 'no-template'
+
+export type TSelectedElement = {
+  elementId: string
+  elementType: TElementType
+  elementURL?: string
+}

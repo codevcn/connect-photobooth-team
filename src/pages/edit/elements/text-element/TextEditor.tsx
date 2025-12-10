@@ -181,7 +181,7 @@ export const EditorModalWrapper = ({
 
   return (
     <>
-      <button className="p-2 flex flex-col items-center -rotate-6 gap-2 cursor-pointer mobile-touch bg-white rounded-md active:bg-light-orange-cl touch-target transition">
+      <button className="flex flex-col items-center -rotate-6 gap-2 rounded-md active:bg-light-orange-cl">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -190,7 +190,7 @@ export const EditorModalWrapper = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-6 smd:h-6 5xl:w-12 5xl:h-12"
+          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-6 smd:h-6 5xl:w-8 5xl:h-8"
         >
           <path d="M12 4v16" />
           <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
@@ -273,13 +273,13 @@ export const TextEditor = () => {
     <div
       ref={containerRef}
       onClick={() => setShowEditorModal(true)}
-      className="5xl:text-[1.5em] cursor-pointer flex items-center justify-center mt-2 gap-1 bg-white flex-1 rounded-md px-1"
+      className="5xl:text-[1.5em] py-4 px-1 pb-3 bg-gray-100 cursor-pointer flex items-center justify-center gap-2 flex-1 rounded-md"
     >
       <EditorModalWrapper
         showEditorModal={showEditorModal}
         setShowEditorModal={setShowEditorModal}
       />
-      <p className="5xl:text-[0.8em] smd:text-sm text-xs font-bold text-gray-800 leading-none">
+      <p className="5xl:text-[0.7em] smd:text-sm text-xs font-bold text-gray-800 leading-none">
         Thêm văn bản
       </p>
       {/* <TextMenuWrapper /> */}

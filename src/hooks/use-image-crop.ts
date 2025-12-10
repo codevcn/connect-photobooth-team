@@ -35,12 +35,15 @@ export const useImageCrop = ({ imageData, onCropComplete }: UseCropImageOptions 
   }, [])
 
   // Handle crop change from ReactCrop component
-  const handleCropChange = useCallback((c: Crop) => {
-    setCrop(c)
-    syncCropToRef(c)
-    setCustomWidth(Math.round(c.width))
-    setCustomHeight(Math.round(c.height))
-  }, [syncCropToRef])
+  const handleCropChange = useCallback(
+    (c: Crop) => {
+      setCrop(c)
+      syncCropToRef(c)
+      setCustomWidth(Math.round(c.width))
+      setCustomHeight(Math.round(c.height))
+    },
+    [syncCropToRef]
+  )
 
   // Handle crop complete event
   const handleCropComplete = useCallback((c: Crop) => {
@@ -48,66 +51,75 @@ export const useImageCrop = ({ imageData, onCropComplete }: UseCropImageOptions 
   }, [])
 
   // Initialize crop area when image loads
-  const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const image = e.currentTarget
-    const { width, height } = image.getBoundingClientRect()
+  const onImageLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const image = e.currentTarget
+      const { width, height } = image.getBoundingClientRect()
 
-    const initialCrop: Crop = {
-      unit: '%',
-      x: 5,
-      y: 5,
-      width: 90,
-      height: 90,
-    }
-    setCrop(initialCrop)
-    syncCropToRef(initialCrop)
-    setCompletedCrop(initialCrop)
+      const initialCrop: Crop = {
+        unit: '%',
+        x: 5,
+        y: 5,
+        width: 90,
+        height: 90,
+      }
+      setCrop(initialCrop)
+      syncCropToRef(initialCrop)
+      setCompletedCrop(initialCrop)
 
-    setCustomWidth(Math.round(width * 0.9))
-    setCustomHeight(Math.round(height * 0.9))
-  }, [syncCropToRef])
+      setCustomWidth(Math.round(width * 0.9))
+      setCustomHeight(Math.round(height * 0.9))
+    },
+    [syncCropToRef]
+  )
 
   // Update crop width programmatically
-  const updateCropWidth = useCallback((width: number) => {
-    const image = imgRef.current
-    const currentCrop = cropRef.current
-    if (!image || !currentCrop) return
+  const updateCropWidth = useCallback(
+    (width: number) => {
+      const image = imgRef.current
+      const currentCrop = cropRef.current
+      if (!image || !currentCrop) return
 
-    const maxWidth = image.getBoundingClientRect().width
-    const constrainedWidth = Math.min(Math.max(width, minCropSizeWidth), maxWidth)
+      const maxWidth = image.getBoundingClientRect().width
+      const constrainedWidth = Math.min(Math.max(width, minCropSizeWidth), maxWidth)
 
-    const newCrop: Crop = {
-      ...currentCrop,
-      width: constrainedWidth,
-      x: Math.min(currentCrop.x, maxWidth - constrainedWidth),
-    }
+      const newCrop: Crop = {
+        ...currentCrop,
+        width: constrainedWidth,
+        x: Math.min(currentCrop.x, maxWidth - constrainedWidth),
+      }
 
-    setCrop(newCrop)
-    syncCropToRef(newCrop)
-    setCompletedCrop(newCrop)
-    setCustomWidth(Math.round(constrainedWidth))
-  }, [minCropSizeWidth, syncCropToRef])
+      setCrop(newCrop)
+      syncCropToRef(newCrop)
+      setCompletedCrop(newCrop)
+      setCustomWidth(Math.round(constrainedWidth))
+    },
+    [minCropSizeWidth, syncCropToRef]
+  )
 
   // Update crop height programmatically
-  const updateCropHeight = useCallback((height: number) => {
-    const image = imgRef.current
-    const currentCrop = cropRef.current
-    if (!image || !currentCrop) return
+  const updateCropHeight = useCallback(
+    (height: number) => {
+      const image = imgRef.current
+      const currentCrop = cropRef.current
+      if (!image || !currentCrop) return
 
-    const maxHeight = image.getBoundingClientRect().height
-    const constrainedHeight = Math.min(Math.max(height, minCropSizeHeight), maxHeight)
+      const maxHeight = image.getBoundingClientRect().height
+      const constrainedHeight = Math.min(Math.max(height, minCropSizeHeight), maxHeight)
 
-    const newCrop: Crop = {
-      ...currentCrop,
-      height: constrainedHeight,
-      y: Math.min(currentCrop.y, maxHeight - constrainedHeight),
-    }
+      const newCrop: Crop = {
+        ...currentCrop,
+        height: constrainedHeight,
+        y: Math.min(currentCrop.y, maxHeight - constrainedHeight),
+      }
 
-    setCrop(newCrop)
-    syncCropToRef(newCrop)
-    setCompletedCrop(newCrop)
-    setCustomHeight(Math.round(constrainedHeight))
-  }, [minCropSizeHeight, syncCropToRef])
+      setCrop(newCrop)
+      syncCropToRef(newCrop)
+      setCompletedCrop(newCrop)
+      setCustomHeight(Math.round(constrainedHeight))
+    },
+    [minCropSizeHeight, syncCropToRef]
+  )
 
   // Perform the actual crop operation
   const performCrop = useCallback((): Promise<CropResult> => {
@@ -125,7 +137,7 @@ export const useImageCrop = ({ imageData, onCropComplete }: UseCropImageOptions 
 
       setIsCropping(true)
 
-      queueMicrotask(() => {
+      requestIdleCallback(() => {
         try {
           const canvas = document.createElement('canvas')
           const scaleX = image.naturalWidth / image.width
@@ -183,13 +195,11 @@ export const useImageCrop = ({ imageData, onCropComplete }: UseCropImageOptions 
                 return
               }
 
-              const result: CropResult = {
+              setIsCropping(false)
+              resolve({
                 blob,
                 url: URL.createObjectURL(blob),
-              }
-
-              setIsCropping(false)
-              resolve(result)
+              })
             },
             format,
             quality

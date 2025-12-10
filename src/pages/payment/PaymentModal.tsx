@@ -37,11 +37,10 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
     const province = formData.get('province')?.toString().trim()
     const city = formData.get('city')?.toString().trim()
     const address = formData.get('address')?.toString().trim()
-    if (!fullName || !phone || !email || !province || !city || !address) {
+    if (!fullName || !phone || !province || !city || !address) {
       setErrors({
         fullName: fullName ? undefined : 'Họ và tên là bắt buộc',
         phone: phone ? undefined : 'Số điện thoại là bắt buộc',
-        email: email ? undefined : 'Email là bắt buộc',
         province: province ? undefined : 'Tỉnh/Thành phố là bắt buộc',
         city: city ? undefined : 'Quận/Huyện là bắt buộc',
         address: address ? undefined : 'Địa chỉ là bắt buộc',

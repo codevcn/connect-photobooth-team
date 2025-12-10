@@ -1,5 +1,5 @@
 import { resizeCanvas } from '@/utils/helpers'
-import { domToCanvas } from 'modern-screenshot'
+import { domToBlob, domToCanvas } from 'modern-screenshot'
 
 /**
  * Crop canvas to a specific region
@@ -55,6 +55,7 @@ type TUseHtlmToCanvasReturn = {
   ) => void
   saveHtmlAsImageWithDesiredSize: (
     htmlContainer: HTMLDivElement,
+    transparentPrintAreaContainer: HTMLDivElement,
     desiredOutputWidth: number,
     desiredOutputHeight: number,
     upScale: number,
@@ -66,9 +67,74 @@ type TUseHtlmToCanvasReturn = {
     ) => void,
     onError: (error: Error) => void
   ) => void
+  savePrintAreaAsImage: (
+    htmContainer: HTMLDivElement,
+    allowedPrintArea: HTMLDivElement,
+    desiredImgMimeType: string | null,
+    upScale: number | undefined,
+    onSaved: (
+      fullPrintAreaContainer: Blob,
+      allowedPrintAreaImage: Blob,
+      allowedPrintAreaCanvas: HTMLCanvasElement
+    ) => void,
+    onError: (error: Error) => void
+  ) => void
 }
 
 export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
+  const savePrintAreaAsImage = async (
+    htmContainer: HTMLDivElement,
+    allowedPrintArea: HTMLDivElement,
+    desiredImgMimeType: string | null,
+    upScale: number | undefined,
+    onSaved: (
+      fullPrintAreaContainer: Blob,
+      allowedPrintAreaImage: Blob,
+      allowedPrintAreaCanvas: HTMLCanvasElement
+    ) => void,
+    onError: (error: Error) => void
+  ) => {
+    try {
+      await document.fonts.ready
+      const scale: number = upScale || 8
+      const [fullContainerCanvas, allowedPrintAreaCanvas] = await Promise.all([
+        domToCanvas(htmContainer, {
+          scale: scale,
+          quality: 1,
+          type: desiredImgMimeType || 'image/webp',
+        }),
+        domToCanvas(allowedPrintArea, {
+          scale: scale,
+          quality: 1,
+          type: desiredImgMimeType || 'image/webp',
+        }),
+      ])
+      const outputList: Blob[] = []
+      fullContainerCanvas.toBlob((blob) => {
+        if (blob) {
+          outputList.push(blob)
+          if (outputList.length === 2) {
+            onSaved(outputList[0], outputList[1], allowedPrintAreaCanvas)
+          }
+        } else {
+          throw new Error('Failed to convert entire product canvas to Blob')
+        }
+      }, desiredImgMimeType || 'image/webp')
+      allowedPrintAreaCanvas.toBlob((blob) => {
+        if (blob) {
+          outputList.push(blob)
+          if (outputList.length === 2) {
+            onSaved(outputList[0], outputList[1], allowedPrintAreaCanvas)
+          }
+        } else {
+          throw new Error('Failed to convert allowed print area canvas to Blob')
+        }
+      }, desiredImgMimeType || 'image/webp')
+    } catch (error) {
+      onError(error as Error)
+    }
+  }
+
   const saveHtmlAsImage = async (
     htmContainer: HTMLDivElement,
     desiredImgMimeType: string | null,
@@ -100,6 +166,7 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
 
   const saveHtmlAsImageWithDesiredSize = async (
     htmlContainer: HTMLDivElement,
+    transparentPrintAreaContainer: HTMLDivElement,
     desiredOutputWidth: number,
     desiredOutputHeight: number,
     upScale: number = 8,
@@ -112,21 +179,27 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
     onError: (error: Error) => void
   ) => {
     requestIdleCallback(async () => {
+      const mokupImageBlob = await domToBlob(htmlContainer, {
+        scale: upScale,
+        quality: 1,
+        type: desiredImgMimeType || 'image/webp',
+      })
+
       // Lấy vị trí của container và element cần crop
-      const containerRect = htmlContainer.getBoundingClientRect()
-      const elementRect = htmlContainer
+      const containerRect = transparentPrintAreaContainer.getBoundingClientRect()
+      const elementRect = transparentPrintAreaContainer
         .querySelector('.NAME-print-area-allowed')
         ?.getBoundingClientRect()
       if (!elementRect) return
       // Tính vị trí relative của element so với container
       const relativeX = elementRect.left - containerRect.left
       const relativeY = elementRect.top - containerRect.top
-      // insert(htmlContainer, true)
+      // insert(transparentPrintAreaContainer, true)
       const imageDataPromises: Promise<Blob>[] = []
       try {
         await document.fonts.ready
 
-        const fullCanvas = await domToCanvas(htmlContainer, {
+        const fullCanvas = await domToCanvas(transparentPrintAreaContainer, {
           scale: upScale,
           quality: 1,
           type: desiredImgMimeType || 'image/webp',
@@ -182,7 +255,7 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
           })
         )
         const blobs = await Promise.all(imageDataPromises)
-        onSaved(blobs[0], blobs[1], croppedCanvas)
+        onSaved(mokupImageBlob, blobs[1], croppedCanvas)
       } catch (error) {
         onError(error as Error)
       }
@@ -271,6 +344,7 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
   }
 
   return {
+    savePrintAreaAsImage,
     saveHtmlAsImage,
     saveHtmlAsImageWithDesiredSizeOldVersion,
     saveHtmlAsImageCropped,

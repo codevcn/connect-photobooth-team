@@ -4,17 +4,12 @@ import {
   TElementsVisualState,
   TElementType,
   TPrintedImageVisualState,
+  TSelectedElement,
   TStickerVisualState,
   TTextVisualState,
 } from '@/utils/types/global'
 import { create } from 'zustand'
 import { useElementLayerStore } from '../ui/element-layer.store'
-
-type TSelectedElement = {
-  elementId: string
-  elementType: TElementType
-  elementURL?: string
-}
 
 type TSavedElementVisualState = Partial<TElementsVisualState> & {
   productId: TBaseProduct['id']
@@ -29,6 +24,8 @@ type TUseElementStore = {
   savedElementsVisualStates: TSavedElementVisualState[]
 
   // Actions
+  updatePrintedImageElement: (printedImage: Partial<TPrintedImageVisualState>) => void
+  updateStickerElement: (sticker: Partial<TStickerVisualState>) => void
   selectElement: (elementId: string, elementType: TElementType, elementURL?: string) => void
   cancelSelectingElement: () => void
   updateSelectedElement: (updatedElement: Partial<TSelectedElement>) => void
@@ -58,6 +55,29 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
   printedImagesBuildId: null,
   savedElementsVisualStates: [],
 
+  unselectElement: () => {
+    set({ selectedElement: null })
+  },
+  updateStickerElement: (sticker) => {
+    const { stickerElements } = get()
+    const stickerId = sticker.id
+    if (!stickerId) return
+    set({
+      stickerElements: stickerElements.map((st) =>
+        st.id === stickerId ? { ...st, ...sticker } : st
+      ),
+    })
+  },
+  updatePrintedImageElement: (printedImage) => {
+    const { printedImages } = get()
+    const printedImageId = printedImage.id
+    if (!printedImageId) return
+    set({
+      printedImages: printedImages.map((img) =>
+        img.id === printedImageId ? { ...img, ...printedImage } : img
+      ),
+    })
+  },
   getSavedElementsVisualState: (productId) => {
     const { savedElementsVisualStates } = get()
     return savedElementsVisualStates.find((evs) => evs.productId === productId) || null

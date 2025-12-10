@@ -73,15 +73,15 @@ export const AddToCartHandler = ({
       return onError(new Error(message))
     }
     if (!pickedVariant || !pickedProduct || !pickedSurface || !printAreaContainerRef.current) return
-    const { printAreaContainer, removeMockPrintArea } = cleanPrintAreaOnExtractMockupImage(
-      printAreaContainerRef.current
-    )
-    if (!printAreaContainer) {
+    const { printAreaContainer, removeMockPrintArea, transparentPrintAreaContainer } =
+      cleanPrintAreaOnExtractMockupImage(printAreaContainerRef.current)
+    if (!printAreaContainer || !transparentPrintAreaContainer) {
       return onError(new Error('Không tìm thấy khu vực in trên sản phẩm'))
     }
     const imgMimeType: TImgMimeType = 'image/png'
     saveHtmlAsImageWithDesiredSize(
       printAreaContainer,
+      transparentPrintAreaContainer,
       pickedSurface.area.widthRealPx,
       pickedSurface.area.heightRealPx,
       8,

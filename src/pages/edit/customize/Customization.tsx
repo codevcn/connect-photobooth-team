@@ -198,10 +198,10 @@ export const Customization = ({ printedImages }: TCustomizeProps) => {
         <LayoutsPicker printedImages={printedImages} />
         <div className="gap-2 grid grid-cols-1 smd:grid-cols-2 flex-wrap mt-2">
           <PrintedImagesPreview printedImages={printedImages} />
-          <div className="5xl:gap-4 flex col-span-2 gap-2">
+          {/* <div className="5xl:gap-4 flex col-span-2 gap-2">
             <StickerPicker />
             <TextEditor />
-          </div>
+          </div> */}
         </div>
         <PrintedImageMenuWrapper />
         <TextMenuWrapper />

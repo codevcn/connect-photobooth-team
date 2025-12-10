@@ -7,6 +7,8 @@ import { LocalStorageHelper } from '@/utils/localstorage'
 import { toast } from 'react-toastify'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { fillQueryStringToURL } from '@/utils/helpers'
+import { StickerPicker } from './elements/sticker-element/StickerPicker'
+import { TextEditor } from './elements/text-element/TextEditor'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -102,6 +104,10 @@ export const Actions = () => {
       <div className="NAME-actions-bar fixed shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-t-lg bg-white bottom-0 right-2 z-40 smd:block hidden">
         <div className="px-3 py-4 5xl:text-[1.3em]">
           {/* Action Buttons */}
+          <div className="flex w-full mb-2 gap-2">
+            <StickerPicker />
+            <TextEditor />
+          </div>
           <div className="flex gap-1.5">
             {/* Preview Button */}
             <div className="flex flex-col gap-1.5 w-[80%]">

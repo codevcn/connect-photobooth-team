@@ -6,6 +6,7 @@ import { TextFontPicker } from './FontPicker'
 import { createInitialConstants } from '@/utils/contants'
 import { createPortal } from 'react-dom'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
+import { CropImageElement } from '../CropImageElement'
 
 type TPropertyType = 'font-size' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
@@ -540,6 +541,9 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
                 />,
                 document.body
               )}
+          </div>
+          <div className="NAME-form-group NAME-form-color flex flex-1 justify-center gap-1 rounded">
+            <CropImageElement />
           </div>
         </div>
       </div>

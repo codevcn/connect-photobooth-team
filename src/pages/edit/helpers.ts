@@ -240,6 +240,7 @@ export const initTheBestTemplateForPrintedImages = (
 
 type TCleanPrintAreaResult = {
   printAreaContainer: HTMLDivElement | null
+  transparentPrintAreaContainer: HTMLDivElement | null
   removeMockPrintArea: () => void
 }
 
@@ -261,29 +262,37 @@ export const cleanPrintAreaOnExtractMockupImage = (
   clonedPrintAreaContainer
     .querySelector<HTMLElement>('.NAME-out-of-bounds-overlay-warning')
     ?.remove()
-  clonedPrintAreaContainer
-    .querySelector<HTMLElement>('.NAME-zoom-placed-image-btn-wrapper')
-    ?.remove()
+  // clonedPrintAreaContainer
+  //   .querySelector<HTMLElement>('.NAME-zoom-placed-image-btn-wrapper')
+  //   ?.remove()
   const clonedAllowedPrintArea = clonedPrintAreaContainer.querySelector<HTMLDivElement>(
     '.NAME-print-area-allowed'
   )
   clonedAllowedPrintArea?.style.setProperty('border', 'none')
   clonedAllowedPrintArea?.style.setProperty('background-color', 'transparent')
-  const clonedFramesDisplayer = clonedAllowedPrintArea?.querySelector<HTMLElement>(
-    '.NAME-frames-add-image-displayer'
-  )
-  clonedFramesDisplayer?.style.setProperty('background-color', 'transparent')
-  clonedFramesDisplayer?.style.setProperty('border', 'none')
-  for (const frame of clonedAllowedPrintArea?.querySelectorAll<HTMLElement>(
-    '.NAME-template-frame'
-  ) || []) {
-    frame.style.setProperty('border', 'none')
-    frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
-  }
+  // const clonedFramesDisplayer = clonedAllowedPrintArea?.querySelector<HTMLElement>(
+  //   '.NAME-frames-add-image-displayer'
+  // )
+  // clonedFramesDisplayer?.style.setProperty('background-color', 'transparent')
+  // clonedFramesDisplayer?.style.setProperty('border', 'none')
+  // for (const frame of clonedAllowedPrintArea?.querySelectorAll<HTMLElement>(
+  //   '.NAME-template-frame'
+  // ) || []) {
+  //   frame.style.setProperty('border', 'none')
+  //   frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
+  // }
+  const transparentPrintAreaContainer = clonedPrintAreaContainer.cloneNode(true) as HTMLDivElement
+  transparentPrintAreaContainer.style.backgroundColor = 'transparent'
+  document.body
+    .querySelector<HTMLElement>('.NAME-app-temp-container')
+    ?.appendChild(transparentPrintAreaContainer)
+  transparentPrintAreaContainer.querySelector<HTMLElement>('.NAME-product-image')?.remove()
   return {
     printAreaContainer: clonedPrintAreaContainer,
+    transparentPrintAreaContainer,
     removeMockPrintArea: () => {
       clonedPrintAreaContainer?.remove()
+      transparentPrintAreaContainer?.remove()
     },
   }
 }

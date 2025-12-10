@@ -1,0 +1,268 @@
+{
+  "device_id": "ptm01",
+  "customer": { "name": "luong thanh loi", "email": "", "phone": "0976154110" },
+  "shipping_address": {
+    "address1": "22/3/4, guyen van chu",
+    "city": "Thành phố Biên Hòa",
+    "province": "Đồng Nai",
+    "postcode": "000000",
+    "country": "VN"
+  },
+  "items": [
+    {
+      "variant_id": 178,
+      "quantity": 1,
+      "surfaces": [
+        {
+          "surface_id": 14,
+          "editor_state_json": {
+            "printedImages": [
+              {
+                "id": "14c178ec-3a5c-46d6-984d-47129203a5f7",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 274 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 10,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "796e744b-33f1-4a80-8c53-4e0561b2a6b2",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 360.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 20,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "a71a2ede-12ab-47bc-b057-0f2705358a41",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 447 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 30,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "03ac09b9-b854-4144-b02b-fc77498e1331",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 533.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 40,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              }
+            ]
+          },
+          "file_url": "https://api.encycom.com/files/1765403114401-283179696.png",
+          "width_px": 2373,
+          "height_px": 2828
+        },
+        {
+          "surface_id": 14,
+          "editor_state_json": {
+            "printedImages": [
+              {
+                "id": "3424ac05-e34b-44e3-a3e9-c1b20e089e1a",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 274 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 10,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "5180c2bd-a4d9-486d-b948-b31f21eaf769",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 360.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 20,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "4a80faab-b9a1-45b7-bf93-45de23107288",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 447 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 30,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "4ffc2994-b26c-43c1-b5ac-690f078124c8",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 533.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 40,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              }
+            ]
+          },
+          "file_url": "https://api.encycom.com/files/1765403950834-243284624.png",
+          "width_px": 2373,
+          "height_px": 2828
+        },
+        {
+          "surface_id": 14,
+          "editor_state_json": {
+            "printedImages": [
+              {
+                "id": "846f0bd0-6239-43b7-9736-a747b0c0f779",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 274 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 10,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "2a1c88a4-f654-4ebf-9dce-74cd404c0946",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 360.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 20,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "715a242a-22c4-4af8-9fd3-cd3179d34191",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 447 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 30,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "55fd4aaa-d402-444c-abd1-98bf0bbaf9fe",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 533.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 40,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              }
+            ]
+          },
+          "file_url": "https://api.encycom.com/files/1765404129267-766867977.png",
+          "width_px": 2373,
+          "height_px": 2828
+        },
+        {
+          "surface_id": 14,
+          "editor_state_json": {
+            "printedImages": [
+              {
+                "id": "0ba2c146-f1b5-453b-ae86-d629c398a79f",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 274 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 10,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "6c4a6a1c-2c07-4232-982b-fa52746b2dcc",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 360.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 20,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "fe8b43d6-c559-4678-adc4-ab06b4a9d32b",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 447 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 30,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              },
+              {
+                "id": "8129ed6a-05b4-4e48-b247-60266db1053f",
+                "path": "https://photobooth-public.s3.ap-southeast-1.amazonaws.com/scaled-img-ptb.jpg",
+                "position": { "x": 356.69249394673125, "y": 533.5 },
+                "scale": 1,
+                "angle": 0,
+                "zindex": 40,
+                "height": 87,
+                "grayscale": 0,
+                "width": 258,
+                "isInitWithLayout": true,
+                "matchOrientation": "height"
+              }
+            ]
+          },
+          "file_url": "https://api.encycom.com/files/1765404316516-757742483.png",
+          "width_px": 2373,
+          "height_px": 2828
+        }
+      ]
+    }
+  ],
+  "note": ""
+}

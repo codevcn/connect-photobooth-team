@@ -44,7 +44,7 @@ export class OrderAdapter {
       }
     }
     return {
-      store_code: storeCode,
+      device_id: 'ptm01',
       customer: {
         name: shippingInfo.name,
         email: shippingInfo.email,

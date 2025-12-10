@@ -227,7 +227,7 @@ export type TCountryCode = 'VN'
 
 // Create Order API Types
 export type TCreateOrderReq = {
-  store_code: string
+  device_id: string
   customer: {
     name: string
     email: string
@@ -335,7 +335,7 @@ export type TCheckVoucherReq = {
 
 export type TVoucherType = 'free_shipping' | 'percent' | 'fixed'
 
-export type TCheckVoucherRes = 
+export type TCheckVoucherRes =
   | {
       error: string
     }

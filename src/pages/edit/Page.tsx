@@ -193,9 +193,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   useEffect(() => {
     const listenPointerDownOnPage = (e: PointerEvent) => {
       const target = e.target
-      console.log('>>> [poi] target:', target)
       if (target instanceof Element) {
-        console.log('>>> [poi] closest:', target.closest('.NAME-menu-section'))
         if (
           !(
             target.closest('.NAME-root-element') ||

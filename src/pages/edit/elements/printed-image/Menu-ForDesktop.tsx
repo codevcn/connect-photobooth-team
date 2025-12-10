@@ -3,6 +3,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TPrintedImageVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { CropImageElement } from '../CropImageElement'
 
 type TGrayscaleControlProps = {
   grayscale: number
@@ -417,6 +418,8 @@ export const PrintedImageElementMenuForDesktop = ({
               </svg>
               <span>Xuống 1 lớp</span>
             </button>
+
+            <CropImageElement />
           </div>
         </div>
       </div>

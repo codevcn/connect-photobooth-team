@@ -36,7 +36,8 @@ export const PrintedImageElement = ({
   printAreaContainerRef,
   elementControlRef,
 }: TPrintedImageElementProps) => {
-  const { path, id, mountType, height, width, grayscale, isInitWithLayout } = element
+  const { path, id, mountType, height, width, grayscale, isInitWithLayout, matchOrientation } =
+    element
   const rootRef = useRef<HTMLElement | null>(null)
   const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
   const {
@@ -155,6 +156,7 @@ export const PrintedImageElement = ({
           grayscale: grayscale || 0,
           width,
           isInitWithLayout,
+          matchOrientation,
         })
       )}
       data-persist-position={JSON.stringify(
