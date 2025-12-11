@@ -247,25 +247,6 @@ export const StickerElementMenuForDesktop = ({ elementId, onClose }: TStickerEle
     }
   }, [isDragging, dragOffset])
 
-  // Close popover on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(target) &&
-        !pickedElementRootRef.current?.contains(target)
-      ) {
-        onClose()
-      }
-    }
-
-    document.addEventListener('pointerdown', handleClickOutside)
-    return () => {
-      document.removeEventListener('pointerdown', handleClickOutside)
-    }
-  }, [onClose])
-
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
     type: TPropertyType

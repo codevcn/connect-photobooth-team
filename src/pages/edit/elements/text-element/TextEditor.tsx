@@ -190,7 +190,7 @@ export const EditorModalWrapper = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-6 smd:h-6 5xl:w-8 5xl:h-8"
+          className="lucide lucide-type-icon lucide-type text-main-cl w-5 h-5 smd:w-6 smd:h-6 5xl:w-8 5xl:h-8"
         >
           <path d="M12 4v16" />
           <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
@@ -273,7 +273,7 @@ export const TextEditor = () => {
     <div
       ref={containerRef}
       onClick={() => setShowEditorModal(true)}
-      className="5xl:text-[1.5em] py-4 px-1 pb-3 bg-gray-100 cursor-pointer flex items-center justify-center gap-2 flex-1 rounded-md"
+      className="5xl:text-[1.5em] 5xl:bg-gray-100 bg-white 5xl:py-4 smd:pb-3 flex px-1 py-2 cursor-pointer items-center justify-center gap-2 flex-1 rounded-md"
     >
       <EditorModalWrapper
         showEditorModal={showEditorModal}

@@ -209,10 +209,15 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
         {printedImages.length > 0 &&
           printedImages.map((printedImage, index) => (
             <div
-              className="shadow-[0_0_10px_rgba(0,0,0,0.3)] mobile-touch rounded-md"
+              className="shadow-[0_0_10px_rgba(0,0,0,0.3)] mobile-touch rounded-md relative"
               key={printedImage.id}
               onClick={() => setPickedImage(printedImage)}
             >
+              <div className="bg-gray-100 z-40 rounded px-1 text-[10px] text-gray-600 absolute top-1 right-1 shadow-md">
+                {index + 1}
+                <span>/</span>
+                {printedImages.length}
+              </div>
               <img
                 className={`${
                   index === 0 ? 'aspect-video' : 'aspect-square'

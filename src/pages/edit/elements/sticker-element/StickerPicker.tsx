@@ -295,7 +295,7 @@ const PickerModalWrapper = ({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-sticker-icon lucide-sticker text-main-cl -rotate-6 w-6 h-6 smd:w-7 smd:h-7 5xl:w-8 5xl:h-8"
+            className="lucide lucide-sticker-icon lucide-sticker text-main-cl -rotate-6 w-5 h-5 smd:w-7 smd:h-7 5xl:w-8 5xl:h-8"
           >
             <path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z" />
             <path d="M15 3v5a1 1 0 0 0 1 1h5" />
@@ -350,7 +350,7 @@ export const StickerPicker = () => {
   return (
     <div
       onClick={() => setShowStickerPicker(true)}
-      className="5xl:text-[1.5em] py-4 px-1 pb-3 cursor-pointer flex items-center justify-center gap-2 bg-gray-100 flex-1 rounded-md"
+      className="5xl:text-[1.5em] 5xl:bg-gray-100 bg-white 5xl:py-4 smd:pb-3 flex px-1 pb-1 cursor-pointer items-center justify-center gap-2 flex-1 rounded-md"
     >
       <PickerModalWrapper
         showStickerPicker={showStickerPicker}

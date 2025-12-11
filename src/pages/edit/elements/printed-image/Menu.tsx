@@ -93,7 +93,7 @@ const GrayscaleControl = ({
       <button
         ref={buttonRef}
         onClick={() => setShowPopover(!showPopover)}
-        className="group flex items-center justify-center font-bold gap-1 text-inherit rounded p-1 w-full h-full"
+        className="group flex items-center justify-center font-bold gap-1 text-inherit rounded py-1 px-0.5 w-full h-full"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -243,7 +243,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
       posXYInputs && posXYInputs[0]?.value ? parseFloat(posXYInputs[0].value) : undefined,
       posXYInputs && posXYInputs[1]?.value ? parseFloat(posXYInputs[1].value) : undefined
     )
-    // onClose()
+    onClose()
   }
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
@@ -348,7 +348,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
             <span className="text-white text-[1em] font-bold">độ</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-grayscale 5xl:h-12 h-8 smd:h-9 cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 shadow">
+        <div className="NAME-form-group NAME-form-grayscale 5xl:h-12 h-8 smd:h-9 cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded shadow">
           <GrayscaleControl
             grayscale={grayscale}
             setGrayscale={setGrayscale}

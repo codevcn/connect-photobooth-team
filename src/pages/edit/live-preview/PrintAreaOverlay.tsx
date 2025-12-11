@@ -79,16 +79,22 @@ type TPrintAreaOverlayPreviewProps = {
   printAreaOptions: {
     className: string
   }
+  displayMockupOnMobile: boolean
 }>
 
 export const PrintAreaOverlayPreview = ({
   printAreaOptions,
   registerPrintAreaRef,
+  displayMockupOnMobile = true,
 }: TPrintAreaOverlayPreviewProps) => {
   return (
     <div
       ref={registerPrintAreaRef}
-      className={cn(`z-5 flex justify-center items-center absolute`, printAreaOptions?.className)}
+      className={cn(
+        `z-5 flex justify-center items-center absolute`,
+        printAreaOptions?.className,
+        displayMockupOnMobile ? '' : 'smd:block hidden'
+      )}
     >
       {/* <FramesDisplayerForPreview
         template={printTemplate}

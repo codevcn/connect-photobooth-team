@@ -338,25 +338,6 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
     }
   }, [isDragging, dragOffset])
 
-  // Close popover on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(target) &&
-        !pickedElementRootRef.current?.contains(target)
-      ) {
-        onClose()
-      }
-    }
-
-    document.addEventListener('pointerdown', handleClickOutside)
-    return () => {
-      document.removeEventListener('pointerdown', handleClickOutside)
-    }
-  }, [onClose])
-
   useEffect(() => {
     eventEmitter.on(EInternalEvents.SYNC_ELEMENT_PROPS, listenElementProps)
     initInputText()

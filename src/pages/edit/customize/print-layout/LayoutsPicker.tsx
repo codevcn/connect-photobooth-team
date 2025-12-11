@@ -101,19 +101,24 @@ export const LayoutsPicker = ({ printedImages }: TLayoutsPickerProps) => {
   return (
     <div className="w-full">
       <h3 className="5xl:text-[1.5em] smd:text-sm text-xs mb-1 font-bold text-gray-800">
-        Chọn bố cục khung ảnh
+        Chọn layout
       </h3>
       <CustomScrollbar
         classNames={{
           content: 'flex flex-nowrap gap-3 overflow-x-auto no-scrollbar pb-3 pt-1',
         }}
       >
-        {allLayouts.map((layout) => (
+        {allLayouts.map((layout, index) => (
           <div
             key={layout.id}
             onClick={() => handlePickTemplate(layout)}
             className="relative flex items-center justify-center aspect-square 5xl:min-h-22 min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition"
           >
+            <div className="bg-gray-100 z-40 rounded px-1 text-[10px] text-gray-600 absolute top-1 right-1 shadow-md">
+              {index + 1}
+              <span>/</span>
+              {allLayouts.length}
+            </div>
             {/* Layout preview element - dùng làm print area để build elements */}
             <div
               ref={(el) => registerLayoutRef(layout.id, el)}
